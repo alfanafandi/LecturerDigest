@@ -4,12 +4,15 @@ import 'package:lecturer_digest/core/services/supabase_service.dart';
 import 'package:lecturer_digest/core/services/ai_service.dart';
 import 'package:lecturer_digest/core/services/audio_service.dart';
 import 'package:lecturer_digest/core/services/transcription_service.dart';
+import 'package:lecturer_digest/core/services/document_service.dart';
+import 'dart:io';
 
 class AppProvider extends ChangeNotifier {
   final SupabaseService _db = SupabaseService();
   final AIService _ai = AIService();
   final AudioService _audio = AudioService();
   final TranscriptionService _transcriber = TranscriptionService();
+  final DocumentService _docService = DocumentService();
 
   // State
   List<Map<String, dynamic>> courses = [];
@@ -348,6 +351,52 @@ class AppProvider extends ChangeNotifier {
       await fetchQuizzes(lectureId);
     } catch (e) {
       error = "Gagal membuat kuis AI: ${e.toString()}";
+      print(error);
+    }
+    _setLoading(false);
+  }
+
+  // --- Document Upload Workflow ---
+  Future<void> processDocument(String courseId, String title, File file) async {
+    _setLoading(true);
+    error = null;
+    try {
+      // 1. Extract text from PDF
+      final transcript = await _docService.extractTextFromPDF(file);
+      
+      // 2. Save Lecture (Mock duration for documents as 5 mins)
+      final lectureId = await _db.saveLecture(courseId, title, 5, transcript, audioPath: null);
+
+      // 3. Generate Summary via AI
+      final summaryRaw = await _ai.generateSummary(transcript);
+      final summaryData = jsonDecode(summaryRaw);
+
+      // 4. Save Summary
+      await _db.saveSummary(
+        lectureId,
+        summaryData['core_essence'],
+        {'takeaways': summaryData['key_takeaways']},
+        summaryData['exam_tip'],
+      );
+
+      // 5. Generate Flashcards via AI
+      final flashcardsRaw = await _ai.generateFlashcards(summaryRaw);
+      final List<dynamic> flashcardsData = jsonDecode(flashcardsRaw);
+
+      // 6. Save Flashcards
+      await _db.saveFlashcards(
+        lectureId,
+        flashcardsData.map((f) => {
+          'front_concept': f['front_concept'],
+          'back_detail': f['back_detail'],
+        }).toList().cast<Map<String, dynamic>>(),
+      );
+
+      // Finish
+      await fetchCourses(); 
+      await fetchDueFlashcards();
+    } catch (e) {
+      error = e.toString().contains('Exception:') ? e.toString().replaceAll('Exception: ', '') : "Gagal memproses dokumen: ${e.toString()}";
       print(error);
     }
     _setLoading(false);

@@ -39,7 +39,7 @@ Dokumen ini melacak status pengembangan fitur dan rencana masa depan aplikasi **
 ## 🛠️ Fitur dalam Proses / Rencana Mendatang
 
 ### 🕙 Prioritas Tinggi (Next)
-- [ ] **Upload Materi (PDF/PPT)**: Mengaktifkan tombol upload agar AI bisa memproses dokumen tanpa harus merekam suara.
+- [x] **Upload Materi (PDF)**: Mengaktifkan tombol upload agar AI bisa memproses dokumen tanpa harus merekam suara (Batas 30 halaman).
 - [ ] **Refined Chat AI**: Meningkatkan memori bot saat sesi tanya jawab materi kuliah.
 
 ### 🚀 Pengembangan Jangka Panjang

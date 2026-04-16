@@ -46,6 +46,8 @@ dependencies:
   permission_handler: ^11.3.1
   intl: ^0.19.0
   just_audio: ^0.9.42
+  file_picker: ^11.0.2
+  syncfusion_flutter_pdf: ^33.1.49
 
 dev_dependencies:
   flutter_test:

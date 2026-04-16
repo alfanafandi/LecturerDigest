@@ -3,6 +3,8 @@ import 'package:provider/provider.dart';
 import 'dart:async';
 import 'package:lecturer_digest/core/theme/app_theme.dart';
 import 'package:lecturer_digest/core/providers/app_provider.dart';
+import 'package:lecturer_digest/core/services/document_service.dart';
+import 'dart:io';
 
 class NewLectureRecording extends StatefulWidget {
   const NewLectureRecording({super.key});
@@ -159,6 +161,72 @@ class _NewLectureRecordingState extends State<NewLectureRecording> with TickerPr
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Sesi berhasil disimpan & dirangkum oleh AI!')),
+        );
+        Navigator.pop(context); // Return to Dashboard
+      }
+    }
+  }
+
+  Future<void> _handleUploadMaterial() async {
+    if (_selectedCourseId == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Silakan pilih mata kuliah terlebih dahulu')),
+      );
+      return;
+    }
+
+    final provider = Provider.of<AppProvider>(context, listen: false);
+    final docService = DocumentService();
+
+    // 1. Pick PDF
+    final file = await docService.pickPDF();
+    if (file == null) return; // User cancelled
+
+    // 2. Show Loading Overlay
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => WillPopScope(
+        onWillPop: () async => false,
+        child: const AlertDialog(
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              CircularProgressIndicator(),
+              SizedBox(height: 16),
+              Text('AI sedang membaca dokumen...', style: TextStyle(fontWeight: FontWeight.bold)),
+              SizedBox(height: 8),
+              Text('Ini mungkin memakan waktu 10-20 detik.', textAlign: TextAlign.center, style: TextStyle(fontSize: 12, color: Colors.grey)),
+            ],
+          ),
+        ),
+      ),
+    );
+
+    // 3. Process Document
+    await provider.processDocument(
+      _selectedCourseId!,
+      _titleController.text,
+      file,
+    );
+
+    // Close Loading Dialog
+    if (mounted) Navigator.pop(context);
+
+    if (provider.error != null) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(provider.error!), 
+            backgroundColor: provider.error!.contains('halaman') ? Colors.orange : Colors.red,
+            duration: const Duration(seconds: 4),
+          ),
+        );
+      }
+    } else {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Dokumen berhasil diunggah & dirangkum oleh AI!'), backgroundColor: Colors.green),
         );
         Navigator.pop(context); // Return to Dashboard
       }
@@ -405,9 +473,7 @@ class _NewLectureRecordingState extends State<NewLectureRecording> with TickerPr
                   ),
                   const SizedBox(height: 32),
                   GestureDetector(
-                    onTap: () {
-                      // TODO: Implement file picker
-                    },
+                    onTap: _handleUploadMaterial,
                     child: Container(
                       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
                       decoration: BoxDecoration(
