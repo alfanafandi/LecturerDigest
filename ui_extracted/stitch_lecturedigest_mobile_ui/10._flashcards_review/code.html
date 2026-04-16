@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-background": "#191c1d",
+                        "inverse-on-surface": "#f0f1f2",
+                        "primary-fixed": "#68fadd",
+                        "tertiary-container": "#fe896a",
+                        "surface": "#f8f9fa",
+                        "secondary-container": "#54a0fe",
+                        "inverse-surface": "#2e3132",
+                        "on-tertiary-fixed": "#3c0800",
+                        "background": "#f8f9fa",
+                        "tertiary": "#9f4128",
+                        "on-primary-fixed": "#00201a",
+                        "tertiary-fixed": "#ffdbd2",
+                        "on-surface-variant": "#3c4a46",
+                        "on-tertiary-fixed-variant": "#7f2a13",
+                        "tertiary-fixed-dim": "#ffb4a1",
+                        "surface-container-highest": "#e1e3e4",
+                        "on-error-container": "#93000a",
+                        "surface-container": "#edeeef",
+                        "surface-tint": "#006b5c",
+                        "outline": "#6c7a76",
+                        "outline-variant": "#bbcac4",
+                        "secondary-fixed-dim": "#a5c8ff",
+                        "on-tertiary-container": "#74220b",
+                        "surface-container-high": "#e7e8e9",
+                        "secondary": "#005faf",
+                        "surface-dim": "#d9dadb",
+                        "on-primary": "#ffffff",
+                        "surface-variant": "#e1e3e4",
+                        "surface-bright": "#f8f9fa",
+                        "surface-container-low": "#f3f4f5",
+                        "error-container": "#ffdad6",
+                        "on-secondary-fixed-variant": "#004786",
+                        "primary-fixed-dim": "#44ddc1",
+                        "on-secondary-fixed": "#001c3a",
+                        "on-secondary-container": "#003567",
+                        "on-tertiary": "#ffffff",
+                        "on-primary-fixed-variant": "#005145",
+                        "primary-container": "#00bfa5",
+                        "on-surface": "#191c1d",
+                        "error": "#ba1a1a",
+                        "primary": "#006b5c",
+                        "secondary-fixed": "#d4e3ff",
+                        "inverse-primary": "#44ddc1",
+                        "on-secondary": "#ffffff",
+                        "on-primary-container": "#00473c",
+                        "surface-container-lowest": "#ffffff",
+                        "on-error": "#ffffff"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "fontFamily": {
+                        "headline": ["Plus Jakarta Sans"],
+                        "body": ["Inter"],
+                        "label": ["Inter"]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .perspective-1000 {
+            perspective: 1000px;
+        }
+        .flashcard-inner {
+            transition: transform 0.6s;
+            transform-style: preserve-3d;
+        }
+        .flashcard-face {
+            backface-visibility: hidden;
+        }
+        .flashcard-back {
+            transform: rotateY(180deg);
+        }
+        .asymmetric-blob {
+            border-radius: 42% 58% 70% 30% / 45% 45% 55% 55%;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-surface text-on-surface font-body min-h-screen">
+<!-- TopAppBar -->
+<header class="bg-[#F8F9FA]/80 dark:bg-[#191C1D]/80 backdrop-blur-xl docked full-width top-0 sticky z-50 flex justify-between items-center w-full px-6 py-4 shadow-none">
+<div class="flex items-center gap-3">
+<div class="flex items-center justify-center w-10 h-10 rounded-xl bg-primary-container/20 text-[#006B5C] dark:text-[#44DDC1]">
+<span class="material-symbols-outlined text-2xl">auto_stories</span>
+</div>
+<span class="text-[#191C1D] dark:text-[#F8F9FA] font-extrabold tracking-tighter font-headline text-xl">LectureDigest</span>
+</div>
+<div class="flex items-center gap-4">
+<div class="hidden md:flex gap-6 mr-4">
+<span class="text-[#006B5C] dark:text-[#44DDC1] font-semibold cursor-pointer">AI Tools</span>
+<span class="text-[#5C5F5F] dark:text-[#C4C7C7] hover:text-[#006B5C] cursor-pointer transition-colors">Courses</span>
+</div>
+<img alt="User" class="w-10 h-10 rounded-full border-2 border-primary-container/30" data-alt="professional headshot of a young informatics student smiling, warm natural indoor lighting, soft bokeh background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAWcF-8EPHFKSIuu7gNU_m6OXygVtEvnKs6nyPCEC-Oz0a4WoTXTGUhEbhdU2B_b_S8PptaxDVvM8GuNxgO8wmQyEudrHTknswExFsLJ4hL5BRle-f8vpay3T9jKZFtRz811SOEG3g_ICRjkCtjajFxICdaL5n_P9FqkQVCa93seMM-JB0aDzy9kTtswfBgl1_-TP3n7nIh6tsjAxsFAL71H5pJvA_TvtJ5ALY0lX530ZC2J0fSKSKGqTH0X7nSSh2UATdHlll1vzGg"/>
+</div>
+</header>
+<main class="max-w-4xl mx-auto px-6 py-8 pb-32">
+<!-- Header & Stats Section -->
+<div class="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 mb-12">
+<div>
+<span class="text-primary font-bold tracking-wider text-xs uppercase mb-2 block">Informatics: Data Structures</span>
+<h1 class="font-headline font-extrabold text-4xl text-on-surface tracking-tight">Flashcards Review</h1>
+</div>
+<!-- Progress & Streak (Editorial Utility style) -->
+<div class="flex gap-4">
+<div class="bg-surface-container-lowest p-4 rounded-2xl shadow-[0px_12px_32px_rgba(0,107,92,0.08)] flex items-center gap-3">
+<div class="w-10 h-10 asymmetric-blob bg-tertiary-container/20 flex items-center justify-center text-tertiary">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">local_fire_department</span>
+</div>
+<div>
+<p class="text-[10px] text-outline uppercase font-bold tracking-widest">Streak</p>
+<p class="font-headline font-bold text-lg leading-tight">12 Days</p>
+</div>
+</div>
+<div class="bg-surface-container-lowest p-4 rounded-2xl shadow-[0px_12px_32px_rgba(0,107,92,0.08)] flex items-center gap-3">
+<div class="relative w-10 h-10">
+<svg class="w-full h-full transform -rotate-90">
+<circle class="text-surface-container-high" cx="20" cy="20" fill="transparent" r="18" stroke="currentColor" stroke-width="3"></circle>
+<circle class="text-primary-container" cx="20" cy="20" fill="transparent" r="18" stroke="currentColor" stroke-dasharray="113" stroke-dashoffset="34" stroke-width="3"></circle>
+</svg>
+<div class="absolute inset-0 flex items-center justify-center">
+<span class="material-symbols-outlined text-primary text-sm" style="font-variation-settings: 'FILL' 1;">flag</span>
+</div>
+</div>
+<div>
+<p class="text-[10px] text-outline uppercase font-bold tracking-widest">Daily Goal</p>
+<p class="font-headline font-bold text-lg leading-tight">14/20</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Card Stack UI -->
+<div class="relative w-full max-w-xl mx-auto h-[420px] perspective-1000">
+<!-- Background Decoration (Soft Tonal Shifts) -->
+<div class="absolute top-4 left-4 right-4 bottom-[-16px] bg-surface-container rounded-[2rem] -z-10"></div>
+<div class="absolute top-2 left-2 right-2 bottom-[-8px] bg-surface-container-high rounded-[2rem] -z-10"></div>
+<!-- Active Card -->
+<div class="flashcard-inner relative w-full h-full cursor-pointer">
+<!-- Front Face -->
+<div class="flashcard-face absolute inset-0 bg-surface-container-lowest rounded-[2.5rem] shadow-[0px_12px_32px_rgba(0,107,92,0.08)] p-12 flex flex-col items-center justify-center text-center overflow-hidden">
+<!-- Glass Texture Element -->
+<div class="absolute -top-20 -right-20 w-64 h-64 bg-gradient-to-br from-primary/10 to-transparent blur-3xl opacity-30"></div>
+<span class="text-primary/40 font-headline font-black text-7xl absolute top-10 opacity-10">01</span>
+<div class="relative z-10">
+<h2 class="font-headline font-bold text-3xl md:text-5xl text-on-surface mb-6 leading-tight">B-Trees</h2>
+<p class="text-outline-variant font-medium text-sm md:text-base max-w-[280px] mx-auto italic">
+                            A self-balancing tree data structure that maintains sorted data and allows searches, sequential access, insertions, and deletions in logarithmic time.
+                        </p>
+</div>
+<div class="absolute bottom-10 flex items-center gap-2 text-primary font-bold text-xs tracking-widest uppercase bg-primary-container/10 px-4 py-2 rounded-full">
+<span class="material-symbols-outlined text-sm">touch_app</span>
+                        Tap to Reveal
+                    </div>
+</div>
+<!-- Back Face (Concept: Min-Max Heap used as an example of flipped content) -->
+<div class="flashcard-face flashcard-back absolute inset-0 bg-gradient-to-br from-surface-container-lowest to-surface-container-low rounded-[2.5rem] shadow-[0px_12px_32px_rgba(0,107,92,0.08)] p-12 flex flex-col justify-between overflow-hidden">
+<div class="absolute top-8 left-8">
+<span class="text-primary font-bold text-xs uppercase tracking-tighter">Answer Detail</span>
+</div>
+<div class="mt-8 space-y-6">
+<div class="flex items-start gap-4">
+<div class="w-2 h-2 rounded-full bg-primary mt-2 flex-shrink-0"></div>
+<p class="text-on-surface leading-relaxed font-medium">Nodes can have more than two children (multi-way tree).</p>
+</div>
+<div class="flex items-start gap-4">
+<div class="w-2 h-2 rounded-full bg-primary mt-2 flex-shrink-0"></div>
+<p class="text-on-surface leading-relaxed font-medium">Keeps data sorted and optimized for systems that read and write large blocks of data.</p>
+</div>
+<div class="flex items-start gap-4">
+<div class="w-2 h-2 rounded-full bg-primary mt-2 flex-shrink-0"></div>
+<p class="text-on-surface leading-relaxed font-medium">Commonly used in databases and file systems like NTFS and HFS+.</p>
+</div>
+</div>
+<div class="bg-primary/5 p-4 rounded-2xl border border-primary/10">
+<p class="text-[11px] font-bold text-primary uppercase mb-1">Related Concept</p>
+<p class="text-on-surface font-semibold">Min-Max Heap: A specialized binary tree for double-ended priority queues.</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Rating Buttons (Jewel Variants) -->
+<div class="mt-16 flex flex-col md:flex-row items-center justify-center gap-4">
+<button class="w-full md:w-auto px-8 py-4 rounded-2xl bg-surface-container-high text-on-surface-variant font-bold text-sm hover:bg-surface-container-highest transition-all active:scale-95 flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-lg">replay</span>
+                Still Learning
+            </button>
+<button class="w-full md:w-auto px-10 py-4 rounded-2xl bg-secondary-container/20 text-on-secondary-container font-bold text-sm hover:bg-secondary-container/30 transition-all active:scale-95 flex items-center justify-center gap-2 border border-secondary-container/20">
+<span class="material-symbols-outlined text-lg">check_circle</span>
+                Got It!
+            </button>
+<button class="w-full md:w-auto px-12 py-4 rounded-2xl bg-gradient-to-br from-primary to-primary-container text-white font-bold text-sm shadow-[0px_8px_24px_rgba(0,107,92,0.2)] hover:opacity-90 transition-all active:scale-95 flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-lg" style="font-variation-settings: 'FILL' 1;">star</span>
+                Mastered
+            </button>
+</div>
+</main>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 left-0 w-full flex justify-around items-center px-4 pb-6 pt-3 bg-[#F8F9FA]/80 dark:bg-[#191C1D]/80 backdrop-blur-xl rounded-t-[2rem] z-50 shadow-[0px_-8px_24px_rgba(0,107,92,0.06)] md:hidden">
+<div class="flex flex-col items-center justify-center text-[#5C5F5F] dark:text-[#C4C7C7] px-5 py-2 hover:bg-[#E7E8E9] dark:hover:bg-[#2D3132] rounded-xl transition-all">
+<span class="material-symbols-outlined">home</span>
+<span class="font-['Inter'] font-medium text-[11px]">Home</span>
+</div>
+<div class="flex flex-col items-center justify-center bg-gradient-to-br from-[#006B5C] to-[#00BFA5] text-white rounded-2xl px-5 py-2">
+<span class="material-symbols-outlined">library_books</span>
+<span class="font-['Inter'] font-medium text-[11px]">Courses</span>
+</div>
+<div class="flex flex-col items-center justify-center text-[#5C5F5F] dark:text-[#C4C7C7] px-5 py-2 hover:bg-[#E7E8E9] dark:hover:bg-[#2D3132] rounded-xl transition-all">
+<span class="material-symbols-outlined">auto_awesome</span>
+<span class="font-['Inter'] font-medium text-[11px]">AI Tools</span>
+</div>
+<div class="flex flex-col items-center justify-center text-[#5C5F5F] dark:text-[#C4C7C7] px-5 py-2 hover:bg-[#E7E8E9] dark:hover:bg-[#2D3132] rounded-xl transition-all">
+<span class="material-symbols-outlined">person</span>
+<span class="font-['Inter'] font-medium text-[11px]">Profile</span>
+</div>
+</nav>
+<!-- Decorative Async Energy BG -->
+<div class="fixed top-1/4 -left-32 w-96 h-96 bg-primary-container/5 asymmetric-blob -z-20 blur-[100px]"></div>
+<div class="fixed bottom-1/4 -right-32 w-80 h-80 bg-tertiary-container/5 asymmetric-blob -z-20 blur-[100px]"></div>
+</body></html>

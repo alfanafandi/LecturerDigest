@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>LectureDigest - Course Detail</title>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-background": "#191c1d",
+                        "inverse-on-surface": "#f0f1f2",
+                        "primary-fixed": "#68fadd",
+                        "tertiary-container": "#fe896a",
+                        "surface": "#f8f9fa",
+                        "secondary-container": "#54a0fe",
+                        "inverse-surface": "#2e3132",
+                        "on-tertiary-fixed": "#3c0800",
+                        "background": "#f8f9fa",
+                        "tertiary": "#9f4128",
+                        "on-primary-fixed": "#00201a",
+                        "tertiary-fixed": "#ffdbd2",
+                        "on-surface-variant": "#3c4a46",
+                        "on-tertiary-fixed-variant": "#7f2a13",
+                        "tertiary-fixed-dim": "#ffb4a1",
+                        "surface-container-highest": "#e1e3e4",
+                        "on-error-container": "#93000a",
+                        "surface-container": "#edeeef",
+                        "surface-tint": "#006b5c",
+                        "outline": "#6c7a76",
+                        "outline-variant": "#bbcac4",
+                        "secondary-fixed-dim": "#a5c8ff",
+                        "on-tertiary-container": "#74220b",
+                        "surface-container-high": "#e7e8e9",
+                        "secondary": "#005faf",
+                        "surface-dim": "#d9dadb",
+                        "on-primary": "#ffffff",
+                        "surface-variant": "#e1e3e4",
+                        "surface-bright": "#f8f9fa",
+                        "surface-container-low": "#f3f4f5",
+                        "error-container": "#ffdad6",
+                        "on-secondary-fixed-variant": "#004786",
+                        "primary-fixed-dim": "#44ddc1",
+                        "on-secondary-fixed": "#001c3a",
+                        "on-secondary-container": "#003567",
+                        "on-tertiary": "#ffffff",
+                        "on-primary-fixed-variant": "#005145",
+                        "primary-container": "#00bfa5",
+                        "on-surface": "#191c1d",
+                        "error": "#ba1a1a",
+                        "primary": "#006b5c",
+                        "secondary-fixed": "#d4e3ff",
+                        "inverse-primary": "#44ddc1",
+                        "on-secondary": "#ffffff",
+                        "on-primary-container": "#00473c",
+                        "surface-container-lowest": "#ffffff",
+                        "on-error": "#ffffff"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "fontFamily": {
+                        "headline": ["Plus Jakarta Sans"],
+                        "body": ["Inter"],
+                        "label": ["Inter"]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            display: inline-block;
+            line-height: 1;
+            text-transform: none;
+            letter-spacing: normal;
+            word-wrap: normal;
+            white-space: nowrap;
+            direction: ltr;
+        }
+        .glass-nav {
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+        }
+        .digest-pulse {
+            background: linear-gradient(90deg, #006B5C 0%, #00BFA5 100%);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-surface text-on-surface font-body selection:bg-primary-container selection:text-on-primary-container">
+<!-- TopAppBar -->
+<header class="bg-[#F8F9FA]/80 dark:bg-[#191C1D]/80 backdrop-blur-xl docked full-width top-0 sticky z-50 flex justify-between items-center w-full px-6 py-4 no-border shadow-none">
+<div class="flex items-center gap-3">
+<div class="p-2 rounded-xl bg-surface-container-high text-[#006B5C] hover:bg-[#E7E8E9] transition-colors cursor-pointer active:opacity-80 active:scale-95 duration-200">
+<span class="material-symbols-outlined" data-icon="arrow_back">arrow_back</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[#006B5C] dark:text-[#44DDC1]" data-icon="auto_stories">auto_stories</span>
+<h1 class="text-[#191C1D] dark:text-[#F8F9FA] font-extrabold tracking-tighter text-xl font-headline">LectureDigest</h1>
+</div>
+</div>
+<div class="w-10 h-10 rounded-full overflow-hidden border-2 border-surface-container-highest">
+<img alt="User profile photo" class="w-full h-full object-cover" data-alt="Close-up portrait of a young adult informatics student with a friendly expression and soft natural lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAYNbiGLlpZUGTn0e8JAtWgqGt4yHjM5zz1xlWLBahMDRMS-uN3LCjRh9wjsQVyHT2r2FaGOSLQWBaraHYndpxGvqbJqJamWu5_G77C1JvnjLx15czjsIOV1CY5OAupvCYykvojIIyIW5-tsZKiKCTtCzKALmCPw9mbbf7-Wu51FaH2xMvXHd8C_0sYuJoriLEkps5gCA_nkH3U1JVRF1H4ThZw0uPwhNRnTj3cnPObAXm_Cc0kSLjy6pLoK8ddEKRm6O7qPxz7MtHj"/>
+</div>
+</header>
+<main class="max-w-5xl mx-auto px-6 pt-8 pb-32">
+<!-- Course Header Section -->
+<section class="relative mb-12 flex flex-col md:flex-row gap-8 items-end md:items-center">
+<div class="flex-1 space-y-2">
+<div class="flex items-center gap-2">
+<span class="text-primary font-headline font-bold text-sm tracking-wider uppercase">Informatics Department</span>
+</div>
+<h2 class="text-4xl md:text-5xl font-headline font-extrabold tracking-tight text-on-surface">Struktur Data</h2>
+<div class="flex items-center gap-3 pt-2">
+<img alt="Professor avatar" class="w-8 h-8 rounded-full" data-alt="Professional portrait of a male computer science professor in a clean office environment with soft focus" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDOkrQ91i5rQMEHWffgm3dKIwz8A8xNyVnnH8Wv3DkHlLojVufHdEtovXOFwdRVKvCtGjgpHx_vz-UEw2GNTG5OzMHdL4XK8UJvkIgGdH27WuHe2oylvXGiF7vlL1bLdwXUsafDI5BDFK0ygKgV6_G_ryspxiokC9P_aLy40b4yG0eB3OOvkKZ3WXbYvXrovl2ObnMPXprJX0Mh6uIotfeEK6yL5C5woIIwGKfr_fBycY97QFSRZqGGLdf_PKSjl66_PxQQOW5GkOms"/>
+<p class="text-on-surface-variant font-medium">Prof. Dr. Ir. Budi Santoso</p>
+</div>
+</div>
+<!-- Bento Stats -->
+<div class="w-full md:w-auto grid grid-cols-2 gap-4">
+<div class="bg-surface-container-lowest p-6 rounded-[2rem] shadow-[0px_12px_32px_rgba(0,107,92,0.08)] flex flex-col items-center justify-center text-center">
+<span class="text-primary font-headline font-extrabold text-3xl">12.5h</span>
+<span class="text-on-surface-variant font-label text-xs mt-1">Time Saved</span>
+</div>
+<div class="bg-surface-container-lowest p-6 rounded-[2rem] shadow-[0px_12px_32px_rgba(0,107,92,0.08)] flex flex-col items-center justify-center text-center">
+<span class="text-secondary font-headline font-extrabold text-3xl">88%</span>
+<span class="text-on-surface-variant font-label text-xs mt-1">Avg. Quiz</span>
+</div>
+</div>
+</section>
+<!-- Filters & Search -->
+<div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
+<div class="flex flex-wrap gap-2">
+<button class="px-6 py-2.5 rounded-full bg-primary text-on-primary font-label font-semibold shadow-md transition-all">All</button>
+<button class="px-6 py-2.5 rounded-full bg-surface-container-high text-on-surface-variant font-label font-medium hover:bg-surface-container-highest transition-all">Unread</button>
+<button class="px-6 py-2.5 rounded-full bg-surface-container-high text-on-surface-variant font-label font-medium hover:bg-surface-container-highest transition-all">Summarized</button>
+</div>
+<div class="relative w-full md:w-64">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-lg" data-icon="search">search</span>
+<input class="w-full pl-10 pr-4 py-2.5 rounded-2xl border-none bg-surface-container-high text-sm focus:ring-2 focus:ring-primary/20 placeholder:text-on-surface-variant/50" placeholder="Search lectures..." type="text"/>
+</div>
+</div>
+<!-- Lectures List -->
+<div class="space-y-4">
+<!-- Lecture Item 1: Active/Recent -->
+<div class="group bg-surface-container-lowest hover:bg-white p-6 rounded-[2rem] transition-all duration-300 flex items-center gap-6 shadow-[0px_12px_32px_rgba(0,107,92,0.02)] border border-transparent hover:border-primary/10">
+<div class="relative w-16 h-16 rounded-2xl overflow-hidden flex-shrink-0 digest-pulse flex items-center justify-center">
+<span class="material-symbols-outlined text-white text-3xl" data-icon="play_arrow" style="font-variation-settings: 'FILL' 1;">play_arrow</span>
+</div>
+<div class="flex-1 min-w-0">
+<div class="flex items-center gap-2 mb-1">
+<span class="text-primary font-label font-bold text-[10px] tracking-widest uppercase">Week 08</span>
+<span class="w-1 h-1 rounded-full bg-outline-variant"></span>
+<span class="text-on-surface-variant font-label text-xs">Oct 24, 2023</span>
+</div>
+<h3 class="text-xl font-headline font-bold text-on-surface truncate">Tree Traversal &amp; Binary Search Tree</h3>
+<div class="flex items-center gap-4 mt-2">
+<div class="flex items-center gap-1 text-on-surface-variant">
+<span class="material-symbols-outlined text-sm" data-icon="schedule">schedule</span>
+<span class="text-xs font-medium">94 mins</span>
+</div>
+<div class="flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary-container/20 text-on-primary-container">
+<span class="material-symbols-outlined text-sm" data-icon="auto_awesome" style="font-variation-settings: 'FILL' 1;">auto_awesome</span>
+<span class="text-[11px] font-bold">Summarized</span>
+</div>
+</div>
+</div>
+<div class="hidden md:flex flex-col items-end gap-2">
+<button class="p-3 rounded-2xl bg-surface-container-high hover:bg-primary hover:text-on-primary transition-colors">
+<span class="material-symbols-outlined" data-icon="download">download</span>
+</button>
+</div>
+</div>
+<!-- Lecture Item 2 -->
+<div class="group bg-surface-container-lowest hover:bg-white p-6 rounded-[2rem] transition-all duration-300 flex items-center gap-6 shadow-[0px_12px_32px_rgba(0,107,92,0.02)] border border-transparent hover:border-primary/10">
+<div class="relative w-16 h-16 rounded-2xl bg-surface-container-high overflow-hidden flex-shrink-0 flex items-center justify-center">
+<span class="material-symbols-outlined text-on-surface-variant text-3xl" data-icon="play_arrow" style="font-variation-settings: 'FILL' 1;">play_arrow</span>
+</div>
+<div class="flex-1 min-w-0">
+<div class="flex items-center gap-2 mb-1">
+<span class="text-on-surface-variant font-label font-bold text-[10px] tracking-widest uppercase">Week 07</span>
+<span class="w-1 h-1 rounded-full bg-outline-variant"></span>
+<span class="text-on-surface-variant font-label text-xs">Oct 17, 2023</span>
+</div>
+<h3 class="text-xl font-headline font-bold text-on-surface truncate">Introduction to Linked Lists</h3>
+<div class="flex items-center gap-4 mt-2">
+<div class="flex items-center gap-1 text-on-surface-variant">
+<span class="material-symbols-outlined text-sm" data-icon="schedule">schedule</span>
+<span class="text-xs font-medium">82 mins</span>
+</div>
+<div class="flex items-center gap-1.5 px-3 py-1 rounded-full bg-tertiary-fixed text-on-tertiary-fixed-variant">
+<span class="material-symbols-outlined text-sm" data-icon="pending">pending</span>
+<span class="text-[11px] font-bold">In Progress</span>
+</div>
+</div>
+</div>
+<div class="hidden md:flex flex-col items-end gap-2">
+<button class="p-3 rounded-2xl bg-surface-container-high hover:bg-primary hover:text-on-primary transition-colors">
+<span class="material-symbols-outlined" data-icon="download">download</span>
+</button>
+</div>
+</div>
+<!-- Lecture Item 3 -->
+<div class="group bg-surface-container-lowest hover:bg-white p-6 rounded-[2rem] transition-all duration-300 flex items-center gap-6 shadow-[0px_12px_32px_rgba(0,107,92,0.02)] border border-transparent hover:border-primary/10">
+<div class="relative w-16 h-16 rounded-2xl bg-surface-container-high overflow-hidden flex-shrink-0 flex items-center justify-center">
+<span class="material-symbols-outlined text-on-surface-variant text-3xl" data-icon="play_arrow" style="font-variation-settings: 'FILL' 1;">play_arrow</span>
+</div>
+<div class="flex-1 min-w-0">
+<div class="flex items-center gap-2 mb-1">
+<span class="text-on-surface-variant font-label font-bold text-[10px] tracking-widest uppercase">Week 06</span>
+<span class="w-1 h-1 rounded-full bg-outline-variant"></span>
+<span class="text-on-surface-variant font-label text-xs">Oct 10, 2023</span>
+</div>
+<h3 class="text-xl font-headline font-bold text-on-surface truncate">Sorting Algorithms Deep Dive</h3>
+<div class="flex items-center gap-4 mt-2">
+<div class="flex items-center gap-1 text-on-surface-variant">
+<span class="material-symbols-outlined text-sm" data-icon="schedule">schedule</span>
+<span class="text-xs font-medium">105 mins</span>
+</div>
+<div class="flex items-center gap-1.5 px-3 py-1 rounded-full bg-surface-container-high text-on-surface-variant">
+<span class="material-symbols-outlined text-sm" data-icon="visibility_off">visibility_off</span>
+<span class="text-[11px] font-bold">Not Summarized</span>
+</div>
+</div>
+</div>
+<div class="hidden md:flex flex-col items-end gap-2">
+<button class="p-3 rounded-2xl bg-surface-container-high hover:bg-primary hover:text-on-primary transition-colors">
+<span class="material-symbols-outlined" data-icon="download">download</span>
+</button>
+</div>
+</div>
+<!-- Lecture Item 4 -->
+<div class="group bg-surface-container-lowest hover:bg-white p-6 rounded-[2rem] transition-all duration-300 flex items-center gap-6 shadow-[0px_12px_32px_rgba(0,107,92,0.02)] border border-transparent hover:border-primary/10">
+<div class="relative w-16 h-16 rounded-2xl overflow-hidden flex-shrink-0 digest-pulse flex items-center justify-center">
+<span class="material-symbols-outlined text-white text-3xl" data-icon="play_arrow" style="font-variation-settings: 'FILL' 1;">play_arrow</span>
+</div>
+<div class="flex-1 min-w-0">
+<div class="flex items-center gap-2 mb-1">
+<span class="text-primary font-label font-bold text-[10px] tracking-widest uppercase">Week 05</span>
+<span class="w-1 h-1 rounded-full bg-outline-variant"></span>
+<span class="text-on-surface-variant font-label text-xs">Oct 03, 2023</span>
+</div>
+<h3 class="text-xl font-headline font-bold text-on-surface truncate">Recursion &amp; Divide and Conquer</h3>
+<div class="flex items-center gap-4 mt-2">
+<div class="flex items-center gap-1 text-on-surface-variant">
+<span class="material-symbols-outlined text-sm" data-icon="schedule">schedule</span>
+<span class="text-xs font-medium">78 mins</span>
+</div>
+<div class="flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary-container/20 text-on-primary-container">
+<span class="material-symbols-outlined text-sm" data-icon="auto_awesome" style="font-variation-settings: 'FILL' 1;">auto_awesome</span>
+<span class="text-[11px] font-bold">Summarized</span>
+</div>
+</div>
+</div>
+<div class="hidden md:flex flex-col items-end gap-2">
+<button class="p-3 rounded-2xl bg-surface-container-high hover:bg-primary hover:text-on-primary transition-colors">
+<span class="material-symbols-outlined" data-icon="download">download</span>
+</button>
+</div>
+</div>
+</div>
+</main>
+<!-- BottomNavBar (Visible on Mobile) -->
+<nav class="fixed bottom-0 left-0 w-full flex justify-around items-center px-4 pb-6 pt-3 bg-[#F8F9FA]/80 dark:bg-[#191C1D]/80 backdrop-blur-xl md:hidden z-50 rounded-t-[2rem] shadow-[0px_-8px_24px_rgba(0,107,92,0.06)] no-line">
+<div class="flex flex-col items-center justify-center text-[#5C5F5F] dark:text-[#C4C7C7] px-5 py-2 hover:bg-[#E7E8E9] dark:hover:bg-[#2D3132] rounded-xl transition-all">
+<span class="material-symbols-outlined" data-icon="home">home</span>
+<span class="font-['Inter'] font-medium text-[11px]">Home</span>
+</div>
+<div class="flex flex-col items-center justify-center bg-gradient-to-br from-[#006B5C] to-[#00BFA5] text-white rounded-2xl px-5 py-2 scale-100 transition-all">
+<span class="material-symbols-outlined" data-icon="library_books" style="font-variation-settings: 'FILL' 1;">library_books</span>
+<span class="font-['Inter'] font-medium text-[11px]">Courses</span>
+</div>
+<div class="flex flex-col items-center justify-center text-[#5C5F5F] dark:text-[#C4C7C7] px-5 py-2 hover:bg-[#E7E8E9] dark:hover:bg-[#2D3132] rounded-xl transition-all">
+<span class="material-symbols-outlined" data-icon="auto_awesome">auto_awesome</span>
+<span class="font-['Inter'] font-medium text-[11px]">AI Tools</span>
+</div>
+<div class="flex flex-col items-center justify-center text-[#5C5F5F] dark:text-[#C4C7C7] px-5 py-2 hover:bg-[#E7E8E9] dark:hover:bg-[#2D3132] rounded-xl transition-all">
+<span class="material-symbols-outlined" data-icon="person">person</span>
+<span class="font-['Inter'] font-medium text-[11px]">Profile</span>
+</div>
+</nav>
+<!-- Desktop Floating Navigation Element (Optional UX Anchor) -->
+<div class="hidden md:flex fixed bottom-8 right-8 z-40">
+<button class="bg-gradient-to-br from-primary to-primary-container text-on-primary w-14 h-14 rounded-2xl flex items-center justify-center shadow-[0px_12px_32px_rgba(0,107,92,0.2)] hover:scale-110 transition-transform duration-300">
+<span class="material-symbols-outlined text-2xl" data-icon="add" style="font-variation-settings: 'wght' 600;">add</span>
+</button>
+</div>
+</body></html>

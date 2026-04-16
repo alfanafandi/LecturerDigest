@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>LectureDigest - Splash Screen</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-background": "#191c1d",
+                        "inverse-on-surface": "#f0f1f2",
+                        "primary-fixed": "#68fadd",
+                        "tertiary-container": "#fe896a",
+                        "surface": "#f8f9fa",
+                        "secondary-container": "#54a0fe",
+                        "inverse-surface": "#2e3132",
+                        "on-tertiary-fixed": "#3c0800",
+                        "background": "#f8f9fa",
+                        "tertiary": "#9f4128",
+                        "on-primary-fixed": "#00201a",
+                        "tertiary-fixed": "#ffdbd2",
+                        "on-surface-variant": "#3c4a46",
+                        "on-tertiary-fixed-variant": "#7f2a13",
+                        "tertiary-fixed-dim": "#ffb4a1",
+                        "surface-container-highest": "#e1e3e4",
+                        "on-error-container": "#93000a",
+                        "surface-container": "#edeeef",
+                        "surface-tint": "#006b5c",
+                        "outline": "#6c7a76",
+                        "outline-variant": "#bbcac4",
+                        "secondary-fixed-dim": "#a5c8ff",
+                        "on-tertiary-container": "#74220b",
+                        "surface-container-high": "#e7e8e9",
+                        "secondary": "#005faf",
+                        "surface-dim": "#d9dadb",
+                        "on-primary": "#ffffff",
+                        "surface-variant": "#e1e3e4",
+                        "surface-bright": "#f8f9fa",
+                        "surface-container-low": "#f3f4f5",
+                        "error-container": "#ffdad6",
+                        "on-secondary-fixed-variant": "#004786",
+                        "primary-fixed-dim": "#44ddc1",
+                        "on-secondary-fixed": "#001c3a",
+                        "on-secondary-container": "#003567",
+                        "on-tertiary": "#ffffff",
+                        "on-primary-fixed-variant": "#005145",
+                        "primary-container": "#00bfa5",
+                        "on-surface": "#191c1d",
+                        "error": "#ba1a1a",
+                        "primary": "#006b5c",
+                        "secondary-fixed": "#d4e3ff",
+                        "inverse-primary": "#44ddc1",
+                        "on-secondary": "#ffffff",
+                        "on-primary-container": "#00473c",
+                        "surface-container-lowest": "#ffffff",
+                        "on-error": "#ffffff"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "fontFamily": {
+                        "headline": ["Plus Jakarta Sans"],
+                        "body": ["Inter"],
+                        "label": ["Inter"]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .bg-gradient-mesh {
+            background: radial-gradient(at 0% 0%, #00bfa51a 0px, transparent 50%),
+                        radial-gradient(at 100% 100%, #006b5c1a 0px, transparent 50%),
+                        #f8f9fa;
+        }
+        .loading-pulse {
+            width: 48px;
+            height: 4px;
+            background: #e7e8e9;
+            border-radius: 2px;
+            overflow: hidden;
+            position: relative;
+        }
+        .loading-pulse::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: 30%;
+            background: linear-gradient(90deg, #006b5c, #00bfa5);
+            border-radius: 2px;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-surface font-body text-on-surface antialiased overflow-hidden">
+<!-- Splash Content Wrapper -->
+<main class="relative min-h-screen w-full flex flex-col items-center justify-between py-16 px-8 bg-gradient-mesh">
+<!-- Subtle Top Glow -->
+<div class="absolute top-[-10%] left-[50%] translate-x-[-50%] w-[80%] h-[40%] bg-primary/5 blur-[120px] rounded-full pointer-events-none"></div>
+<!-- Spacer for center alignment -->
+<div class="flex-1"></div>
+<!-- Identity Cluster -->
+<div class="flex flex-col items-center gap-12 relative z-10">
+<!-- Logo Icon Assembly -->
+<div class="relative">
+<div class="w-32 h-32 bg-gradient-to-br from-primary to-primary-container rounded-[2.5rem] shadow-[0px_24px_48px_rgba(0,107,92,0.15)] flex items-center justify-center rotate-3">
+<div class="flex flex-col items-center justify-center -rotate-3 gap-1">
+<span class="material-symbols-outlined text-on-primary text-5xl" data-icon="auto_stories" style="font-variation-settings: 'FILL' 1;">auto_stories</span>
+<span class="material-symbols-outlined text-primary-fixed-dim text-2xl absolute -top-1 -right-1" data-icon="auto_awesome" style="font-variation-settings: 'FILL' 1;">auto_awesome</span>
+</div>
+</div>
+<!-- Glass Reflection Element -->
+<div class="absolute inset-0 bg-gradient-to-tr from-white/20 to-transparent rounded-[2.5rem] pointer-events-none"></div>
+</div>
+<!-- Text Branding -->
+<div class="text-center">
+<h1 class="font-headline font-extrabold text-4xl tracking-tighter text-on-background mb-3">
+                    LectureDigest
+                </h1>
+<p class="font-label text-primary font-medium tracking-wide uppercase text-xs">
+                    Smart Learning, Simplified.
+                </p>
+</div>
+</div>
+<!-- Bottom Layout Area -->
+<div class="flex-1 flex flex-col items-center justify-end w-full max-w-xs gap-8">
+<!-- Digest Pulse (Signature AI Loading) -->
+<div class="flex flex-col items-center gap-4">
+<div class="loading-pulse"></div>
+<span class="text-sm font-medium text-outline opacity-60 font-body">Synthesizing intelligence...</span>
+</div>
+<!-- Footer Meta (Optional for professionalism) -->
+<div class="pt-8 opacity-20 flex items-center gap-2">
+<div class="w-8 h-[1px] bg-outline"></div>
+<span class="text-[10px] font-bold tracking-[0.2em] uppercase">V 2.0 Academic Flow</span>
+<div class="w-8 h-[1px] bg-outline"></div>
+</div>
+</div>
+<!-- Floating Background Accents (Asymmetry Energy) -->
+<div class="absolute top-[20%] left-[10%] opacity-10 pointer-events-none transform -rotate-12">
+<span class="material-symbols-outlined text-8xl text-primary" data-icon="terminal">terminal</span>
+</div>
+<div class="absolute bottom-[25%] right-[5%] opacity-10 pointer-events-none transform rotate-12">
+<span class="material-symbols-outlined text-9xl text-primary-container" data-icon="psychology">psychology</span>
+</div>
+</main>
+<!-- Background Image Strategy (Editorial Utility) -->
+<div class="fixed inset-0 -z-10 opacity-[0.03] pointer-events-none">
+<img alt="minimalist architectural shadows and light play on a clean white wall surface" class="w-full h-full object-cover" data-alt="minimalist architectural shadows and light play on a clean white wall surface with sharp geometric angles and soft natural lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDE3EejVBHUk4PmdWvcKkKcLlA6GF16HM_JGKnnoWKVqCdc2N0CTjcOZqvsqOVJYVuSRFk7ImHUxEOBwVHhJT4NW_5UnUw-IvzF6g1yMqjOXS_X0LSWkzm1JEb6qjpU1XoCAVrobR5kZjv_Cr4Ehoyk0yPYat9VxDeoY6NfhF9EqBcFH0hZhlI2lyVb7ISq2e9XReIFd-0QR4pzOV3TF9-yvTddJvL4ZTkzmEq3Trdj_00q4gt8HtNAQV9aKPwrFmxwt4oCynHpR54v"/>
+</div>
+</body></html>
