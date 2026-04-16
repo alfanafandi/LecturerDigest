@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:lecturer_digest/core/theme/app_theme.dart';
 import 'package:lecturer_digest/core/providers/app_provider.dart';
+import 'package:lecturer_digest/screens/quiz_review_screen.dart';
 
 class QuizScreen extends StatefulWidget {
   final String lectureId;
@@ -309,7 +310,7 @@ class _QuizScreenState extends State<QuizScreen> {
               Text('Anda menjawab $_score dari $totalQuestions soal dengan benar.', textAlign: TextAlign.center, style: const TextStyle(fontSize: 16, height: 1.5)),
               const SizedBox(height: 48),
               SizedBox(
-                width: double.infinity,
+                width: 280, // Minimalis
                 height: 56,
                 child: ElevatedButton(
                   onPressed: () => Navigator.of(context).pop(),
@@ -317,13 +318,31 @@ class _QuizScreenState extends State<QuizScreen> {
                     backgroundColor: AppTheme.primary,
                     foregroundColor: Colors.white,
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                    elevation: 8,
-                    shadowColor: AppTheme.primary.withOpacity(0.4),
+                    elevation: 4,
+                    shadowColor: AppTheme.primary.withOpacity(0.3),
                   ),
                   child: const Text('Selesai & Kembali'),
                 ),
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: 16), // Jarak antar tombol
+              SizedBox(
+                width: 280, // Minimalis
+                height: 56,
+                child: ElevatedButton(
+                  onPressed: () {
+                    Navigator.of(context).pushReplacement(
+                      MaterialPageRoute(builder: (_) => QuizReviewScreen(lectureId: widget.lectureId))
+                    );
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppTheme.secondary,
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                  ),
+                  child: const Text('Bahas Soal'),
+                ),
+              ),
+              const SizedBox(height: 16), // Jarak
               TextButton(
                 onPressed: () {
                   setState(() {

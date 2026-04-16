@@ -19,6 +19,7 @@ class AppProvider extends ChangeNotifier {
   List<Map<String, dynamic>> dueFlashcards = [];
   List<Map<String, dynamic>> currentFlashcards = [];
   List<Map<String, dynamic>> currentQuizzes = [];
+  Map<String, dynamic>? latestQuizAttempt;
   
   // Chat State
   List<Map<String, dynamic>> chatMessages = [];
@@ -190,6 +191,17 @@ class AppProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  Future<void> fetchLatestQuizAttempt(String lectureId) async {
+    _setLoading(true);
+    try {
+      latestQuizAttempt = await _db.getLatestQuizAttempt(lectureId);
+      notifyListeners();
+    } catch (e) {
+      error = e.toString();
+    }
+    _setLoading(false);
+  }
+
   Future<void> sendChatMessage(String text) async {
     if (chatLecture == null) return;
     
@@ -253,7 +265,7 @@ class AppProvider extends ChangeNotifier {
   }
 
   // --- AI Synthesis Workflow ---
-  Future<void> processLectureRecording(String courseId, String title, String audioPath) async {
+  Future<void> processLectureRecording(String courseId, String title, String audioPath, int durationMinutes) async {
     _setLoading(true);
     error = null;
     try {
@@ -262,7 +274,7 @@ class AppProvider extends ChangeNotifier {
       if (transcript.isEmpty) throw Exception("Transkrip kosong. Pastikan suara terdengar jelas.");
 
       // 2. Save Lecture (with audio path for playback)
-      final lectureId = await _db.saveLecture(courseId, title, 0, transcript, audioPath: audioPath);
+      final lectureId = await _db.saveLecture(courseId, title, durationMinutes, transcript, audioPath: audioPath);
 
       // 3. Generate Summary via AI
       final summaryRaw = await _ai.generateSummary(transcript);

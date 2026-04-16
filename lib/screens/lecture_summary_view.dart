@@ -7,6 +7,7 @@ import 'package:lecturer_digest/core/providers/app_provider.dart';
 import 'package:lecturer_digest/screens/flashcards_review.dart';
 import 'package:lecturer_digest/screens/ask_ai_chat.dart';
 import 'package:lecturer_digest/screens/quiz_screen.dart';
+import 'package:lecturer_digest/screens/quiz_review_screen.dart';
 
 class LectureSummaryView extends StatefulWidget {
   final String lectureId;
@@ -30,6 +31,7 @@ class _LectureSummaryViewState extends State<LectureSummaryView> {
       final provider = Provider.of<AppProvider>(context, listen: false);
       await provider.fetchSummary(widget.lectureId);
       await provider.fetchQuizzes(widget.lectureId);
+      await provider.fetchLatestQuizAttempt(widget.lectureId);
 
       // Load audio if path exists in lecture details
       String? audioPath = provider.currentLectureDetails?['audio_url'];
@@ -233,6 +235,20 @@ class _LectureSummaryViewState extends State<LectureSummaryView> {
                               label: 'Chat AI',
                               color: AppTheme.primary,
                             ),
+                            if (provider.latestQuizAttempt != null) ...[
+                              const SizedBox(width: 12),
+                              _buildActionButton(
+                                context,
+                                onPressed: () {
+                                  Navigator.of(context).push(MaterialPageRoute(
+                                      builder: (_) => QuizReviewScreen(
+                                          lectureId: widget.lectureId)));
+                                },
+                                icon: Icons.history_edu_outlined,
+                                label: 'Hasil',
+                                color: AppTheme.secondary,
+                              ),
+                            ],
                           ],
                         ),
                       ),

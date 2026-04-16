@@ -163,4 +163,20 @@ class SupabaseService {
       return 0.0;
     }
   }
+
+  Future<Map<String, dynamic>?> getLatestQuizAttempt(String lectureId) async {
+    try {
+      final response = await _client
+          .from('quiz_attempts')
+          .select()
+          .eq('lecture_id', lectureId)
+          .order('created_at', ascending: false)
+          .limit(1)
+          .maybeSingle();
+      return response;
+    } catch (e) {
+      print('DEBUG: Error fetching latest quiz attempt: $e');
+      return null;
+    }
+  }
 }

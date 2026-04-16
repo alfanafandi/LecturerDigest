@@ -50,3 +50,17 @@ CREATE TABLE IF NOT EXISTS quizzes (
   explanation TEXT,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
+
+ -- Buat tabel untuk menyimpan hasil kuis
+create table quiz_attempts (
+  id uuid default gen_random_uuid() primary key,
+  lecture_id uuid references lectures(id) on delete cascade,
+  score int not null,
+  total_questions int not null,
+  detailed_answers jsonb default '[]'::jsonb,
+  created_at timestamptz default now()
+);
+
+create index idx_quiz_attempts_lecture_id on quiz_attempts(lecture_id);
+
+

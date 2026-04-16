@@ -194,7 +194,7 @@ class _CourseDetailState extends State<CourseDetail> {
                       itemBuilder: (context, index) {
                         final lecture = filteredLectures[index];
                         final duration = lecture['duration_minutes'] ?? 0;
-                        String dur = (duration > 0) ? "$duration menit" : "Baru";
+                        String dur = "${duration}m";
                         String status = lecture['status'] ?? 'Unknown';
                         Color statusColor = status == 'Summarized' ? AppTheme.primary : AppTheme.tertiary;
                         bool pulseBg = status == 'Summarized';

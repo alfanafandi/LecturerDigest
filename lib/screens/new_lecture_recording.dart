@@ -137,11 +137,13 @@ class _NewLectureRecordingState extends State<NewLectureRecording> with TickerPr
       ),
     );
 
-    // 3. Process with real audio path
+    // 3. Process with real audio path and duration
+    final durationMinutes = (_secondsElapsed / 60).ceil();
     await provider.processLectureRecording(
       _selectedCourseId!,
       _titleController.text,
       audioPath,
+      durationMinutes,
     );
 
     // Close Loading Dialog

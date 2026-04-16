@@ -19,6 +19,10 @@ Dokumen ini melacak status pengembangan fitur dan rencana masa depan aplikasi **
 
 ### 🎙️ Perekaman & AI Synthesis
 - [x] **Audio Recording**: Stabil, animasi pulse terkontrol, fitur **Pause** & **Mute** aktif.
+- [x] **Integrasi Supabase**: Koneksi database melalui `dotenv` untuk keamanan.
+- [x] **Security Patch (April 16)**: Menghapus kredensial database dari pelacakan Git dan memperbarui `.gitignore`.
+- [x] **Sistem Rekaman**: Merekam suara kuliah dan menyimpannya sebagai file lokal (.m4a).
+- [x] **Duration Tracking**: Perbaikan sistem pencatatan durasi materi agar akurat (tidak lagi 0m).
 - [x] **Transkripsi Real-time**: Konversi suara ke teks otomatis.
 - [x] **AI Summarizer**: Ekstraksi intisari, poin penting (takeaways), dan tips ujian.
 - [x] **AI Flashcards**: Pembuatan kartu hafalan otomatis dari materi.
@@ -28,13 +32,13 @@ Dokumen ini melacak status pengembangan fitur dan rencana masa depan aplikasi **
 - [x] **Quiz Scoring System**: Penyimpanan skor ke tabel `quiz_attempts`.
 - [x] **Detailed Answer Logging**: Menyimpan jawaban benar/salah per soal dalam format JSONB.
 - [x] **UI Kuis**: Feedback instan setelah menjawab dan ringkasan hasil di akhir.
+- [x] **Bahas Soal (Quiz Review)**: Meninjau kembali detail jawaban, melihat mana yang salah, dan membaca penjelasan AI.
 
 ---
 
 ## 🛠️ Fitur dalam Proses / Rencana Mendatang
 
 ### 🕙 Prioritas Tinggi (Next)
-- [ ] **Bahas Soal (Quiz Review)**: Menampilkan kembali detail jawaban kuis yang sudah dikerjakan agar user bisa belajar dari kesalahan.
 - [ ] **Upload Materi (PDF/PPT)**: Mengaktifkan tombol upload agar AI bisa memproses dokumen tanpa harus merekam suara.
 - [ ] **Refined Chat AI**: Meningkatkan memori bot saat sesi tanya jawab materi kuliah.
 
