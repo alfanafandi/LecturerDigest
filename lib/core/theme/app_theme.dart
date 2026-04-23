@@ -23,49 +23,70 @@ class AppTheme {
   static const Color outlineVariant = Color(0xFFbbcac4);
 
   static ThemeData get lightTheme {
+    return _buildTheme(ColorScheme.light(
+      primary: primary,
+      primaryContainer: primaryContainer,
+      secondary: secondary,
+      tertiary: tertiary,
+      background: background,
+      surface: surface,
+      onPrimary: Colors.white,
+      onSecondary: Colors.white,
+      onBackground: onBackground,
+      onSurface: onSurface,
+      onSurfaceVariant: onSurfaceVariant,
+    ));
+  }
+
+  static ThemeData get darkTheme {
+    return _buildTheme(const ColorScheme.dark(
+      primary: Color(0xFF00bfa5),
+      onPrimary: Color(0xFF00382f),
+      primaryContainer: Color(0xFF005044),
+      onPrimaryContainer: Color(0xFF70f7de),
+      secondary: Color(0xFFa6c8ff),
+      onSecondary: Color(0xFF00305f),
+      tertiary: Color(0xFFffb4a1),
+      onTertiary: Color(0xFF601400),
+      background: Color(0xFF191c1d),
+      onBackground: Color(0xFFe1e3e4),
+      surface: Color(0xFF191c1d),
+      onSurface: Color(0xFFe1e3e4),
+      onSurfaceVariant: Color(0xFFbbcac4),
+      outline: Color(0xFF86938e),
+    ));
+  }
+
+  static ThemeData _buildTheme(ColorScheme colorScheme) {
     return ThemeData(
       useMaterial3: true,
-      colorScheme: const ColorScheme.light(
-        primary: primary,
-        primaryContainer: primaryContainer,
-        secondary: secondary,
-        tertiary: tertiary,
-        background: background,
-        surface: surface,
-        onPrimary: Colors.white,
-        onSecondary: Colors.white,
-        onBackground: onBackground,
-        onSurface: onSurface,
-        onSurfaceVariant: onSurfaceVariant,
-      ),
-      scaffoldBackgroundColor: background,
+      colorScheme: colorScheme,
+      scaffoldBackgroundColor: colorScheme.background,
       textTheme: TextTheme(
-        // Plus Jakarta Sans for headlines
         displayLarge: GoogleFonts.plusJakartaSans(
-            color: onSurface, fontWeight: FontWeight.w800, letterSpacing: -0.5),
+            color: colorScheme.onSurface, fontWeight: FontWeight.w800, letterSpacing: -0.5),
         displayMedium: GoogleFonts.plusJakartaSans(
-            color: onSurface, fontWeight: FontWeight.w800, letterSpacing: -0.5),
+            color: colorScheme.onSurface, fontWeight: FontWeight.w800, letterSpacing: -0.5),
         displaySmall: GoogleFonts.plusJakartaSans(
-            color: onSurface, fontWeight: FontWeight.w800),
+            color: colorScheme.onSurface, fontWeight: FontWeight.w800),
         headlineMedium: GoogleFonts.plusJakartaSans(
-            color: onSurface, fontWeight: FontWeight.w800),
+            color: colorScheme.onSurface, fontWeight: FontWeight.w800),
         headlineSmall: GoogleFonts.plusJakartaSans(
-            color: onSurface, fontWeight: FontWeight.w700),
+            color: colorScheme.onSurface, fontWeight: FontWeight.w700),
         titleLarge: GoogleFonts.plusJakartaSans(
-            color: onSurface, fontWeight: FontWeight.w700),
+            color: colorScheme.onSurface, fontWeight: FontWeight.w700),
         titleMedium: GoogleFonts.plusJakartaSans(
-            color: onSurface, fontWeight: FontWeight.w600),
+            color: colorScheme.onSurface, fontWeight: FontWeight.w600),
         
-        // Inter for body
-        bodyLarge: GoogleFonts.inter(color: onSurfaceVariant, fontSize: 16),
-        bodyMedium: GoogleFonts.inter(color: onSurfaceVariant, fontSize: 14),
-        bodySmall: GoogleFonts.inter(color: onSurfaceVariant, fontSize: 12),
+        bodyLarge: GoogleFonts.inter(color: colorScheme.onSurfaceVariant, fontSize: 16),
+        bodyMedium: GoogleFonts.inter(color: colorScheme.onSurfaceVariant, fontSize: 14),
+        bodySmall: GoogleFonts.inter(color: colorScheme.onSurfaceVariant, fontSize: 12),
         labelLarge: GoogleFonts.inter(
-            color: primary, fontWeight: FontWeight.w600, letterSpacing: 0.5),
+            color: colorScheme.primary, fontWeight: FontWeight.w600, letterSpacing: 0.5),
         labelMedium: GoogleFonts.inter(
-            color: onSurfaceVariant, fontWeight: FontWeight.w500),
+            color: colorScheme.onSurfaceVariant, fontWeight: FontWeight.w500),
         labelSmall: GoogleFonts.inter(
-            color: onSurfaceVariant, fontWeight: FontWeight.w500, fontSize: 11),
+            color: colorScheme.onSurfaceVariant, fontWeight: FontWeight.w500, fontSize: 11),
       ),
     );
   }

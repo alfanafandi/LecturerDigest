@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:lecturer_digest/core/theme/app_theme.dart';
 import 'package:lecturer_digest/core/providers/app_provider.dart';
+import 'package:lecturer_digest/core/widgets/brand_logo.dart';
 
 class FlashcardsReview extends StatefulWidget {
   final String? lectureId;
@@ -72,7 +73,7 @@ class _FlashcardsReviewState extends State<FlashcardsReview> {
             ),
             title: Row(
               children: [
-                const Icon(Icons.auto_stories, color: AppTheme.primary),
+                const BrandLogo(size: 28),
                 const SizedBox(width: 8),
                 Text('LectureDigest', style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w800, letterSpacing: -0.5)),
               ],

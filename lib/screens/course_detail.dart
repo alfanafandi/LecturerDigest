@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:lecturer_digest/core/theme/app_theme.dart';
 import 'package:lecturer_digest/core/providers/app_provider.dart';
+import 'package:lecturer_digest/core/widgets/brand_logo.dart';
 import 'package:lecturer_digest/screens/lecture_summary_view.dart';
+import 'package:lecturer_digest/core/widgets/brand_logo.dart';
 
 class CourseDetail extends StatefulWidget {
   final String courseId;
@@ -46,7 +48,7 @@ class _CourseDetailState extends State<CourseDetail> {
               ),
               title: Row(
                 children: [
-                  const Icon(Icons.auto_stories, color: AppTheme.primary),
+                  const BrandLogo(size: 32),
                   const SizedBox(width: 8),
                   Text(
                     'LectureDigest',
@@ -201,7 +203,7 @@ class _CourseDetailState extends State<CourseDetail> {
                         
                         return _buildLectureItem(
                           context,
-                          'Lecture',
+                          'Materi',
                           lecture['lecture_date'] ?? 'No Date',
                           lecture['title'] ?? 'Untitled',
                           dur,

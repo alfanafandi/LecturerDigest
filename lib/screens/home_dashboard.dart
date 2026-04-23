@@ -5,6 +5,8 @@ import 'package:lecturer_digest/core/providers/app_provider.dart';
 import 'package:lecturer_digest/screens/flashcards_review.dart';
 import 'package:lecturer_digest/screens/new_lecture_recording.dart';
 import 'package:lecturer_digest/screens/lecture_summary_view.dart';
+import 'package:lecturer_digest/core/widgets/brand_logo.dart';
+import 'package:lecturer_digest/screens/profile_screen.dart';
 
 class HomeDashboard extends StatelessWidget {
   const HomeDashboard({super.key});
@@ -24,7 +26,7 @@ class HomeDashboard extends StatelessWidget {
                   children: [
                     Row(
                       children: [
-                        const Icon(Icons.auto_stories, color: AppTheme.primary),
+                        const BrandLogo(size: 32),
                         const SizedBox(width: 8),
                         Text(
                           'LectureDigest',
@@ -36,19 +38,36 @@ class HomeDashboard extends StatelessWidget {
                         ),
                       ],
                     ),
-                    Container(
-                      width: 40,
-                      height: 40,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        border: Border.all(color: AppTheme.primaryContainer, width: 2),
-                        image: const DecorationImage(
-                          image: NetworkImage(
-                            'https://lh3.googleusercontent.com/aida-public/AB6AXuAbP6Oxc6OIqiBQIXVdbxYw18jCF3kZHgBtMA__sqbmfPm4L8GrM91jl7bZfsCG4z_agCQiiIk91l7HBEyZN2UU6tzlIxbzAIlnLczfK_CYgyN8tYLY8orE7hvA9IO-ivk-2XZUXBNz9hIKAlDbANol0585gmHKz7vXb3wXt6l9auZEQ4r6MyLbJ_BNeTwEnWYrUYjeNgSbX4u8G5mqSmPrGKIntrstaGqYrVA_EWGJUlFnyzCHgCsL7RHIr9qDjJhjWCPlCmBgqz10'
+                    Consumer<AppProvider>(
+                      builder: (context, provider, child) {
+                        return GestureDetector(
+                          onTap: () => Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => const ProfileScreen()),
                           ),
-                          fit: BoxFit.cover,
-                        ),
-                      ),
+                          child: Container(
+                            width: 42,
+                            height: 42,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
+                              border: Border.all(color: Theme.of(context).colorScheme.primary, width: 2),
+                            ),
+                            child: provider.userProfile?['avatar_url'] != null
+                                ? ClipOval(
+                                    child: Image.asset(
+                                      provider.userProfile!['avatar_url'],
+                                      fit: BoxFit.cover,
+                                    ),
+                                  )
+                                : Icon(
+                                    Icons.person_rounded, 
+                                    color: Theme.of(context).colorScheme.primary,
+                                    size: 24,
+                                  ),
+                          ),
+                        );
+                      },
                     ),
                   ],
                 ),
@@ -59,24 +78,39 @@ class HomeDashboard extends StatelessWidget {
             SliverToBoxAdapter(
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'SELAMAT DATANG',
-                      style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                        letterSpacing: 1.0,
-                        fontSize: 12,
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      'Halo, Budi!',
-                      style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                        fontWeight: FontWeight.w800,
-                      ),
-                    ),
-                  ],
+                child: Consumer<AppProvider>(
+                  builder: (context, provider, child) {
+                    final user = provider.currentUser;
+                    final profile = provider.userProfile;
+                    
+                    String displayName = 'Mahasiswa';
+                    if (profile != null && profile['full_name'] != null && profile['full_name'].toString().isNotEmpty) {
+                      displayName = profile['full_name'];
+                    } else if (user?.email != null) {
+                      final emailPrefix = user!.email!.split('@')[0];
+                      displayName = emailPrefix[0].toUpperCase() + emailPrefix.substring(1);
+                    }
+
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'SELAMAT DATANG',
+                          style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                            letterSpacing: 1.0,
+                            fontSize: 12,
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          'Halo, $displayName!',
+                          style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                            fontWeight: FontWeight.w800,
+                          ),
+                        ),
+                      ],
+                    );
+                  },
                 ),
               ),
             ),
@@ -115,7 +149,7 @@ class HomeDashboard extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Ringkasan Terbaru',
+                          'Mata Kuliah',
                           style: Theme.of(context).textTheme.titleLarge?.copyWith(
                             fontWeight: FontWeight.w800,
                           ),
@@ -452,7 +486,7 @@ class HomeDashboard extends StatelessWidget {
                       ),
                       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 0),
                     ),
-                    child: const Text('Record', style: TextStyle(fontWeight: FontWeight.w700)),
+                    child: const Text('Rekam', style: TextStyle(fontWeight: FontWeight.w700)),
                   ),
                   const SizedBox(width: 8),
                   ElevatedButton(
@@ -466,7 +500,7 @@ class HomeDashboard extends StatelessWidget {
                       ),
                       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 0),
                     ),
-                    child: Text('Join', style: TextStyle(fontWeight: FontWeight.w700, color: isJoinActive ? Colors.white : Colors.grey)),
+                    child: Text('Gabung', style: TextStyle(fontWeight: FontWeight.w700, color: isJoinActive ? Colors.white : Colors.grey)),
                   ),
                 ],
               )

@@ -8,6 +8,8 @@ import 'package:lecturer_digest/screens/flashcards_review.dart';
 import 'package:lecturer_digest/screens/ask_ai_chat.dart';
 import 'package:lecturer_digest/screens/quiz_screen.dart';
 import 'package:lecturer_digest/screens/quiz_review_screen.dart';
+import 'package:lecturer_digest/core/widgets/brand_logo.dart';
+import 'package:lecturer_digest/core/services/pdf_service.dart';
 
 class LectureSummaryView extends StatefulWidget {
   final String lectureId;
@@ -117,7 +119,7 @@ class _LectureSummaryViewState extends State<LectureSummaryView> {
             ),
             title: Row(
               children: [
-                const Icon(Icons.auto_stories, color: AppTheme.primary),
+                const BrandLogo(size: 28),
                 const SizedBox(width: 8),
                 Text('LectureDigest',
                     style: Theme.of(context).textTheme.titleLarge?.copyWith(
@@ -192,6 +194,11 @@ class _LectureSummaryViewState extends State<LectureSummaryView> {
                                           .showSnackBar(const SnackBar(
                                               content: Text(
                                                   'Kuis AI berhasil dibuat!')));
+                                      
+                                      // Auto-navigate to quiz screen after generation
+                                      Navigator.of(context).push(MaterialPageRoute(
+                                          builder: (_) => QuizScreen(
+                                              lectureId: widget.lectureId)));
                                     }
                                   }
                                 } else {
@@ -249,6 +256,36 @@ class _LectureSummaryViewState extends State<LectureSummaryView> {
                                 color: AppTheme.secondary,
                               ),
                             ],
+                            const SizedBox(width: 12),
+                            _buildActionButton(
+                              context,
+                              onPressed: () async {
+                                final path = await provider.exportLectureSummary();
+                                if (path != null) {
+                                  if (context.mounted) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                        content: const Text('PDF Berhasil disimpan!'),
+                                        action: SnackBarAction(
+                                          label: 'BUKA',
+                                          onPressed: () => PdfService.openFile(path),
+                                        ),
+                                      ),
+                                    );
+                                  }
+                                } else if (provider.error != null) {
+                                  if (context.mounted) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(content: Text(provider.error!))
+                                    );
+                                  }
+                                }
+                              },
+                              icon: Icons.picture_as_pdf_outlined,
+                              label: 'Simpan PDF',
+                              color: AppTheme.tertiary,
+                              isLoading: provider.isLoading,
+                            ),
                           ],
                         ),
                       ),

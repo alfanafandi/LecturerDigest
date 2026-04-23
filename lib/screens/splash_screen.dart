@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
 import 'package:lecturer_digest/core/theme/app_theme.dart';
+import 'package:lecturer_digest/core/widgets/brand_logo.dart';
 import 'package:lecturer_digest/screens/main_wrapper.dart';
+import 'package:lecturer_digest/screens/login_screen.dart';
+import 'package:provider/provider.dart';
+import 'package:lecturer_digest/core/providers/app_provider.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -25,11 +29,18 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
       CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
     );
 
-    // Navigate to MainWrapper after 3 seconds
+    // Navigate based on Auth status after 3 seconds
     Timer(const Duration(seconds: 3), () {
-      Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (_) => const MainWrapper()),
-      );
+      final provider = Provider.of<AppProvider>(context, listen: false);
+      if (provider.isAuthenticated) {
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(builder: (_) => const MainWrapper()),
+        );
+      } else {
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(builder: (_) => const LoginScreen()),
+        );
+      }
     });
   }
 
@@ -73,52 +84,7 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
                   Column(
                     children: [
                       // Logo Box
-                      Transform.rotate(
-                        angle: 0.05, // ~3 degrees
-                        child: Container(
-                          width: 128,
-                          height: 128,
-                          decoration: BoxDecoration(
-                            gradient: const LinearGradient(
-                              begin: Alignment.topLeft,
-                              end: Alignment.bottomRight,
-                              colors: [AppTheme.primary, AppTheme.primaryContainer],
-                            ),
-                            borderRadius: BorderRadius.circular(40),
-                            boxShadow: [
-                              BoxShadow(
-                                color: AppTheme.primary.withOpacity(0.15),
-                                blurRadius: 48,
-                                offset: const Offset(0, 24),
-                              ),
-                            ],
-                          ),
-                          child: Center(
-                            child: Transform.rotate(
-                              angle: -0.05,
-                              child: Stack(
-                                clipBehavior: Clip.none,
-                                children: [
-                                  const Icon(
-                                    Icons.auto_stories,
-                                    color: Colors.white,
-                                    size: 64,
-                                  ),
-                                  Positioned(
-                                    top: -4,
-                                    right: -12,
-                                    child: const Icon(
-                                      Icons.auto_awesome,
-                                      color: Color(0xFF44ddc1), // primary-fixed-dim
-                                      size: 24,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
+                      const BrandLogo(size: 140, hasShadow: true),
                       const SizedBox(height: 48),
                       // Text Branding
                       Text(
@@ -130,7 +96,7 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
                       ),
                       const SizedBox(height: 12),
                       Text(
-                        'SMART LEARNING, SIMPLIFIED.',
+                        'BELAJAR CERDAS, LEBIH MUDAH.',
                         style: Theme.of(context).textTheme.labelLarge?.copyWith(
                           fontSize: 12,
                           letterSpacing: 2.0, // wide tracking
@@ -172,7 +138,7 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
                       ),
                       const SizedBox(height: 16),
                       Text(
-                        'Synthesizing intelligence...',
+                        'Memproses materi...',
                         style: Theme.of(context).textTheme.bodySmall?.copyWith(
                           color: AppTheme.outlineVariant,
                           fontWeight: FontWeight.w500,

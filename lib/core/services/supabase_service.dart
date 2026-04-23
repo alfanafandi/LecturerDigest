@@ -13,11 +13,12 @@ class SupabaseService {
       'name': name,
       'schedule': schedule,
       'color_hex': colorHex,
+      'user_id': _client.auth.currentUser?.id,
     });
   }
 
   Future<List<Map<String, dynamic>>> getLectures(String courseId) async {
-    return await _client.from('lectures').select().eq('course_id', courseId).order('lecture_date', ascending: false);
+    return await _client.from('lectures').select().eq('course_id', courseId).order('created_at', ascending: false);
   }
 
   Future<List<Map<String, dynamic>>> getAllLectures() async {
@@ -36,6 +37,7 @@ class SupabaseService {
       'duration_minutes': duration,
       'raw_transcript': transcript,
       'status': 'Summarized',
+      'user_id': _client.auth.currentUser?.id,
       if (audioPath != null) 'audio_url': audioPath,
     }).select('id').single();
     
@@ -49,6 +51,7 @@ class SupabaseService {
       'core_essence': coreEssence,
       'key_takeaways': keyTakeaways,
       'exam_tips': examTips,
+      'user_id': _client.auth.currentUser?.id,
     });
   }
 
@@ -62,6 +65,7 @@ class SupabaseService {
       'lecture_id': lectureId,
       'front_concept': f['front_concept'],
       'back_detail': f['back_detail'],
+      'user_id': _client.auth.currentUser?.id,
     }).toList();
     
     await _client.from('flashcards').insert(inserts);
@@ -83,6 +87,7 @@ class SupabaseService {
       'options': q['options'],
       'correct_answer': q['correct_answer'],
       'explanation': q['explanation'],
+      'user_id': _client.auth.currentUser?.id,
     }).toList();
     
     await _client.from('quizzes').insert(inserts);
@@ -101,6 +106,7 @@ class SupabaseService {
         'score': score,
         'total_questions': totalQuestions,
         'detailed_answers': detailedAnswers,
+        'user_id': _client.auth.currentUser?.id,
       });
       print('DEBUG: Berhasil menyimpan percobaan kuis.');
     } catch (e) {
@@ -174,9 +180,60 @@ class SupabaseService {
           .limit(1)
           .maybeSingle();
       return response;
+      return response;
     } catch (e) {
       print('DEBUG: Error fetching latest quiz attempt: $e');
       return null;
     }
+  }
+
+  // --- Chat Messages ---
+  Future<void> saveChatMessage(String lectureId, String role, String content) async {
+    await _client.from('chat_messages').insert({
+      'lecture_id': lectureId,
+      'role': role,
+      'content': content,
+      'user_id': _client.auth.currentUser?.id,
+    });
+  }
+
+  Future<List<Map<String, dynamic>>> getChatMessages(String lectureId) async {
+    return await _client
+        .from('chat_messages')
+        .select()
+        .eq('lecture_id', lectureId)
+        .order('created_at', ascending: true);
+  }
+
+  // --- Profile ---
+  Future<Map<String, dynamic>> getProfile() async {
+    final userId = _client.auth.currentUser?.id;
+    if (userId == null) throw Exception("User not authenticated");
+
+    final profile = await _client.from('profiles').select().eq('id', userId).maybeSingle();
+    
+    if (profile == null) {
+      // Create profile if it doesn't exist
+      final newProfile = {
+        'id': userId,
+        'full_name': _client.auth.currentUser?.email?.split('@')[0] ?? 'User',
+      };
+      await _client.from('profiles').insert(newProfile);
+      return newProfile;
+    }
+    
+    return profile;
+  }
+
+  Future<void> updateProfile({String? fullName, String? avatarUrl, Map<String, dynamic>? preferences}) async {
+    final userId = _client.auth.currentUser?.id;
+    if (userId == null) throw Exception("User not authenticated");
+
+    await _client.from('profiles').update({
+      if (fullName != null) 'full_name': fullName,
+      if (avatarUrl != null) 'avatar_url': avatarUrl,
+      if (preferences != null) 'preferences': preferences,
+      'updated_at': DateTime.now().toIso8601String(),
+    }).eq('id', userId);
   }
 }

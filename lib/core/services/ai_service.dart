@@ -13,8 +13,8 @@ class AIService {
       headers: {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer $_apiKey',
-        'HTTP-Referer': 'https://lecturerdigest.app',
-        'X-Title': 'LecturerDigest',
+        'HTTP-Referer': 'https://lecturedigest.app',
+        'X-Title': 'LectureDigest',
       },
       body: jsonEncode({
         "model": "openai/gpt-3.5-turbo",
@@ -71,7 +71,29 @@ class AIService {
     }
   }
 
-  Future<String> askAIChat(String transcript, String question) async {
+  Future<String> askAIChat(String transcript, String question, List<Map<String, String>> history) async {
+    // Map internal roles to OpenAI roles and limit history to last 10 messages
+    final recentHistory = history.length > 10 ? history.sublist(history.length - 10) : history;
+    
+    final List<Map<String, String>> messages = [
+      {
+        "role": "system",
+        "content": "You are DigestBot, an academic assistant. Answer questions based ONLY on the provided lecture transcript. Answer in Indonesian. If the answer is not in the transcript, say you don't know but try to be helpful. Keep responses concise and academic."
+      },
+      {
+        "role": "user",
+        "content": "Transcript context: $transcript"
+      },
+      ...recentHistory.map((m) => {
+        "role": m['role'] == 'bot' ? 'assistant' : 'user',
+        "content": m['content'] ?? m['text'] ?? '',
+      }).toList(),
+      {
+        "role": "user",
+        "content": question
+      }
+    ];
+
     final response = await http.post(
       Uri.parse(_baseUrl),
       headers: {
@@ -79,18 +101,9 @@ class AIService {
         'Authorization': 'Bearer $_apiKey',
       },
       body: jsonEncode({
-        "model": "openai/gpt-3.5-turbo", // Fast model for chat
-        "max_tokens": 1000,
-        "messages": [
-          {
-            "role": "system",
-            "content": "You are DigestBot, an academic assistant. Answer questions based ONLY on the provided lecture transcript. Answer in Indonesian. If the answer is not in the transcript, say you don't know but try to be helpful. Keep responses concise and academic."
-          },
-          {
-            "role": "user",
-            "content": "Transcript: $transcript\n\nQuestion: $question"
-          }
-        ]
+        "model": "openai/gpt-3.5-turbo",
+        "max_tokens": 800,
+        "messages": messages,
       }),
     );
 

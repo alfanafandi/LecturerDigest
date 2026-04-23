@@ -1,14 +1,18 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:lecturer_digest/core/services/supabase_service.dart';
+import 'package:lecturer_digest/core/services/auth_service.dart';
 import 'package:lecturer_digest/core/services/ai_service.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:lecturer_digest/core/services/audio_service.dart';
 import 'package:lecturer_digest/core/services/transcription_service.dart';
 import 'package:lecturer_digest/core/services/document_service.dart';
+import 'package:lecturer_digest/core/services/pdf_service.dart';
 import 'dart:io';
 
 class AppProvider extends ChangeNotifier {
   final SupabaseService _db = SupabaseService();
+  final AuthService _auth = AuthService();
   final AIService _ai = AIService();
   final AudioService _audio = AudioService();
   final TranscriptionService _transcriber = TranscriptionService();
@@ -27,6 +31,7 @@ class AppProvider extends ChangeNotifier {
   // Chat State
   List<Map<String, dynamic>> chatMessages = [];
   Map<String, dynamic>? chatLecture;
+  Map<String, dynamic>? chatCourse;
   
   // Stats State
   Map<String, double> courseStats = {};
@@ -34,13 +39,113 @@ class AppProvider extends ChangeNotifier {
   bool isLoading = false;
   String? error;
   
+  // Navigation State
+  int currentTabIndex = 0;
+  
   // Recording State
   String? currentRecordingPath;
   bool isRecording = false;
 
+  // Theme & Profile State
+  ThemeMode _themeMode = ThemeMode.light;
+  Map<String, dynamic>? userProfile;
+  
+  ThemeMode get themeMode => _themeMode;
+
+  User? get currentUser => _auth.currentUser;
+  bool get isAuthenticated => currentUser != null;
+
+  void setTabIndex(int index) {
+    currentTabIndex = index;
+    notifyListeners();
+  }
+
   AppProvider() {
-    // Initial fetch
-    _initData();
+    _loadTheme();
+    // Listen for auth changes
+    _auth.authStateChanges.listen((data) {
+      if (data.session != null) {
+        _initData();
+      } else {
+        _clearData();
+      }
+    });
+
+    // Check initial session
+    if (_auth.currentUser != null) {
+      _initData();
+    }
+  }
+
+  Future<void> _loadTheme() async {
+    // We could use shared_preferences here, but for now we'll default to light
+    // In a real app, you'd initialize SharedPreferences in main and pass it here
+    // or use a service.
+  }
+
+  void toggleTheme() async {
+    _themeMode = _themeMode == ThemeMode.light ? ThemeMode.dark : ThemeMode.light;
+    notifyListeners();
+    
+    // Save to preferences in DB
+    final prefs = Map<String, dynamic>.from(userProfile?['preferences'] ?? {});
+    prefs['theme'] = _themeMode == ThemeMode.dark ? 'dark' : 'light';
+    await _db.updateProfile(preferences: prefs);
+  }
+
+  Future<void> fetchProfile() async {
+    try {
+      userProfile = await _db.getProfile();
+      
+      // Sync theme from profile preferences
+      if (userProfile?['preferences'] != null) {
+        final theme = userProfile!['preferences']['theme'];
+        if (theme == 'dark') {
+          _themeMode = ThemeMode.dark;
+        } else if (theme == 'light') {
+          _themeMode = ThemeMode.light;
+        }
+      }
+      notifyListeners();
+    } catch (e) {
+      print('DEBUG: Error fetching profile: $e');
+    }
+  }
+
+  Future<void> updateUserProfile({String? name, String? avatarUrl}) async {
+    _setLoading(true);
+    try {
+      await _db.updateProfile(fullName: name, avatarUrl: avatarUrl);
+      await fetchProfile();
+    } catch (e) {
+      error = e.toString();
+    }
+    _setLoading(false);
+  }
+
+  Future<void> signOut() async {
+    await _auth.signOut();
+  }
+
+  Future<void> changePassword(String newPassword) async {
+    _setLoading(true);
+    try {
+      await _auth.updatePassword(newPassword);
+    } catch (e) {
+      error = e.toString();
+      rethrow;
+    } finally {
+      _setLoading(false);
+    }
+  }
+
+  void _clearData() {
+    courses = [];
+    lectures = [];
+    currentSummary = null;
+    dueFlashcards = [];
+    userProfile = null;
+    notifyListeners();
   }
 
   void _setLoading(bool value) {
@@ -50,6 +155,7 @@ class AppProvider extends ChangeNotifier {
 
   Future<void> _initData() async {
     _setLoading(true);
+    await fetchProfile();
     await fetchCourses();
     await fetchAllLectures();
     await fetchDueFlashcards();
@@ -77,6 +183,57 @@ class AppProvider extends ChangeNotifier {
     _setLoading(false);
   }
 
+  Future<void> login(String email, String password) async {
+    _setLoading(true);
+    try {
+      await _auth.signIn(email, password);
+      error = null;
+    } catch (e) {
+      error = _mapAuthError(e);
+    }
+    _setLoading(false);
+  }
+
+  Future<void> logout() async {
+    _setLoading(true);
+    await _auth.signOut();
+    _setLoading(false);
+  }
+
+  Future<void> signup(String email, String password) async {
+    _setLoading(true);
+    try {
+      await _auth.signUp(email, password);
+      error = null;
+    } catch (e) {
+      error = _mapAuthError(e);
+    }
+    _setLoading(false);
+  }
+
+  String _mapAuthError(dynamic e) {
+    if (e is AuthException) {
+      switch (e.code) {
+        case 'invalid_credentials':
+          return "Email atau kata sandi salah. Silakan cek kembali.";
+        case 'validation_failed':
+          return "Format email tidak valid.";
+        case 'user_not_found':
+          return "Akun tidak ditemukan. Silakan daftar terlebih dahulu.";
+        case 'email_not_confirmed':
+          return "Email belum dikonfirmasi. Silakan cek inbox Anda.";
+        case 'too_many_requests':
+          return "Terlalu banyak percobaan. Tunggu sebentar dan coba lagi.";
+        case 'network_error':
+          return "Koneksi internet bermasalah. Periksa koneksi Anda.";
+        default:
+          if (e.message.contains('invalid email')) return "Format email tidak valid.";
+          return "Terjadi kesalahan: ${e.message}";
+      }
+    }
+    return "Terjadi kendala teknis. Silakan coba lagi nanti.";
+  }
+
   Future<void> createDummyCourse() async {
     await addCourse('Informatics', 'Monday 10:00 AM', '#006b5c');
   }
@@ -91,6 +248,15 @@ class AppProvider extends ChangeNotifier {
       error = e.toString();
     }
     _setLoading(false);
+  }
+
+  Future<List<Map<String, dynamic>>> getLecturesForCourse(String courseId) async {
+    try {
+      return await _db.getLectures(courseId);
+    } catch (e) {
+      print('DEBUG: Error getting lectures: $e');
+      return [];
+    }
   }
 
   Future<void> fetchAllLectures() async {
@@ -165,6 +331,32 @@ class AppProvider extends ChangeNotifier {
     }
   }
 
+  Future<String?> exportLectureSummary() async {
+    if (currentSummary == null || currentLectureDetails == null) return null;
+    
+    _setLoading(true);
+    try {
+      final takeaways = (currentSummary!['key_takeaways'] != null && currentSummary!['key_takeaways']['takeaways'] != null)
+          ? currentSummary!['key_takeaways']['takeaways'] as List<dynamic>
+          : [];
+
+      final path = await PdfService.generateLectureSummaryPdf(
+        title: currentLectureDetails!['title'] ?? 'Untitled',
+        date: currentLectureDetails!['lecture_date'] ?? '-',
+        coreEssence: currentSummary!['core_essence'] ?? '-',
+        takeaways: takeaways,
+        examTips: currentSummary!['exam_tips'] ?? '-',
+      );
+      
+      _setLoading(false);
+      return path;
+    } catch (e) {
+      error = "Gagal memproses PDF: ${e.toString()}";
+      _setLoading(false);
+      return null;
+    }
+  }
+
   Future<void> fetchDueFlashcards() async {
     try {
       dueFlashcards = await _db.getFlashcardsDue();
@@ -176,21 +368,59 @@ class AppProvider extends ChangeNotifier {
   // --- AI Chat ---
   Future<void> setChatLecture(String lectureId) async {
     // Prevent duplicate context settings if it's already the same lecture
-    if (chatLecture != null && chatLecture!['id'] == lectureId) return;
+    if (chatLecture != null && chatLecture!['id'] == lectureId && chatMessages.isNotEmpty) return;
 
     _setLoading(true);
-    chatMessages = []; // Reset on new lecture context
+    chatMessages = []; 
+    chatCourse = null; // Clear course mode
     try {
       chatLecture = await _db.getLectureDetails(lectureId);
-      // Initial greeting from bot
-      chatMessages.add({
-        'role': 'bot',
-        'text': "Halo! Saya adalah DigestBot. Ada yang ingin ditanyakan terkait materi perkuliahan ini?",
-      });
+      
+      // Load history from database
+      final history = await _db.getChatMessages(lectureId);
+      if (history.isEmpty) {
+        // Initial greeting only if brand new chat
+        chatMessages.add({
+          'role': 'bot',
+          'text': "Halo! Saya adalah DigestBot. Ada yang ingin ditanyakan terkait materi '${chatLecture!['title']}' ini?",
+        });
+      } else {
+        chatMessages = history.map((m) => {
+          'role': m['role'],
+          'text': m['content'],
+        }).toList();
+      }
     } catch (e) {
       error = e.toString();
     }
     _setLoading(false);
+    notifyListeners();
+  }
+
+  Future<void> setChatCourse(String courseId) async {
+    _setLoading(true);
+    chatMessages = [];
+    chatLecture = null;
+    try {
+      final courseList = courses.where((c) => c['id'] == courseId).toList();
+      if (courseList.isNotEmpty) {
+        chatCourse = courseList.first;
+        chatMessages.add({
+          'role': 'bot',
+          'text': "Halo! Saya DigestBot. Saya sekarang memahami seluruh konteks mata kuliah '${chatCourse!['name']}'. Silakan tanya apa saja!",
+        });
+      }
+    } catch (e) {
+      error = e.toString();
+    }
+    _setLoading(false);
+    notifyListeners();
+  }
+
+  void clearChatContext() {
+    chatLecture = null;
+    chatCourse = null;
+    chatMessages = [];
     notifyListeners();
   }
 
@@ -206,16 +436,53 @@ class AppProvider extends ChangeNotifier {
   }
 
   Future<void> sendChatMessage(String text) async {
-    if (chatLecture == null) return;
+    if (chatLecture == null && chatCourse == null) return;
     
+    // 1. Add to local UI
     chatMessages.add({'role': 'user', 'text': text});
     notifyListeners();
-
+    
     try {
-      final transcript = chatLecture!['raw_transcript'] ?? '';
-      final response = await _ai.askAIChat(transcript, text);
+      String contextId = '';
+      String contextTranscript = '';
+
+      if (chatLecture != null) {
+        contextId = chatLecture!['id'];
+        contextTranscript = chatLecture!['raw_transcript'] ?? '';
+        await _db.saveChatMessage(contextId, 'user', text);
+      } else if (chatCourse != null) {
+        contextId = chatCourse!['id'];
+        // Course Mode: Aggregating context from all lectures
+        final courseLectures = await _db.getLectures(contextId);
+        contextTranscript = "Konteks Mata Kuliah: ${chatCourse!['name']}\n\n";
+        for (var l in courseLectures) {
+          contextTranscript += "Materi: ${l['title']}\nTranskrip: ${l['raw_transcript'] ?? 'No transcript available.'}\n\n";
+        }
+        // Trim if too long for token limits (approx 15k chars for safe GPT-3.5 context)
+        if (contextTranscript.length > 20000) {
+          contextTranscript = contextTranscript.substring(0, 20000) + "... [Konteks dipotong untuk efisiensi]";
+        }
+      }
+
+      // 2. Prepare history for AI
+      final List<Map<String, String>> history = chatMessages.map((m) => {
+        'role': m['role'].toString(),
+        'content': m['text'].toString(),
+      }).toList();
+      
+      if (history.isNotEmpty) history.removeLast();
+
+      // 3. Get AI Response
+      final response = await _ai.askAIChat(contextTranscript, text, history);
+      
+      // 4. Save Bot Response (only if in specific lecture mode for persistent history)
       chatMessages.add({'role': 'bot', 'text': response});
+      if (chatLecture != null) {
+        await _db.saveChatMessage(contextId, 'bot', response);
+      }
+      
     } catch (e) {
+      print("Chat Error: $e");
       chatMessages.add({'role': 'bot', 'text': "Maaf, saya sedang mengalami kendala koneksi."});
     }
     notifyListeners();

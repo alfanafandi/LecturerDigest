@@ -22,21 +22,27 @@ void main() async {
       providers: [
         ChangeNotifierProvider(create: (_) => AppProvider()),
       ],
-      child: const LecturerDigestApp(),
+      child: const LectureDigestApp(),
     ),
   );
 }
 
-class LecturerDigestApp extends StatelessWidget {
-  const LecturerDigestApp({super.key});
+class LectureDigestApp extends StatelessWidget {
+  const LectureDigestApp({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'LecturerDigest',
-      debugShowCheckedModeBanner: false,
-      theme: AppTheme.lightTheme,
-      home: const SplashScreen(),
+    return Consumer<AppProvider>(
+      builder: (context, provider, child) {
+        return MaterialApp(
+          title: 'LectureDigest',
+          debugShowCheckedModeBanner: false,
+          theme: AppTheme.lightTheme,
+          darkTheme: AppTheme.darkTheme,
+          themeMode: provider.themeMode,
+          home: const SplashScreen(),
+        );
+      },
     );
   }
 }

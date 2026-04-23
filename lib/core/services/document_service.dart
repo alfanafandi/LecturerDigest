@@ -5,7 +5,7 @@ import 'package:syncfusion_flutter_pdf/pdf.dart';
 class DocumentService {
   /// Picks a PDF file from the device
   Future<File?> pickPDF() async {
-    FilePickerResult? result = await FilePicker.platform.pickFiles(
+    FilePickerResult? result = await FilePicker.pickFiles(
       type: FileType.custom,
       allowedExtensions: ['pdf'],
     );

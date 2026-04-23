@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:lecturer_digest/core/theme/app_theme.dart';
+import 'package:lecturer_digest/core/widgets/brand_logo.dart';
+import 'package:lecturer_digest/core/providers/app_provider.dart';
+import 'package:lecturer_digest/screens/login_screen.dart';
+import 'package:provider/provider.dart';
 
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
@@ -17,7 +21,7 @@ class SettingsScreen extends StatelessWidget {
         ),
         title: Row(
           children: [
-            const Icon(Icons.auto_stories, color: AppTheme.primary),
+            const BrandLogo(size: 24),
             const SizedBox(width: 8),
             Text('LectureDigest', style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w800, letterSpacing: -0.5)),
           ],
@@ -28,40 +32,81 @@ class SettingsScreen extends StatelessWidget {
         child: Column(
           children: [
             // Profile Header
-            Row(
-              children: [
-                Container(
-                  width: 80,
-                  height: 80,
-                  decoration: BoxDecoration(color: AppTheme.surfaceContainerLowest, borderRadius: BorderRadius.circular(24),
-                    image: const DecorationImage(image: NetworkImage('https://lh3.googleusercontent.com/aida-public/AB6AXuAL6O0ziGcisVOnxvZHWOV94lv5TjrTx45VUk4IuWFJbIL6s703jWvUvjk1blpFmExrtQNkPCv9252clUcJNJG7xYtwJ4LRzPvwWHXDGhvrr655EFoRKXoxpqwDkvo1ujymTlSgHvNY6Z7Md3i-pqjHhhJN7GRbtr70q8aff8Ux8YG1Hn5RS_WqYnAITJAG0bwf72DGxy7Q1iZ7N8GxFW_mknCzd-R5lUyTJughS7R9VlGigu9cfS7VIKmxwLwoeJV0J9H-Kx_PUIfR'), fit: BoxFit.cover),
-                  ),
-                ),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text('PREMIUM MEMBER', style: TextStyle(color: AppTheme.primary, fontSize: 10, fontWeight: FontWeight.bold, letterSpacing: 1.0)),
-                      const SizedBox(height: 4),
-                      Text('Andi Pratama', style: Theme.of(context).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w800)),
-                      const SizedBox(height: 4),
-                      Row(
-                        children: const [
-                          Icon(Icons.school, size: 14, color: AppTheme.onSurfaceVariant),
-                          SizedBox(width: 4),
-                          Text('Informatics Major, Year 3', style: TextStyle(color: AppTheme.onSurfaceVariant, fontSize: 12)),
+            Consumer<AppProvider>(
+              builder: (context, provider, child) {
+                final user = provider.currentUser;
+                final emailPrefix = user?.email?.split('@')[0] ?? 'User';
+                final displayName = emailPrefix.isNotEmpty 
+                    ? (emailPrefix[0].toUpperCase() + emailPrefix.substring(1))
+                    : 'User';
+
+                return Row(
+                  children: [
+                    Container(
+                      width: 80,
+                      height: 80,
+                      decoration: BoxDecoration(
+                        color: AppTheme.primary.withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(24),
+                      ),
+                      child: Center(
+                        child: Text(
+                          displayName[0].toUpperCase(),
+                          style: const TextStyle(
+                            fontSize: 32,
+                            fontWeight: FontWeight.bold,
+                            color: AppTheme.primary,
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text(
+                            'PREMIUM MEMBER',
+                            style: TextStyle(
+                              color: AppTheme.primary,
+                              fontSize: 10,
+                              fontWeight: FontWeight.bold,
+                              letterSpacing: 1.0,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            displayName,
+                            style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                              fontWeight: FontWeight.w800,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Row(
+                            children: [
+                              const Icon(Icons.email_outlined, size: 14, color: AppTheme.onSurfaceVariant),
+                              const SizedBox(width: 4),
+                              Text(
+                                user?.email ?? 'Tidak ada email',
+                                style: const TextStyle(color: AppTheme.onSurfaceVariant, fontSize: 12),
+                              ),
+                            ],
+                          ),
                         ],
                       ),
-                    ],
-                  ),
-                ),
-                Container(
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(gradient: const LinearGradient(colors: [AppTheme.primary, AppTheme.primaryContainer]), borderRadius: BorderRadius.circular(16), boxShadow: [BoxShadow(color: AppTheme.primary.withOpacity(0.3), blurRadius: 16)]),
-                  child: const Icon(Icons.edit, color: Colors.white, size: 20),
-                )
-              ],
+                    ),
+                    Container(
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        gradient: const LinearGradient(colors: [AppTheme.primary, AppTheme.primaryContainer]),
+                        borderRadius: BorderRadius.circular(16),
+                        boxShadow: [BoxShadow(color: AppTheme.primary.withOpacity(0.3), blurRadius: 16)],
+                      ),
+                      child: const Icon(Icons.edit, color: Colors.white, size: 20),
+                    )
+                  ],
+                );
+              },
             ),
             const SizedBox(height: 32),
 
@@ -127,17 +172,29 @@ class SettingsScreen extends StatelessWidget {
             const SizedBox(height: 32),
 
             // Logout
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.symmetric(vertical: 16),
-              decoration: BoxDecoration(color: Colors.red.withOpacity(0.1), borderRadius: BorderRadius.circular(24), border: Border.all(color: Colors.red.withOpacity(0.2))),
-              child: const Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(Icons.logout, color: Colors.red, size: 20),
-                  SizedBox(width: 8),
-                  Text('Logout Account', style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold)),
-                ],
+            GestureDetector(
+              onTap: () async {
+                final provider = Provider.of<AppProvider>(context, listen: false);
+                await provider.logout();
+                if (context.mounted) {
+                  Navigator.of(context).pushAndRemoveUntil(
+                    MaterialPageRoute(builder: (_) => const LoginScreen()),
+                    (route) => false,
+                  );
+                }
+              },
+              child: Container(
+                width: double.infinity,
+                padding: const EdgeInsets.symmetric(vertical: 16),
+                decoration: BoxDecoration(color: Colors.red.withOpacity(0.1), borderRadius: BorderRadius.circular(24), border: Border.all(color: Colors.red.withOpacity(0.2))),
+                child: const Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(Icons.logout, color: Colors.red, size: 20),
+                    SizedBox(width: 8),
+                    Text('Logout Account', style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold)),
+                  ],
+                ),
               ),
             ),
             const SizedBox(height: 100),

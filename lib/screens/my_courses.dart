@@ -3,6 +3,8 @@ import 'package:provider/provider.dart';
 import 'package:lecturer_digest/core/theme/app_theme.dart';
 import 'package:lecturer_digest/core/providers/app_provider.dart';
 import 'package:lecturer_digest/screens/course_detail.dart';
+import 'package:lecturer_digest/screens/profile_screen.dart';
+import 'package:lecturer_digest/core/widgets/brand_logo.dart';
 
 class MyCourses extends StatelessWidget {
   const MyCourses({super.key});
@@ -103,7 +105,7 @@ class MyCourses extends StatelessWidget {
                   children: [
                     Row(
                       children: [
-                        const Icon(Icons.auto_stories, color: AppTheme.primary),
+                        const BrandLogo(size: 32),
                         const SizedBox(width: 8),
                         Text(
                           'LectureDigest',
@@ -115,18 +117,36 @@ class MyCourses extends StatelessWidget {
                         ),
                       ],
                     ),
-                    Container(
-                      width: 40,
-                      height: 40,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        border: Border.all(color: AppTheme.primaryContainer.withOpacity(0.5), width: 2),
-                        image: const DecorationImage(
-                          image: NetworkImage(
-                              'https://lh3.googleusercontent.com/aida-public/AB6AXuAbP6Oxc6OIqiBQIXVdbxYw18jCF3kZHgBtMA__sqbmfPm4L8GrM91jl7bZfsCG4z_agCQiiIk91l7HBEyZN2UU6tzlIxbzAIlnLczfK_CYgyN8tYLY8orE7hvA9IO-ivk-2XZUXBNz9hIKAlDbANol0585gmHKz7vXb3wXt6l9auZEQ4r6MyLbJ_BNeTwEnWYrUYjeNgSbX4u8G5mqSmPrGKIntrstaGqYrVA_EWGJUlFnyzCHgCsL7RHIr9qDjJhjWCPlCmBgqz10'),
-                          fit: BoxFit.cover,
-                        ),
-                      ),
+                    Consumer<AppProvider>(
+                      builder: (context, provider, child) {
+                        return GestureDetector(
+                          onTap: () => Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => const ProfileScreen()),
+                          ),
+                          child: Container(
+                            width: 40,
+                            height: 40,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              border: Border.all(color: AppTheme.primaryContainer.withOpacity(0.5), width: 2),
+                              color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
+                            ),
+                            child: provider.userProfile?['avatar_url'] != null
+                                ? ClipOval(
+                                    child: Image.asset(
+                                      provider.userProfile!['avatar_url'],
+                                      fit: BoxFit.cover,
+                                    ),
+                                  )
+                                : Icon(
+                                    Icons.person_rounded, 
+                                    color: Theme.of(context).colorScheme.primary,
+                                    size: 24,
+                                  ),
+                          ),
+                        );
+                      },
                     ),
                   ],
                 ),
@@ -149,7 +169,7 @@ class MyCourses extends StatelessWidget {
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      'Kelas Saya',
+                      'Kelas',
                       style: Theme.of(context).textTheme.displayMedium?.copyWith(
                         fontWeight: FontWeight.w800,
                         fontSize: 36,
@@ -454,7 +474,7 @@ class MyCourses extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text('Sistem Operasi', style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold)),
-                    const Text('ACTIVE SESSION', style: TextStyle(color: AppTheme.primary, fontSize: 10, fontWeight: FontWeight.bold, letterSpacing: 0.5)),
+                    const Text('SESI AKTIF', style: TextStyle(color: AppTheme.primary, fontSize: 10, fontWeight: FontWeight.bold, letterSpacing: 0.5)),
                   ],
                 ),
                 const SizedBox(height: 8),
@@ -466,7 +486,7 @@ class MyCourses extends StatelessWidget {
                       children: const [
                         Icon(Icons.description, size: 16, color: AppTheme.outlineVariant),
                         SizedBox(width: 6),
-                        Text('10 Lectures', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600)),
+                        Text('10 Rekaman', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600)),
                       ],
                     ),
                     const SizedBox(width: 16),
@@ -474,7 +494,7 @@ class MyCourses extends StatelessWidget {
                       children: const [
                         Icon(Icons.schedule, size: 16, color: AppTheme.outlineVariant),
                         SizedBox(width: 6),
-                        Text('Yesterday', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600)),
+                        Text('Kemarin', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600)),
                       ],
                     ),
                   ],
