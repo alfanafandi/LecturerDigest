@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Collab Hub | LectureDigest</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "outline-variant": "#bbcac4",
+                    "on-surface-variant": "#3c4a46",
+                    "inverse-on-surface": "#f0f1f2",
+                    "tertiary-container": "#fe896a",
+                    "surface-container-lowest": "#ffffff",
+                    "on-tertiary": "#ffffff",
+                    "on-tertiary-container": "#74220b",
+                    "surface-container-low": "#f3f4f5",
+                    "primary-container": "#00bfa5",
+                    "tertiary-fixed-dim": "#ffb4a1",
+                    "primary-fixed-dim": "#44ddc1",
+                    "on-primary-fixed-variant": "#005145",
+                    "inverse-surface": "#2e3132",
+                    "error": "#ba1a1a",
+                    "surface-dim": "#d9dadb",
+                    "on-secondary-fixed-variant": "#004786",
+                    "secondary-fixed-dim": "#a5c8ff",
+                    "surface-container-highest": "#e1e3e4",
+                    "primary-fixed": "#68fadd",
+                    "on-primary-container": "#00473c",
+                    "outline": "#6c7a76",
+                    "on-background": "#191c1d",
+                    "surface-bright": "#f8f9fa",
+                    "surface": "#f8f9fa",
+                    "error-container": "#ffdad6",
+                    "surface-container-high": "#e7e8e9",
+                    "secondary": "#005faf",
+                    "on-tertiary-fixed-variant": "#7f2a13",
+                    "on-secondary-fixed": "#001c3a",
+                    "on-tertiary-fixed": "#3c0800",
+                    "on-secondary": "#ffffff",
+                    "inverse-primary": "#44ddc1",
+                    "on-primary-fixed": "#00201a",
+                    "secondary-container": "#54a0fe",
+                    "background": "#f8f9fa",
+                    "on-primary": "#ffffff",
+                    "tertiary": "#9f4128",
+                    "surface-container": "#edeeef",
+                    "on-secondary-container": "#003567",
+                    "on-error-container": "#93000a",
+                    "on-error": "#ffffff",
+                    "tertiary-fixed": "#ffdbd2",
+                    "surface-tint": "#006b5c",
+                    "secondary-fixed": "#d4e3ff",
+                    "surface-variant": "#e1e3e4",
+                    "on-surface": "#191c1d",
+                    "primary": "#006b5c"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "fontFamily": {
+                    "headline": ["Plus Jakarta Sans"],
+                    "body": ["Inter"],
+                    "label": ["Inter"]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; }
+        .font-headline { font-family: 'Plus Jakarta Sans', sans-serif; }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .bg-glass {
+            background: rgba(248, 249, 250, 0.8);
+            backdrop-filter: blur(24px);
+        }
+        .custom-shadow {
+            box-shadow: 0px 12px 32px rgba(0, 107, 92, 0.08);
+        }
+    </style>
+</head>
+<body class="bg-surface text-on-surface">
+<!-- TopAppBar Execution -->
+<header class="fixed top-0 w-full z-40 bg-[#F8F9FA]/80 backdrop-blur-md flex justify-between items-center w-full px-8 py-4">
+<div class="flex items-center gap-8">
+<span class="text-2xl font-bold tracking-tighter text-[#006B5C]">LectureDigest</span>
+<div class="hidden md:flex items-center bg-surface-container-high rounded-full px-4 py-2 w-96">
+<span class="material-symbols-outlined text-outline" data-icon="search">search</span>
+<input class="bg-transparent border-none focus:ring-0 text-sm w-full ml-2" placeholder="Search collaborations..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<button class="p-2 rounded-full hover:bg-[#E7E8E9] transition-colors duration-200">
+<span class="material-symbols-outlined text-on-surface-variant" data-icon="notifications">notifications</span>
+</button>
+<button class="p-2 rounded-full hover:bg-[#E7E8E9] transition-colors duration-200">
+<span class="material-symbols-outlined text-on-surface-variant" data-icon="settings">settings</span>
+</button>
+<div class="h-10 w-10 rounded-full overflow-hidden border-2 border-primary-container">
+<img alt="Student Profile" data-alt="Close up portrait of a young informatics student smiling with a soft natural indoor lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAg3lAEQAfsPkwl-XjIMLkygmk0yvvzdZAUnRzejfwYyBsud6MNGcfXW7o71xSl9GyWaIrcc9igCkb4BB6SWlhKpddbuCNhvvrd-Sjv8diE7MNvfN4wRWKiM3_kxE4qnj88CTURLLXo6Xyy49xu7DN1CA3OhZ1Z6_gTsAlNZzPyobEgHMjLG_aO0GDEiAW0vyHv0ofVn_j3x4K7Hy-iJpQY6aUM2WaBOZ6hT7r1KC1NNJPRCcCyEzwBq69Uh_e2YV-ePbTJLNlrE5nQ"/>
+</div>
+</div>
+</header>
+<!-- SideNavBar Execution -->
+<aside class="h-screen w-64 fixed left-0 top-0 z-50 bg-[#E7E8E9] flex flex-col h-full py-8 px-4">
+<div class="mb-10 px-2">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
+<span class="material-symbols-outlined text-white text-sm" data-icon="auto_stories">auto_stories</span>
+</div>
+<div>
+<h1 class="text-xl font-extrabold text-[#006B5C] leading-none">LectureDigest</h1>
+<p class="text-[10px] text-slate-600 font-semibold tracking-widest uppercase">Academic Synthesis</p>
+</div>
+</div>
+</div>
+<nav class="flex-1 space-y-2">
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl transition-all opacity-70 text-slate-600 hover:bg-white/40 hover:opacity-100 font-semibold text-sm" href="#">
+<span class="material-symbols-outlined" data-icon="home">home</span>
+<span>Home</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl transition-all opacity-70 text-slate-600 hover:bg-white/40 hover:opacity-100 font-semibold text-sm" href="#">
+<span class="material-symbols-outlined" data-icon="library_books">library_books</span>
+<span>Courses</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl transition-all opacity-70 text-slate-600 hover:bg-white/40 hover:opacity-100 font-semibold text-sm" href="#">
+<span class="material-symbols-outlined" data-icon="auto_awesome">auto_awesome</span>
+<span>AI Tools</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl transition-all text-[#006B5C] border-r-4 border-[#006B5C] bg-white/50 font-semibold text-sm translate-x-1" href="#">
+<span class="material-symbols-outlined" data-icon="groups">groups</span>
+<span>Collab</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl transition-all opacity-70 text-slate-600 hover:bg-white/40 hover:opacity-100 font-semibold text-sm" href="#">
+<span class="material-symbols-outlined" data-icon="account_circle">account_circle</span>
+<span>Profile</span>
+</a>
+</nav>
+<div class="mt-auto space-y-4">
+<button class="w-full py-4 px-4 bg-gradient-to-br from-primary to-primary-container text-white rounded-xl font-bold flex items-center justify-center gap-2 custom-shadow">
+<span class="material-symbols-outlined" data-icon="add">add</span>
+                Summarize New
+            </button>
+<div class="pt-4 border-t border-outline-variant/20 space-y-2">
+<a class="flex items-center gap-3 px-4 py-2 text-slate-600 text-sm font-semibold hover:text-primary" href="#">
+<span class="material-symbols-outlined" data-icon="help">help</span>
+                    Help
+                </a>
+<a class="flex items-center gap-3 px-4 py-2 text-slate-600 text-sm font-semibold hover:text-error" href="#">
+<span class="material-symbols-outlined" data-icon="logout">logout</span>
+                    Logout
+                </a>
+</div>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="ml-64 pt-24 min-h-screen px-12 pb-12">
+<!-- Header & Asymmetric Layout Section -->
+<section class="mb-12">
+<div class="flex flex-col md:flex-row justify-between items-end gap-6">
+<div class="max-w-2xl">
+<span class="text-primary font-bold text-sm tracking-widest uppercase mb-2 block">Collaborative Intelligence</span>
+<h2 class="text-5xl font-headline font-extrabold text-on-surface tracking-tight leading-tight">Sync your insights with <br/><span class="text-primary">the study hive.</span></h2>
+</div>
+<div class="flex gap-4 mb-2">
+<button class="px-6 py-3 bg-secondary-container text-on-secondary-container rounded-xl font-bold flex items-center gap-2">
+<span class="material-symbols-outlined" data-icon="sensors">sensors</span>
+                        In-person Share
+                    </button>
+</div>
+</div>
+</section>
+<!-- Bento Grid Collaboration Hub -->
+<div class="grid grid-cols-12 gap-6 items-start">
+<!-- Invite & Share (The Large Section) -->
+<div class="col-span-12 lg:col-span-7 bg-surface-container-lowest rounded-xl p-8 custom-shadow border border-outline-variant/10">
+<div class="flex items-start justify-between mb-8">
+<div>
+<h3 class="text-2xl font-headline font-bold text-on-surface mb-1">Invite Collaborators</h3>
+<p class="text-on-surface-variant text-sm">Grow your research group with secure, encrypted access.</p>
+</div>
+<div class="p-3 bg-primary-container/10 rounded-xl">
+<span class="material-symbols-outlined text-primary" data-icon="share">share</span>
+</div>
+</div>
+<div class="flex flex-col md:flex-row gap-8 items-center">
+<div class="flex-1 w-full">
+<label class="block text-xs font-bold text-outline uppercase tracking-widest mb-2">Private Share Link</label>
+<div class="flex items-center bg-surface-container-low rounded-xl overflow-hidden p-1 pr-3">
+<input class="flex-1 bg-transparent border-none text-sm font-mono px-4 focus:ring-0" readonly="" type="text" value="lecturedigest.io/share/a2-88f9-x"/>
+<button class="px-4 py-2 bg-primary text-white text-xs font-bold rounded-lg">Copy Link</button>
+</div>
+<div class="mt-8 flex gap-4">
+<div class="flex -space-x-3 overflow-hidden">
+<img alt="User" class="inline-block h-10 w-10 rounded-full ring-2 ring-white" data-alt="Portrait of a female student with glasses looking focused" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDnWEbaWc0RqSsMJqbB21FpDYT8pEt-X0arszAK4dRgxkHoORgz5sDSovn2zsx4vbdB971SXYcDgJuUZ9W9Qnz42mdvkZeE3IbVUUsZevcht7dJ92Z0v27pahwGvI-vvflZBfMZbqyC4NRqZaonw3Uiipthc2Um_MNLqo8YJLASGWJdzu2o2sjUNw366YUm-5Jo9qeb91RgYxz_R1NmdLH9BpyVAmYiNjoKCnBX0qYwPb4OaRZi9oBC6sVhfIz-wKNAzd_A7Eiweq2G"/>
+<img alt="User" class="inline-block h-10 w-10 rounded-full ring-2 ring-white" data-alt="Smiling male student in a campus setting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBJ4xB7g0EbqCJFrgoN-o3AG6KLhNwBvszAYb7a9hNgqib2NR8q8uBH0IR_kWCBeTAm4lZ68UXF2reibAtoIY8N1uqr6_TAtgbz6B7vaEijl_FQnxqDRs1t5Ofd7PXSDsPQKAwB23siYVG-YprPuPU1nRY2dNykD-pB66XtOzEjumyCVNx_DTMYJgIugMaHP7WV4YFV-6F6P1eMm1P2s2Wma5OiwCbNmH99wajiUu4XVefk2ZtzPGgXEFWHc1eK47bIJCrBdEchdbXU"/>
+<img alt="User" class="inline-block h-10 w-10 rounded-full ring-2 ring-white" data-alt="Young professional man in casual academic wear" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBTrg9kZxB4Z5jCdL5MHtxJSB0BvvZ7XKQ1hUVqnQec1Zm-Hmtk4zCcZIME0ihrAsIenqWNIfkAs30Y5KWcb6_MCxqeT0BL4ucCfP78Tfe-iK9sU4txZis3TmGlJTD_VldB4dpvD_hAK_hzCgqduSUl5T3NHEXCfnQtncfnewrbeKK5nM0OI1M7KXxIfVU0xmdp8WOr2iA7A6vnMYlS5K3hW1f5CjMgRsXZn8dg4dJJEt_PzjyCvP2yxRYR6qBU9_OLBUK_vGe6WbdF"/>
+<div class="flex h-10 w-10 items-center justify-center rounded-full bg-surface-container-high ring-2 ring-white text-[10px] font-bold text-on-surface-variant">+12</div>
+</div>
+<p class="text-xs text-on-surface-variant self-center font-medium">Currently active in your primary hub.</p>
+</div>
+</div>
+<div class="w-full md:w-48 bg-white p-4 rounded-2xl border-2 border-surface-container-low flex flex-col items-center">
+<div class="w-32 h-32 bg-slate-100 flex items-center justify-center rounded-lg mb-3">
+<span class="material-symbols-outlined text-4xl text-on-surface-variant" data-icon="qr_code_2">qr_code_2</span>
+</div>
+<span class="text-[10px] font-bold text-outline tracking-wider uppercase">Scan to Join</span>
+</div>
+</div>
+</div>
+<!-- Active Hubs / Group Study -->
+<div class="col-span-12 lg:col-span-5 bg-surface-container-high rounded-xl p-8 flex flex-col h-full border border-outline-variant/10">
+<div class="flex items-center justify-between mb-6">
+<h3 class="text-xl font-headline font-bold text-on-surface">Active Hubs</h3>
+<div class="flex items-center gap-1.5 px-3 py-1 bg-primary/10 rounded-full">
+<div class="w-2 h-2 bg-primary rounded-full animate-pulse"></div>
+<span class="text-[10px] font-bold text-primary tracking-widest uppercase">Live Now</span>
+</div>
+</div>
+<div class="space-y-4 flex-1">
+<div class="bg-surface-container-lowest p-4 rounded-xl flex items-center gap-4 border border-primary/10">
+<div class="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center text-primary">
+<span class="material-symbols-outlined" data-icon="terminal">terminal</span>
+</div>
+<div class="flex-1">
+<h4 class="text-sm font-bold text-on-surface">Algorithmic Complexity</h4>
+<p class="text-xs text-on-surface-variant">8 classmates synthesized 4h ago</p>
+</div>
+<button class="p-2 text-primary hover:bg-primary/5 rounded-full transition-colors">
+<span class="material-symbols-outlined" data-icon="arrow_forward">arrow_forward</span>
+</button>
+</div>
+<div class="bg-surface-container-lowest p-4 rounded-xl flex items-center gap-4 opacity-75">
+<div class="w-12 h-12 bg-secondary/10 rounded-full flex items-center justify-center text-secondary">
+<span class="material-symbols-outlined" data-icon="database">database</span>
+</div>
+<div class="flex-1">
+<h4 class="text-sm font-bold text-on-surface">DB Schema Design</h4>
+<p class="text-xs text-on-surface-variant">3 classmates active</p>
+</div>
+<button class="p-2 text-secondary hover:bg-secondary/5 rounded-full transition-colors">
+<span class="material-symbols-outlined" data-icon="arrow_forward">arrow_forward</span>
+</button>
+</div>
+<div class="bg-surface-container-lowest p-4 rounded-xl flex items-center gap-4 opacity-75">
+<div class="w-12 h-12 bg-tertiary/10 rounded-full flex items-center justify-center text-tertiary">
+<span class="material-symbols-outlined" data-icon="architecture">architecture</span>
+</div>
+<div class="flex-1">
+<h4 class="text-sm font-bold text-on-surface">Network Protocols</h4>
+<p class="text-xs text-on-surface-variant">Scheduled for 14:00 PM</p>
+</div>
+<button class="p-2 text-tertiary hover:bg-tertiary/5 rounded-full transition-colors">
+<span class="material-symbols-outlined" data-icon="calendar_today">calendar_today</span>
+</button>
+</div>
+</div>
+<button class="mt-6 w-full py-3 border-2 border-primary/20 text-primary font-bold text-sm rounded-xl hover:bg-primary/5 transition-colors">
+                    Create New Group Study
+                </button>
+</div>
+<!-- Permission Management Table -->
+<div class="col-span-12 bg-surface-container-lowest rounded-xl p-8 custom-shadow border border-outline-variant/10">
+<div class="flex items-center justify-between mb-8">
+<div>
+<h3 class="text-2xl font-headline font-bold text-on-surface">Permission Management</h3>
+<p class="text-on-surface-variant text-sm">Control access levels for specific shared summaries.</p>
+</div>
+<div class="flex gap-2">
+<button class="px-4 py-2 bg-surface-container-high rounded-lg text-xs font-bold flex items-center gap-2">
+<span class="material-symbols-outlined text-sm" data-icon="filter_list">filter_list</span>
+                            Filter
+                        </button>
+</div>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="border-b border-surface-container-high">
+<th class="pb-4 text-[10px] font-bold text-outline tracking-widest uppercase">Collaborator</th>
+<th class="pb-4 text-[10px] font-bold text-outline tracking-widest uppercase">Resource</th>
+<th class="pb-4 text-[10px] font-bold text-outline tracking-widest uppercase">Role</th>
+<th class="pb-4 text-[10px] font-bold text-outline tracking-widest uppercase">Last Activity</th>
+<th class="pb-4 text-[10px] font-bold text-outline tracking-widest uppercase text-right">Actions</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-surface-container-high">
+<tr>
+<td class="py-5">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-slate-200 overflow-hidden">
+<img alt="Adelia" data-alt="Portrait of an informatics student with glasses" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB32MVcG9-y7a2trjJqm4dcdXpzwj38co4mng5ghN-ZHSjvI7HCojwxom6lROQgiGWv9FcDEIoLFb-fYJMZ3GCuuVaa49UN6dIeznctI1kzI7UoJJzTWCcOYNJpKsJlp4092Aqs-_JYjmrrhICgLo_Nz8AY5cY6nIHYhzpcSMDnCeFkE4UJbj-ThqYrWPQJErL8_fMnmxNzDhIcvd5U2T8rVVMyHaTCkEvnAcc_rFFy7dqBKBhLTFiRzbsdrd3eImLQodEuAqwIyIW0"/>
+</div>
+<div>
+<p class="text-sm font-bold text-on-surface">Adelia Putri</p>
+<p class="text-[10px] text-on-surface-variant">adelia.p@univ.ac.id</p>
+</div>
+</div>
+</td>
+<td class="py-5">
+<span class="text-xs font-medium text-on-surface bg-surface-container px-2 py-1 rounded">OS Kernel Summary</span>
+</td>
+<td class="py-5">
+<div class="flex items-center gap-1.5 text-primary">
+<span class="material-symbols-outlined text-sm" data-icon="edit">edit</span>
+<span class="text-xs font-bold">Editor</span>
+</div>
+</td>
+<td class="py-5 text-xs text-on-surface-variant">2 mins ago</td>
+<td class="py-5 text-right">
+<button class="text-outline hover:text-error transition-colors">
+<span class="material-symbols-outlined" data-icon="more_horiz">more_horiz</span>
+</button>
+</td>
+</tr>
+<tr>
+<td class="py-5">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-slate-200 overflow-hidden">
+<img alt="Budi" data-alt="Smiling tech student profile" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBTx6Uq0DystlLkxR8Wfc0Hb9u9hViWD0H_kG9WmYP0IPFK1KD_ItG7JVeNkwwpGryFCvcoyzhgJS-hKks7dzzvN9fQultM8DopX2iVA9jEaU-W6RW4EXkn3dIWPWhfS7sJvJxfa78dQzcneBDEOIezp8X-gyDM_OzIhOO9YOtvJIcopVSTzVfXANO8d5EA4EpJLQl_9RVs2feEn5PcM9AgHn2gMW17R7iG6ppAPIIPXb7x3TWo51qy-xKF1GPAadRfqWWeYzFgASAM"/>
+</div>
+<div>
+<p class="text-sm font-bold text-on-surface">Budi Santoso</p>
+<p class="text-[10px] text-on-surface-variant">budi.s@univ.ac.id</p>
+</div>
+</div>
+</td>
+<td class="py-5">
+<span class="text-xs font-medium text-on-surface bg-surface-container px-2 py-1 rounded">Network Layers V2</span>
+</td>
+<td class="py-5">
+<div class="flex items-center gap-1.5 text-on-surface-variant">
+<span class="material-symbols-outlined text-sm" data-icon="visibility">visibility</span>
+<span class="text-xs font-bold">Viewer</span>
+</div>
+</td>
+<td class="py-5 text-xs text-on-surface-variant">1 day ago</td>
+<td class="py-5 text-right">
+<button class="text-outline hover:text-error transition-colors">
+<span class="material-symbols-outlined" data-icon="more_horiz">more_horiz</span>
+</button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<!-- Shared With Me List -->
+<div class="col-span-12 lg:col-span-4 bg-surface-container-high rounded-xl p-8 border border-outline-variant/10">
+<h3 class="text-xl font-headline font-bold text-on-surface mb-6">Shared with me</h3>
+<div class="space-y-4">
+<div class="p-4 bg-surface-container-lowest rounded-xl border-l-4 border-primary">
+<p class="text-[10px] font-bold text-primary tracking-widest uppercase mb-1">New Update</p>
+<h4 class="text-sm font-bold text-on-surface">AI Ethics - Final Report</h4>
+<p class="text-xs text-on-surface-variant mt-1">Shared by Dr. Irfan</p>
+<div class="mt-4 flex justify-between items-center">
+<span class="text-[10px] text-outline">Oct 12, 2023</span>
+<span class="material-symbols-outlined text-primary text-sm" data-icon="open_in_new">open_in_new</span>
+</div>
+</div>
+<div class="p-4 bg-surface-container-lowest/50 rounded-xl">
+<h4 class="text-sm font-bold text-on-surface">Machine Learning Basics</h4>
+<p class="text-xs text-on-surface-variant mt-1">Shared by StudyGroup-A</p>
+<div class="mt-4 flex justify-between items-center">
+<span class="text-[10px] text-outline">Oct 10, 2023</span>
+<span class="material-symbols-outlined text-outline text-sm" data-icon="lock">lock</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Collaborative Notes Feature -->
+<div class="col-span-12 lg:col-span-8 bg-gradient-to-br from-primary to-primary-container rounded-xl p-10 text-white relative overflow-hidden custom-shadow">
+<div class="relative z-10 max-w-md">
+<h3 class="text-3xl font-headline font-extrabold mb-4">Real-time Synthesis</h3>
+<p class="text-white/80 text-sm mb-8 leading-relaxed">Experience zero-latency collaboration. Watch your peers annotate and highlight lecture summaries as you discuss them in live study rooms.</p>
+<button class="px-8 py-3 bg-white text-primary font-extrabold rounded-xl text-sm flex items-center gap-2 hover:bg-opacity-90 transition-all">
+<span class="material-symbols-outlined" data-icon="bolt">bolt</span>
+                        Upgrade to Pro Collab
+                    </button>
+</div>
+<!-- Abstract Design Elements -->
+<div class="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full -mr-20 -mt-20 blur-3xl"></div>
+<div class="absolute bottom-0 right-0 w-32 h-32 bg-primary-fixed-dim/20 rounded-full mr-20 mb-10 blur-2xl"></div>
+<div class="absolute top-1/2 right-10 -translate-y-1/2 opacity-20 hidden md:block">
+<span class="material-symbols-outlined text-[120px]" data-icon="forum">forum</span>
+</div>
+</div>
+</div>
+</main>
+<!-- FAB for quick action (Contextual Suppression Logic: Hidden here as per mandate for detailed pages, but adding a specialized 'New Collab' FAB) -->
+<button class="fixed bottom-8 right-8 w-14 h-14 bg-primary text-white rounded-full flex items-center justify-center custom-shadow hover:scale-105 transition-transform z-50 md:hidden">
+<span class="material-symbols-outlined" data-icon="add_comment">add_comment</span>
+</button>
+</body></html>

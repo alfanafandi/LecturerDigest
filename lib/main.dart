@@ -28,6 +28,7 @@ void main() async {
 }
 
 class LectureDigestApp extends StatelessWidget {
+  static final navigatorKey = GlobalKey<NavigatorState>();
   const LectureDigestApp({super.key});
 
   @override
@@ -40,6 +41,7 @@ class LectureDigestApp extends StatelessWidget {
           theme: AppTheme.lightTheme,
           darkTheme: AppTheme.darkTheme,
           themeMode: provider.themeMode,
+          navigatorKey: navigatorKey,
           home: const SplashScreen(),
         );
       },

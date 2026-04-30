@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:lecturer_digest/main.dart';
 import 'package:provider/provider.dart';
 import 'package:lecturer_digest/core/theme/app_theme.dart';
 import 'package:lecturer_digest/core/providers/app_provider.dart';
 import 'package:lecturer_digest/core/widgets/brand_logo.dart';
+import 'package:lecturer_digest/core/utils/responsive.dart';
 import 'package:lecturer_digest/screens/splash_screen.dart';
+import 'package:lecturer_digest/screens/login_screen.dart';
 
 class ProfileScreen extends StatefulWidget {
   final bool isTab;
@@ -55,6 +58,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final bool isDesktop = Responsive.isDesktop(context);
+
     return Consumer<AppProvider>(
       builder: (context, provider, child) {
         final profile = provider.userProfile;
@@ -74,8 +79,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
               backgroundColor: Colors.transparent,
               elevation: 0,
               automaticallyImplyLeading: !widget.isTab,
-              leadingWidth: widget.isTab ? 0 : 70,
-              leading: widget.isTab ? null : Padding(
+              leadingWidth: isDesktop ? 80 : (widget.isTab ? 0 : 70),
+              leading: widget.isTab && !isDesktop ? null : Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: CircleAvatar(
                   backgroundColor: Theme.of(context).colorScheme.surfaceVariant,
@@ -90,47 +95,51 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
               ),
             ),
-            body: SingleChildScrollView(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  // Integrated Header Section
-                  Container(
-                    padding: const EdgeInsets.fromLTRB(24, 20, 24, 20),
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        begin: Alignment.topCenter,
-                        end: Alignment.bottomCenter,
-                        colors: isDark 
-                          ? [Theme.of(context).colorScheme.surfaceVariant.withOpacity(0.5), Theme.of(context).colorScheme.background]
-                          : [Theme.of(context).colorScheme.primary.withOpacity(0.1), Theme.of(context).colorScheme.background],
-                      ),
-                    ),
-                    child: Column(
-                      children: [
-                        Row(
+            body: Center(
+              child: ConstrainedBox(
+                constraints: BoxConstraints(maxWidth: isDesktop ? 1000 : double.infinity),
+                child: SingleChildScrollView(
+                  padding: EdgeInsets.symmetric(horizontal: isDesktop ? 48 : 0, vertical: 24),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      // Integrated Header Section
+                      Container(
+                        padding: const EdgeInsets.all(32),
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                            colors: isDark 
+                              ? [AppTheme.primary.withOpacity(0.1), AppTheme.surface]
+                              : [AppTheme.primary.withOpacity(0.05), Colors.white],
+                          ),
+                          borderRadius: BorderRadius.circular(isDesktop ? 32 : 0),
+                          boxShadow: isDesktop ? [BoxShadow(color: Colors.black.withOpacity(0.03), blurRadius: 40)] : null,
+                        ),
+                        child: Row(
                           children: [
                             // Avatar with Glow
                             Container(
-                              width: 80,
-                              height: 80,
-                              padding: const EdgeInsets.all(3),
+                              width: isDesktop ? 120 : 80,
+                              height: isDesktop ? 120 : 80,
+                              padding: const EdgeInsets.all(4),
                               decoration: BoxDecoration(
                                 shape: BoxShape.circle,
-                                border: Border.all(color: Theme.of(context).colorScheme.primary.withOpacity(0.3), width: 2),
+                                border: Border.all(color: AppTheme.primary.withOpacity(0.3), width: 2),
                               ),
                               child: CircleAvatar(
-                                radius: 40,
-                                backgroundColor: Theme.of(context).colorScheme.surface,
+                                radius: isDesktop ? 60 : 40,
+                                backgroundColor: AppTheme.surfaceContainerHigh,
                                 backgroundImage: currentAvatar != null 
                                     ? AssetImage(currentAvatar) 
                                     : null,
                                 child: currentAvatar == null 
-                                    ? Icon(Icons.person_outline_rounded, size: 40, color: Theme.of(context).colorScheme.primary)
+                                    ? Icon(Icons.person_outline_rounded, size: isDesktop ? 60 : 40, color: AppTheme.primary)
                                     : null,
                               ),
                             ),
-                            const SizedBox(width: 20),
+                            const SizedBox(width: 32),
                             
                             // Name & Email
                             Expanded(
@@ -143,7 +152,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                          Expanded(
                                            child: TextField(
                                               controller: _nameController,
-                                              style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w800),
+                                              style: Theme.of(context).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w900),
                                               decoration: const InputDecoration(
                                                 hintText: 'Nama kamu',
                                                 isDense: true,
@@ -162,12 +171,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                         Flexible(
                                           child: Text(
                                             profile?['full_name'] ?? 'Mahasiswa',
-                                            style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w800),
+                                            style: Theme.of(context).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w900),
                                             maxLines: 1,
                                             overflow: TextOverflow.ellipsis,
                                           ),
                                         ),
-                                      const SizedBox(width: 8),
+                                      const SizedBox(width: 12),
                                       IconButton(
                                         onPressed: () {
                                           if (_isEditing) {
@@ -178,23 +187,22 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                           }
                                         },
                                         icon: Icon(
-                                          Icons.edit_rounded, 
-                                          color: Theme.of(context).colorScheme.primary,
-                                          size: 20,
+                                          _isEditing ? Icons.check_circle_rounded : Icons.edit_rounded, 
+                                          color: AppTheme.primary,
+                                          size: 24,
                                         ),
                                         padding: EdgeInsets.zero,
                                         constraints: const BoxConstraints(),
                                         visualDensity: VisualDensity.compact,
-                                        tooltip: 'Edit Nama',
+                                        tooltip: 'Edit Profil',
                                       ),
                                     ],
                                   ),
-                                  
-                                  const SizedBox(height: 1),
+                                  const SizedBox(height: 4),
                                   Text(
                                     provider.currentUser?.email ?? '',
-                                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                      color: isDark ? Colors.white70 : Colors.black87,
+                                    style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                                      color: AppTheme.onSurfaceVariant,
                                       fontWeight: FontWeight.w500,
                                     ),
                                   ),
@@ -203,125 +211,165 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             ),
                           ],
                         ),
-                      ],
-                    ),
-                  ),
-
-                const SizedBox(height: 8),
-
-                // Avatar Choice (AI Generated)
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 24),
-                  child: _buildSectionHeader(context, 'PILIH AVATAR AI'),
-                ),
-                const SizedBox(height: 12),
-                SizedBox(
-                  height: 70,
-                  child: ListView.builder(
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
-                    scrollDirection: Axis.horizontal,
-                    itemCount: _availableAvatars.length,
-                    itemBuilder: (context, index) {
-                      final avatarPath = _availableAvatars[index];
-                      final isSelected = currentAvatar == avatarPath;
-                      
-                      return GestureDetector(
-                        onTap: () => _saveProfile(avatarUrl: avatarPath),
-                        child: Container(
-                          width: 60,
-                          margin: const EdgeInsets.symmetric(horizontal: 6),
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            border: Border.all(
-                              color: isSelected ? Theme.of(context).colorScheme.primary : Colors.transparent,
-                              width: 2,
-                            ),
-                          ),
-                          child: CircleAvatar(
-                            backgroundColor: Theme.of(context).colorScheme.surfaceVariant,
-                            backgroundImage: AssetImage(avatarPath),
-                          ),
-                        ),
-                      );
-                    },
-                  ),
-                ),
-
-                const SizedBox(height: 24),
-
-                // App Settings
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 24),
-                  child: Column(
-                    children: [
-                      _buildSectionHeader(context, 'PENGATURAN APLIKASI'),
-                      const SizedBox(height: 12),
-                      _buildSettingTile(
-                        context,
-                        icon: Icons.dark_mode_rounded,
-                        title: 'Mode Gelap',
-                        subtitle: 'Kurangi ketegangan mata',
-                        trailing: Switch(
-                          value: isDark,
-                          onChanged: (val) => provider.toggleTheme(),
-                          activeColor: Theme.of(context).colorScheme.primary,
-                        ),
                       ),
-                      
-                      const SizedBox(height: 20),
-                      _buildSectionHeader(context, 'AKUN'),
-                      const SizedBox(height: 12),
-                      _buildSettingTile(
-                        context,
-                        icon: Icons.lock_reset_rounded,
-                        title: 'Ganti Kata Sandi',
-                        onTap: () => _showPasswordDialog(context, provider),
+
+                      const SizedBox(height: 40),
+
+                      // Avatar Choice
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 24),
+                        child: _buildSectionHeader(context, 'PILIH AVATAR AI'),
                       ),
-                      _buildSettingTile(
-                        context,
-                        icon: Icons.logout_rounded,
-                        title: 'Keluar',
-                        titleColor: Colors.redAccent,
-                        onTap: () {
-                          showDialog(
-                            context: context,
-                            builder: (context) => AlertDialog(
-                              title: const Text('Keluar'),
-                              content: const Text('Apakah kamu yakin ingin keluar dari aplikasi?'),
-                              actions: [
-                                TextButton(onPressed: () => Navigator.pop(context), child: const Text('Batal')),
-                                TextButton(
-                                  onPressed: () async {
-                                    Navigator.pop(context);
-                                    await provider.signOut();
-                                    if (context.mounted) {
-                                      Navigator.of(context, rootNavigator: true).pushAndRemoveUntil(
-                                        MaterialPageRoute(builder: (_) => const SplashScreen()),
-                                        (route) => false,
-                                      );
-                                    }
-                                  }, 
-                                  child: const Text('Ya, Keluar', style: TextStyle(color: Colors.red))
+                      const SizedBox(height: 16),
+                      SizedBox(
+                        height: 90,
+                        child: ListView.builder(
+                          padding: const EdgeInsets.symmetric(horizontal: 16),
+                          scrollDirection: Axis.horizontal,
+                          itemCount: _availableAvatars.length,
+                          itemBuilder: (context, index) {
+                            final avatarPath = _availableAvatars[index];
+                            final isSelected = currentAvatar == avatarPath;
+                            
+                            return GestureDetector(
+                              onTap: () => _saveProfile(avatarUrl: avatarPath),
+                              child: AnimatedContainer(
+                                duration: const Duration(milliseconds: 200),
+                                width: 70,
+                                margin: const EdgeInsets.symmetric(horizontal: 8),
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  border: Border.all(
+                                    color: isSelected ? AppTheme.primary : Colors.transparent,
+                                    width: 3,
+                                  ),
+                                  boxShadow: isSelected ? [BoxShadow(color: AppTheme.primary.withOpacity(0.2), blurRadius: 12)] : null,
                                 ),
-                              ],
-                            ),
-                          );
-                        },
+                                child: CircleAvatar(
+                                  backgroundColor: AppTheme.surfaceContainerHigh,
+                                  backgroundImage: AssetImage(avatarPath),
+                                ),
+                              ),
+                            );
+                          },
+                        ),
                       ),
+
+                      const SizedBox(height: 40),
+
+                      // Settings Grid/List
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 24),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            _buildSectionHeader(context, 'PENGATURAN APLIKASI'),
+                            const SizedBox(height: 16),
+                            
+                            if (isDesktop) 
+                              GridView.count(
+                                shrinkWrap: true,
+                                physics: const NeverScrollableScrollPhysics(),
+                                crossAxisCount: 2,
+                                crossAxisSpacing: 20,
+                                mainAxisSpacing: 20,
+                                childAspectRatio: 4,
+                                children: _buildSettingsItems(context, provider, isDark),
+                              )
+                            else 
+                              Column(
+                                children: _buildSettingsItems(context, provider, isDark),
+                              ),
+                            
+                            const SizedBox(height: 40),
+                            _buildSectionHeader(context, 'AKUN'),
+                            const SizedBox(height: 16),
+                            
+                            _buildSettingTile(
+                              context,
+                              icon: Icons.lock_reset_rounded,
+                              title: 'Ganti Kata Sandi',
+                              onTap: () => _showPasswordDialog(context, provider),
+                            ),
+                            _buildSettingTile(
+                              context,
+                              icon: Icons.logout_rounded,
+                              title: 'Keluar dari Aplikasi',
+                              titleColor: Colors.redAccent,
+                              onTap: () => _showLogoutDialog(context, provider),
+                            ),
+                          ],
+                        ),
+                      ),
+                      
+                      const SizedBox(height: 60),
                     ],
                   ),
                 ),
-                
-                const SizedBox(height: 20),
-                if (widget.isTab) const SizedBox(height: 60), // Space for navbar
-              ],
+              ),
             ),
           ),
+        );
+      },
+    );
+  }
+
+  List<Widget> _buildSettingsItems(BuildContext context, AppProvider provider, bool isDark) {
+    return [
+      _buildSettingTile(
+        context,
+        icon: Icons.dark_mode_rounded,
+        title: 'Mode Gelap',
+        subtitle: 'Kurangi ketegangan mata',
+        trailing: Switch(
+          value: isDark,
+          onChanged: (val) => provider.toggleTheme(),
+          activeColor: AppTheme.primary,
         ),
-      );
-    },
-  );
-}
+      ),
+      _buildSettingTile(
+        context,
+        icon: Icons.notifications_active_rounded,
+        title: 'Notifikasi',
+        subtitle: 'Dapatkan update rangkuman AI',
+        trailing: Switch(
+          value: true,
+          onChanged: (val) {},
+          activeColor: AppTheme.primary,
+        ),
+      ),
+    ];
+  }
+
+  void _showLogoutDialog(BuildContext context, AppProvider provider) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+        title: const Text('Keluar dari Aplikasi?'),
+        content: const Text('Kamu perlu masuk kembali untuk mengakses rangkuman dan data akademismu.'),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(context), child: const Text('Batal')),
+          ElevatedButton(
+            onPressed: () async {
+              Navigator.pop(context);
+              LectureDigestApp.navigatorKey.currentState?.pushAndRemoveUntil(
+                MaterialPageRoute(builder: (_) => const LoginScreen()),
+                (route) => false,
+              );
+              await provider.signOut();
+            }, 
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.redAccent, 
+              foregroundColor: Colors.white,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            ),
+            child: const Text('Ya, Keluar')
+          ),
+        ],
+      ),
+    );
+  }
 
   void _showPasswordDialog(BuildContext context, AppProvider provider) {
     final TextEditingController passController = TextEditingController();

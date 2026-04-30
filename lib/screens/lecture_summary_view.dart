@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:lecturer_digest/core/theme/app_theme.dart';
@@ -10,6 +11,7 @@ import 'package:lecturer_digest/screens/quiz_screen.dart';
 import 'package:lecturer_digest/screens/quiz_review_screen.dart';
 import 'package:lecturer_digest/core/widgets/brand_logo.dart';
 import 'package:lecturer_digest/core/services/pdf_service.dart';
+import 'package:lecturer_digest/core/utils/responsive.dart';
 
 class LectureSummaryView extends StatefulWidget {
   final String lectureId;
@@ -91,6 +93,68 @@ class _LectureSummaryViewState extends State<LectureSummaryView> {
     return '$minutes:$seconds';
   }
 
+  Future<void> _showShareDialog(BuildContext context, AppProvider provider, String lectureId) async {
+    final code = await provider.getShareCode(lectureId);
+    if (code == null) return;
+
+    if (!mounted) return;
+
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+        title: const Row(
+          children: [
+            Icon(Icons.share_rounded, color: AppTheme.primary),
+            SizedBox(width: 12),
+            Text('Bagikan Materi', style: TextStyle(fontWeight: FontWeight.bold)),
+          ],
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Text('Berikan kode ini kepada temanmu agar mereka bisa mengimpor materi ini ke akun mereka.', 
+              style: TextStyle(fontSize: 13, color: AppTheme.onSurfaceVariant)),
+            const SizedBox(height: 24),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+              decoration: BoxDecoration(
+                color: AppTheme.primary.withOpacity(0.05),
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(color: AppTheme.primary.withOpacity(0.2)),
+              ),
+              child: SelectableText(
+                code,
+                style: const TextStyle(fontSize: 24, fontWeight: FontWeight.w900, color: AppTheme.primary, letterSpacing: 2),
+              ),
+            ),
+            const SizedBox(height: 16),
+            const Text('Kode ini berlaku selamanya.', style: TextStyle(fontSize: 10, color: Colors.grey)),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Tutup', style: TextStyle(color: Colors.grey)),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              Clipboard.setData(ClipboardData(text: code));
+              Navigator.pop(context);
+              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Kode berhasil disalin ke clipboard!')));
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppTheme.primary,
+              foregroundColor: Colors.white,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            ),
+            child: const Text('Salin Kode'),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Consumer<AppProvider>(
@@ -128,18 +192,24 @@ class _LectureSummaryViewState extends State<LectureSummaryView> {
             ),
             actions: [
               IconButton(
-                  icon: const Icon(Icons.share, color: AppTheme.primary),
-                  onPressed: () {}),
+                  icon: const Icon(Icons.share_rounded, color: AppTheme.primary),
+                  onPressed: () => _showShareDialog(context, provider, widget.lectureId)),
               const SizedBox(width: 16),
             ],
           ),
           body: Stack(
             children: [
               SingleChildScrollView(
-                padding: const EdgeInsets.all(24),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
+                padding: EdgeInsets.symmetric(
+                  horizontal: Responsive.isDesktop(context) ? MediaQuery.of(context).size.width * 0.15 : 24,
+                  vertical: 48,
+                ),
+                child: Center(
+                  child: ConstrainedBox(
+                    constraints: const BoxConstraints(maxWidth: 900),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
                     const Text('RINGKASAN AKADEMIK',
                         style: TextStyle(
                             color: AppTheme.primary,
@@ -403,9 +473,11 @@ class _LectureSummaryViewState extends State<LectureSummaryView> {
                       ),
                     ),
                     const SizedBox(height: 120),
-                  ],
+                    ],
+                  ),
                 ),
               ),
+            ),
 
               // Floating Audio Player
               if (_isPlayerReady)

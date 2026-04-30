@@ -5,6 +5,7 @@ import 'package:lecturer_digest/core/providers/app_provider.dart';
 import 'package:lecturer_digest/screens/course_detail.dart';
 import 'package:lecturer_digest/screens/profile_screen.dart';
 import 'package:lecturer_digest/core/widgets/brand_logo.dart';
+import 'package:lecturer_digest/core/utils/responsive.dart';
 
 class MyCourses extends StatelessWidget {
   const MyCourses({super.key});
@@ -90,193 +91,344 @@ class MyCourses extends StatelessWidget {
     );
   }
 
+  void _showDeleteConfirmation(BuildContext context, String courseId, String title) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+        title: const Text('Hapus Kelas?'),
+        content: Text('Apakah kamu yakin ingin menghapus "$title"? Semua materi, kuis, dan kartu di dalam kelas ini juga akan terhapus.'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Batal'),
+          ),
+          TextButton(
+            onPressed: () async {
+              final provider = Provider.of<AppProvider>(context, listen: false);
+              Navigator.pop(context);
+              await provider.deleteCourse(courseId);
+              if (provider.error != null && context.mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(provider.error!), backgroundColor: Colors.red));
+              } else if (context.mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Kelas berhasil dihapus'), backgroundColor: Colors.green));
+              }
+            },
+            child: const Text('Hapus', style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold)),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showRenameCourseDialog(BuildContext context, String courseId, String currentName) {
+    final controller = TextEditingController(text: currentName);
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+        title: const Text('Ubah Nama Kelas'),
+        content: TextField(
+          controller: controller,
+          decoration: InputDecoration(
+            hintText: 'Masukkan nama kelas baru',
+            filled: true,
+            fillColor: AppTheme.surfaceContainerHigh,
+            border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
+          ),
+          autofocus: true,
+        ),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(context), child: const Text('Batal')),
+          ElevatedButton(
+            onPressed: () async {
+              if (controller.text.isNotEmpty) {
+                final provider = Provider.of<AppProvider>(context, listen: false);
+                await provider.updateCourseName(courseId, controller.text);
+                if (context.mounted) Navigator.pop(context);
+              }
+            },
+            style: ElevatedButton.styleFrom(backgroundColor: AppTheme.primary, foregroundColor: Colors.white, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))),
+            child: const Text('Simpan'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showCourseOptions(BuildContext context, String courseId, String title) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      builder: (context) => Container(
+        padding: const EdgeInsets.symmetric(vertical: 24),
+        decoration: const BoxDecoration(
+          color: AppTheme.background,
+          borderRadius: BorderRadius.vertical(top: Radius.circular(32)),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: 40,
+              height: 4,
+              decoration: BoxDecoration(
+                color: Colors.grey.withOpacity(0.3),
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
+            const SizedBox(height: 24),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24),
+              child: Text(title, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold), textAlign: TextAlign.center, maxLines: 1, overflow: TextOverflow.ellipsis),
+            ),
+            const SizedBox(height: 16),
+            ListTile(
+              leading: Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(color: AppTheme.primary.withOpacity(0.1), borderRadius: BorderRadius.circular(8)),
+                child: const Icon(Icons.edit_rounded, color: AppTheme.primary),
+              ),
+              title: const Text('Ubah Nama Kelas', style: TextStyle(fontWeight: FontWeight.w600)),
+              onTap: () {
+                Navigator.pop(context);
+                _showRenameCourseDialog(context, courseId, title);
+              },
+            ),
+            ListTile(
+              leading: Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(color: Colors.red.withOpacity(0.1), borderRadius: BorderRadius.circular(8)),
+                child: const Icon(Icons.delete_outline_rounded, color: Colors.red),
+              ),
+              title: const Text('Hapus Kelas', style: TextStyle(color: Colors.red, fontWeight: FontWeight.w600)),
+              subtitle: const Text('Hapus permanen seluruh materi di kelas ini'),
+              onTap: () {
+                Navigator.pop(context);
+                _showDeleteConfirmation(context, courseId, title);
+              },
+            ),
+            const SizedBox(height: 16),
+          ],
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+    final bool isDesktop = Responsive.isDesktop(context);
+
     return Scaffold(
       body: SafeArea(
-        child: CustomScrollView(
-          slivers: [
-            // Top App Bar
-            SliverToBoxAdapter(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Row(
+        child: Center(
+          child: ConstrainedBox(
+            constraints: BoxConstraints(maxWidth: isDesktop ? 1200 : double.infinity),
+            child: CustomScrollView(
+              slivers: [
+                // Top App Bar
+                SliverToBoxAdapter(
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(horizontal: isDesktop ? 48 : 24, vertical: 16),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        const BrandLogo(size: 32),
-                        const SizedBox(width: 8),
-                        Text(
-                          'LectureDigest',
-                          style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                            color: AppTheme.onBackground,
-                            fontWeight: FontWeight.w800,
-                            letterSpacing: -0.5,
-                          ),
-                        ),
-                      ],
-                    ),
-                    Consumer<AppProvider>(
-                      builder: (context, provider, child) {
-                        return GestureDetector(
-                          onTap: () => Navigator.push(
-                            context,
-                            MaterialPageRoute(builder: (context) => const ProfileScreen()),
-                          ),
-                          child: Container(
-                            width: 40,
-                            height: 40,
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              border: Border.all(color: AppTheme.primaryContainer.withOpacity(0.5), width: 2),
-                              color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
-                            ),
-                            child: provider.userProfile?['avatar_url'] != null
-                                ? ClipOval(
-                                    child: Image.asset(
-                                      provider.userProfile!['avatar_url'],
-                                      fit: BoxFit.cover,
-                                    ),
-                                  )
-                                : Icon(
-                                    Icons.person_rounded, 
-                                    color: Theme.of(context).colorScheme.primary,
-                                    size: 24,
-                                  ),
-                          ),
-                        );
-                      },
-                    ),
-                  ],
-                ),
-              ),
-            ),
-
-            // Header Section
-            SliverToBoxAdapter(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'RUANG AKADEMIK',
-                      style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                        letterSpacing: 1.0,
-                        fontSize: 12,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      'Kelas',
-                      style: Theme.of(context).textTheme.displayMedium?.copyWith(
-                        fontWeight: FontWeight.w800,
-                        fontSize: 36,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      'Kelola kurikulum dan ringkasan kuliah berbasis AI Anda.',
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: AppTheme.onSurfaceVariant,
-                      ),
-                    ),
-                    const SizedBox(height: 24),
-                    // Search & Add
-                    Row(
-                      children: [
-                        Expanded(
-                          child: Container(
-                            height: 48,
-                            decoration: BoxDecoration(
-                              color: AppTheme.surfaceContainerHighest.withOpacity(0.5),
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            child: const TextField(
-                              decoration: InputDecoration(
-                                hintText: 'Cari mata kuliah...',
-                                prefixIcon: Icon(Icons.search, color: AppTheme.outlineVariant),
-                                border: InputBorder.none,
-                                contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                              ),
-                            ),
-                          ),
-                        ),
-                        const SizedBox(width: 12),
-                        GestureDetector(
-                          onTap: () => _showAddCourseDialog(context),
-                          child: Container(
-                            height: 48,
-                            width: 48,
-                            decoration: BoxDecoration(
-                              gradient: const LinearGradient(
-                                colors: [AppTheme.primary, AppTheme.primaryContainer],
-                              ),
-                              borderRadius: BorderRadius.circular(12),
-                              boxShadow: [
-                                BoxShadow(color: AppTheme.primary.withOpacity(0.15), blurRadius: 12, offset: const Offset(0, 4)),
-                              ],
-                            ),
-                            child: const Icon(Icons.add, color: Colors.white),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-            ),
-
-            // Course Grids
-            SliverPadding(
-              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-              sliver: SliverToBoxAdapter(
-                child: Consumer<AppProvider>(
-                  builder: (context, provider, child) {
-                    if (provider.isLoading) {
-                      return const Center(child: Padding(
-                        padding: EdgeInsets.all(32.0),
-                        child: CircularProgressIndicator(),
-                      ));
-                    }
-                    if (provider.courses.isEmpty) {
-                      return Center(
-                        child: Column(
+                        Row(
                           children: [
-                            const SizedBox(height: 32),
-                            const Icon(Icons.school_outlined, size: 48, color: AppTheme.outlineVariant),
-                            const SizedBox(height: 16),
-                            const Text('Mata kuliah tidak ditemukan', style: TextStyle(color: AppTheme.outlineVariant)),
-                            const SizedBox(height: 16),
-                            ElevatedButton.icon(
-                              onPressed: () => _showAddCourseDialog(context),
-                              icon: const Icon(Icons.add),
-                              label: const Text('Tambah Kelas Pertama Anda'),
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: AppTheme.primary,
-                                foregroundColor: Colors.white,
-                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                            const BrandLogo(size: 32),
+                            const SizedBox(width: 8),
+                            Text(
+                              'LectureDigest',
+                              style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                                color: AppTheme.onBackground,
+                                fontWeight: FontWeight.w800,
+                                letterSpacing: -0.5,
                               ),
                             ),
                           ],
                         ),
-                      );
-                    }
-                    return ListView.separated(
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      itemCount: provider.courses.length,
-                      separatorBuilder: (context, index) => const SizedBox(height: 16),
-                      itemBuilder: (context, index) {
-                        return _buildDynamicCourseCard(context, provider.courses[index]);
-                      },
-                    );
-                  },
+                        Consumer<AppProvider>(
+                          builder: (context, provider, child) {
+                            return GestureDetector(
+                              onTap: () => Navigator.push(
+                                context,
+                                MaterialPageRoute(builder: (context) => const ProfileScreen()),
+                              ),
+                              child: Container(
+                                width: 40,
+                                height: 40,
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  border: Border.all(color: AppTheme.primaryContainer.withOpacity(0.5), width: 2),
+                                  color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
+                                ),
+                                child: provider.userProfile?['avatar_url'] != null
+                                    ? ClipOval(
+                                        child: Image.asset(
+                                          provider.userProfile!['avatar_url'],
+                                          fit: BoxFit.cover,
+                                        ),
+                                      )
+                                    : Icon(
+                                        Icons.person_rounded, 
+                                        color: Theme.of(context).colorScheme.primary,
+                                        size: 24,
+                                      ),
+                              ),
+                            );
+                          },
+                        ),
+                      ],
+                    ),
+                  ),
                 ),
-              ),
+
+                // Header Section
+                SliverToBoxAdapter(
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(horizontal: isDesktop ? 48 : 24, vertical: 16),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'RUANG AKADEMIK',
+                          style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                            letterSpacing: 1.0,
+                            fontSize: 12,
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          'Kelas',
+                          style: Theme.of(context).textTheme.displayMedium?.copyWith(
+                            fontWeight: FontWeight.w900,
+                            fontSize: isDesktop ? 48 : 36,
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          'Kelola kurikulum dan ringkasan kuliah berbasis AI Anda.',
+                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            color: AppTheme.onSurfaceVariant,
+                            fontSize: isDesktop ? 16 : 14,
+                          ),
+                        ),
+                        const SizedBox(height: 24),
+                        // Search & Add
+                        Row(
+                          children: [
+                            Expanded(
+                              child: Container(
+                                height: 56,
+                                decoration: BoxDecoration(
+                                  color: AppTheme.surfaceContainerHighest.withOpacity(0.5),
+                                  borderRadius: BorderRadius.circular(16),
+                                ),
+                                child: const TextField(
+                                  decoration: InputDecoration(
+                                    hintText: 'Cari mata kuliah...',
+                                    prefixIcon: Icon(Icons.search, color: AppTheme.outlineVariant),
+                                    border: InputBorder.none,
+                                    contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                                  ),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(width: 16),
+                            GestureDetector(
+                              onTap: () => _showAddCourseDialog(context),
+                              child: Container(
+                                height: 56,
+                                width: 56,
+                                decoration: BoxDecoration(
+                                  gradient: const LinearGradient(
+                                    colors: [AppTheme.primary, AppTheme.primaryContainer],
+                                  ),
+                                  borderRadius: BorderRadius.circular(16),
+                                  boxShadow: [
+                                    BoxShadow(color: AppTheme.primary.withOpacity(0.15), blurRadius: 12, offset: const Offset(0, 4)),
+                                  ],
+                                ),
+                                child: const Icon(Icons.add, color: Colors.white),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+
+                // Course Grids
+                SliverPadding(
+                  padding: EdgeInsets.symmetric(horizontal: isDesktop ? 48 : 24, vertical: 32),
+                  sliver: Consumer<AppProvider>(
+                    builder: (context, provider, child) {
+                      if (provider.isLoading) {
+                        return const SliverToBoxAdapter(
+                          child: Center(child: Padding(
+                            padding: EdgeInsets.all(32.0),
+                            child: CircularProgressIndicator(),
+                          )),
+                        );
+                      }
+                      if (provider.courses.isEmpty) {
+                        return SliverToBoxAdapter(
+                          child: Center(
+                            child: Column(
+                              children: [
+                                const SizedBox(height: 64),
+                                const Icon(Icons.school_outlined, size: 64, color: AppTheme.outlineVariant),
+                                const SizedBox(height: 16),
+                                const Text('Mata kuliah tidak ditemukan', style: TextStyle(color: AppTheme.outlineVariant)),
+                                const SizedBox(height: 24),
+                                ElevatedButton.icon(
+                                  onPressed: () => _showAddCourseDialog(context),
+                                  icon: const Icon(Icons.add),
+                                  label: const Text('Tambah Kelas Pertama Anda'),
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: AppTheme.primary,
+                                    foregroundColor: Colors.white,
+                                    padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+                                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        );
+                      }
+                      
+                      if (isDesktop) {
+                        return SliverGrid(
+                          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: 2,
+                            crossAxisSpacing: 32,
+                            mainAxisSpacing: 32,
+                            mainAxisExtent: 280,
+                          ),
+                          delegate: SliverChildBuilderDelegate(
+                            (context, index) => _buildDynamicCourseCard(context, provider.courses[index]),
+                            childCount: provider.courses.length,
+                          ),
+                        );
+                      } else {
+                        return SliverList(
+                          delegate: SliverChildBuilderDelegate(
+                            (context, index) => Padding(
+                              padding: const EdgeInsets.only(bottom: 16),
+                              child: _buildDynamicCourseCard(context, provider.courses[index]),
+                            ),
+                            childCount: provider.courses.length,
+                          ),
+                        );
+                      }
+                    },
+                  ),
+                ),
+              ],
             ),
-          ],
+          ),
         ),
       ),
     );
@@ -313,6 +465,9 @@ class MyCourses extends StatelessWidget {
                     courseId: course['id'],
                     title: course['name'],
                     color: cardColor)));
+          },
+          onLongPress: () {
+            _showCourseOptions(context, course['id'], course['name'] ?? 'Tanpa Nama');
           },
           child: Container(
             padding: const EdgeInsets.all(24),

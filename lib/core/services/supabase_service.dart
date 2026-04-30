@@ -1,3 +1,4 @@
+import 'dart:math';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class SupabaseService {
@@ -5,7 +6,9 @@ class SupabaseService {
 
   // --- Courses ---
   Future<List<Map<String, dynamic>>> getCourses() async {
-    return await _client.from('courses').select().order('created_at');
+    final userId = _client.auth.currentUser?.id;
+    if (userId == null) return [];
+    return await _client.from('courses').select().eq('user_id', userId).order('created_at');
   }
 
   Future<void> addCourse(String name, String schedule, String colorHex) async {
@@ -17,19 +20,42 @@ class SupabaseService {
     });
   }
 
+  Future<void> deleteCourse(String id) async {
+    await _client.from('courses').delete().eq('id', id);
+  }
+
+  // --- Lectures ---
+  Future<void> deleteLecture(String id) async {
+    await _client.from('lectures').delete().eq('id', id);
+  }
+
+  Future<void> updateLectureTitle(String id, String newTitle) async {
+    await _client.from('lectures').update({'title': newTitle}).eq('id', id);
+  }
+
+  Future<void> updateCourseName(String id, String newName) async {
+    await _client.from('courses').update({'name': newName}).eq('id', id);
+  }
   Future<List<Map<String, dynamic>>> getLectures(String courseId) async {
-    return await _client.from('lectures').select().eq('course_id', courseId).order('created_at', ascending: false);
+    final userId = _client.auth.currentUser?.id;
+    if (userId == null) return [];
+    return await _client.from('lectures').select().eq('course_id', courseId).eq('user_id', userId).order('created_at', ascending: false);
   }
 
   Future<List<Map<String, dynamic>>> getAllLectures() async {
-    return await _client.from('lectures').select().order('created_at', ascending: false);
+    final userId = _client.auth.currentUser?.id;
+    if (userId == null) return [];
+    return await _client.from('lectures').select('*, courses(name)').eq('user_id', userId).order('created_at', ascending: false);
   }
 
-  Future<Map<String, dynamic>> getLectureDetails(String lectureId) async {
-    return await _client.from('lectures').select('*, courses(name)').eq('id', lectureId).single();
+  Future<Map<String, dynamic>?> getLectureDetails(String id) async {
+    return await _client.from('lectures').select('*, courses(name)').eq('id', id).maybeSingle();
   }
 
   Future<String> saveLecture(String courseId, String title, int duration, String transcript, {String? audioPath}) async {
+    // Generate a unique share code immediately
+    final shareCode = _generateUniqueCode(title);
+    
     final response = await _client.from('lectures').insert({
       'course_id': courseId,
       'title': title,
@@ -38,10 +64,27 @@ class SupabaseService {
       'raw_transcript': transcript,
       'status': 'Summarized',
       'user_id': _client.auth.currentUser?.id,
+      'share_code': shareCode,
       if (audioPath != null) 'audio_url': audioPath,
     }).select('id').single();
     
     return response['id'];
+  }
+
+  String _generateUniqueCode(String title) {
+    final timestamp = DateTime.now().millisecondsSinceEpoch.toString().substring(7, 11);
+    final prefix = title.length >= 2 ? title.substring(0, 2).toUpperCase() : 'LD';
+    return 'LD-$timestamp$prefix';
+  }
+
+  Future<String?> getOrCreateShareCode(String lectureId) async {
+    final res = await _client.from('lectures').select('share_code, title').eq('id', lectureId).single();
+    if (res['share_code'] != null) return res['share_code'];
+
+    // Generate and update if null (for old data)
+    final code = _generateUniqueCode(res['title'] ?? 'Materi');
+    await _client.from('lectures').update({'share_code': code}).eq('id', lectureId);
+    return code;
   }
 
   // --- Summaries ---
@@ -51,7 +94,6 @@ class SupabaseService {
       'core_essence': coreEssence,
       'key_takeaways': keyTakeaways,
       'exam_tips': examTips,
-      'user_id': _client.auth.currentUser?.id,
     });
   }
 
@@ -61,14 +103,13 @@ class SupabaseService {
 
   // --- Flashcards ---
   Future<void> saveFlashcards(String lectureId, List<Map<String, dynamic>> flashcards) async {
-    final inserts = flashcards.map((f) => {
+    final data = flashcards.map((f) => {
       'lecture_id': lectureId,
-      'front_concept': f['front_concept'],
-      'back_detail': f['back_detail'],
-      'user_id': _client.auth.currentUser?.id,
+      'front_concept': f['front_concept'] ?? f['concept'], // Support both for safety
+      'back_detail': f['back_detail'] ?? f['detail'],
+      'status': 'Learning',
     }).toList();
-    
-    await _client.from('flashcards').insert(inserts);
+    await _client.from('flashcards').insert(data);
   }
 
   Future<List<Map<String, dynamic>>> getFlashcards(String lectureId) async {
@@ -76,164 +117,173 @@ class SupabaseService {
   }
 
   Future<List<Map<String, dynamic>>> getFlashcardsDue() async {
-    // For MVP, just get all learning flashcards
-    return await _client.from('flashcards').select().eq('status', 'Learning');
+    final userId = _client.auth.currentUser?.id;
+    if (userId == null) return [];
+    final now = DateTime.now().toUtc().toIso8601String();
+    return await _client
+        .from('flashcards')
+        .select()
+        .eq('user_id', userId)
+        .lte('next_review_at', now);
   }
 
+  Future<void> updateFlashcardSRS(String id, int intervalDays, String status) async {
+    final nextReview = DateTime.now().add(Duration(days: intervalDays)).toUtc().toIso8601String();
+    await _client.from('flashcards').update({
+      'status': status,
+      'review_interval': intervalDays,
+      'next_review_at': nextReview,
+    }).eq('id', id);
+  }
+
+  // --- Quizzes ---
   Future<void> saveQuizzes(String lectureId, List<Map<String, dynamic>> quizzes) async {
-    final inserts = quizzes.map((q) => {
+    final data = quizzes.map((q) => {
       'lecture_id': lectureId,
       'question': q['question'],
       'options': q['options'],
       'correct_answer': q['correct_answer'],
       'explanation': q['explanation'],
-      'user_id': _client.auth.currentUser?.id,
     }).toList();
-    
-    await _client.from('quizzes').insert(inserts);
+    await _client.from('quizzes').insert(data);
   }
 
   Future<List<Map<String, dynamic>>> getQuizzes(String lectureId) async {
     return await _client.from('quizzes').select().eq('lecture_id', lectureId);
   }
 
-  // --- Quiz Attempts & Stats ---
-  Future<void> saveQuizAttempt(String lectureId, int score, int totalQuestions, List<Map<String, dynamic>> detailedAnswers) async {
-    try {
-      print('DEBUG: Mencoba menyimpan percobaan kuis. LectureID: $lectureId, Score: $score');
-      await _client.from('quiz_attempts').insert({
-        'lecture_id': lectureId,
-        'score': score,
-        'total_questions': totalQuestions,
-        'detailed_answers': detailedAnswers,
-        'user_id': _client.auth.currentUser?.id,
-      });
-      print('DEBUG: Berhasil menyimpan percobaan kuis.');
-    } catch (e) {
-      print('DEBUG: ERROR saat menyimpan kuis: $e');
+  // --- Sharing & Importing ---
+  Future<Map<String, dynamic>?> getFullLectureByCode(String code) async {
+    // Robust code matching: remove spaces, trim, and uppercase
+    final cleanCode = code.replaceAll(' ', '').trim().toUpperCase();
+    final lecture = await _client.from('lectures').select('*, courses(name)').eq('share_code', cleanCode).maybeSingle();
+    if (lecture == null) return null;
+
+    final lectureId = lecture['id'];
+    final summary = await getSummary(lectureId);
+    final flashcards = await getFlashcards(lectureId);
+    final quizzes = await getQuizzes(lectureId);
+
+    return {
+      'lecture': lecture,
+      'summary': summary,
+      'flashcards': flashcards,
+      'quizzes': quizzes,
+    };
+  }
+
+  Future<void> importLecture(String targetCourseId, Map<String, dynamic> data) async {
+    final lecture = data['lecture'];
+    
+    final newLectureId = await saveLecture(
+      targetCourseId, 
+      "[SHARED] ${lecture['title']}", 
+      lecture['duration_minutes'] ?? 0, 
+      lecture['raw_transcript'] ?? '',
+      audioPath: lecture['audio_url'],
+    );
+
+    final summary = data['summary'];
+    if (summary != null) {
+      await saveSummary(newLectureId, summary['core_essence'], summary['key_takeaways'], summary['exam_tips']);
+    }
+
+    final List flashcards = data['flashcards'] ?? [];
+    if (flashcards.isNotEmpty) {
+      await saveFlashcards(newLectureId, List<Map<String, dynamic>>.from(flashcards));
+    }
+
+    final List quizzes = data['quizzes'] ?? [];
+    if (quizzes.isNotEmpty) {
+      await saveQuizzes(newLectureId, List<Map<String, dynamic>>.from(quizzes));
     }
   }
 
-  Future<double> getAverageQuizScoreForCourse(String courseId) async {
+  // --- Quiz Attempts & Stats ---
+  Future<void> saveQuizAttempt(String lectureId, int score, int totalQuestions, List<Map<String, dynamic>> detailedAnswers) async {
     try {
-      print('DEBUG: Mengambil skor rata-rata untuk CourseID: $courseId');
-      
-      // Step 1: Get all lecture IDs for this course
-      final lecturesResponse = await _client
-          .from('lectures')
-          .select('id')
-          .eq('course_id', courseId);
-      
-      final lectureIds = (lecturesResponse as List).map((l) => l['id'] as String).toList();
-      print('DEBUG: Ditemukan ${lectureIds.length} materi untuk kursus ini.');
-      
-      if (lectureIds.isEmpty) return 0.0;
-
-      // Step 2: Get all quiz attempts for ini
-      print('DEBUG: Mencari percobaan kuis untuk ${lectureIds.length} materi...');
-      final attemptsResponse = await _client
-          .from('quiz_attempts')
-          .select('lecture_id, score, total_questions, created_at')
-          .filter('lecture_id', 'in', lectureIds)
-          .order('created_at', ascending: false);
-      
-      final List results = attemptsResponse as List;
-      print('DEBUG: Ditemukan total ${results.length} percobaan kuis.');
-      
-      if (results.isEmpty) return 0.0;
-
-      // Step 3: Filter only the LATEST attempt for each unique lecture_id
-      final Map<String, Map<String, dynamic>> latestAttempts = {};
-      for (var attempt in results) {
-        String lectureId = attempt['lecture_id'];
-        // Since we ordered by created_at DESC, the first one we find is the latest
-        if (!latestAttempts.containsKey(lectureId)) {
-          latestAttempts[lectureId] = attempt;
-        }
-      }
-
-      print('DEBUG: Menggunakan ${latestAttempts.length} nilai kuis terbaru.');
-
-      double totalPercentage = 0;
-      latestAttempts.forEach((id, attempt) {
-        int score = attempt['score'] ?? 0;
-        int total = attempt['total_questions'] ?? 1;
-        totalPercentage += (score / total) * 100;
+      await _client.from('quiz_attempts').insert({
+        'lecture_id': lectureId,
+        'user_id': _client.auth.currentUser?.id,
+        'score': score,
+        'total_questions': totalQuestions,
+        'detailed_answers': detailedAnswers,
       });
-      
-      double finalAvg = totalPercentage / latestAttempts.length;
-      print('DEBUG: Rata-rata akhir (hanya sesi terakhir): $finalAvg%');
-      return finalAvg;
     } catch (e) {
-      print('DEBUG: Error calculating avg score: $e');
-      return 0.0;
+      print('Error saving quiz attempt: $e');
     }
   }
 
   Future<Map<String, dynamic>?> getLatestQuizAttempt(String lectureId) async {
     try {
-      final response = await _client
+      return await _client
           .from('quiz_attempts')
           .select()
           .eq('lecture_id', lectureId)
           .order('created_at', ascending: false)
           .limit(1)
           .maybeSingle();
-      return response;
-      return response;
     } catch (e) {
-      print('DEBUG: Error fetching latest quiz attempt: $e');
+      print('Error fetching latest quiz attempt: $e');
       return null;
     }
   }
 
-  // --- Chat Messages ---
-  Future<void> saveChatMessage(String lectureId, String role, String content) async {
+  Future<double> getAverageQuizScoreForCourse(String courseId) async {
+    try {
+      final lecturesRes = await _client.from('lectures').select('id').eq('course_id', courseId);
+      final List<String> lectureIds = List<String>.from(lecturesRes.map((l) => l['id']));
+      
+      if (lectureIds.isEmpty) return 0.0;
+
+      final attempts = await _client
+          .from('quiz_attempts')
+          .select('score')
+          .inFilter('lecture_id', lectureIds);
+      
+      if (attempts.isEmpty) return 0.0;
+
+      double total = 0;
+      for (var a in attempts) {
+        total += (a['score'] ?? 0).toDouble();
+      }
+      return total / attempts.length;
+    } catch (e) {
+      print('Error fetching quiz stats: $e');
+      return 0.0;
+    }
+  }
+
+  // --- Chat ---
+  Future<List<Map<String, dynamic>>> getChatMessages(String contextId) async {
+    return await _client.from('chat_messages').select().eq('context_id', contextId).order('created_at');
+  }
+
+  Future<void> saveChatMessage(String contextId, String role, String content) async {
     await _client.from('chat_messages').insert({
-      'lecture_id': lectureId,
+      'context_id': contextId,
       'role': role,
       'content': content,
       'user_id': _client.auth.currentUser?.id,
     });
   }
 
-  Future<List<Map<String, dynamic>>> getChatMessages(String lectureId) async {
-    return await _client
-        .from('chat_messages')
-        .select()
-        .eq('lecture_id', lectureId)
-        .order('created_at', ascending: true);
-  }
-
-  // --- Profile ---
-  Future<Map<String, dynamic>> getProfile() async {
-    final userId = _client.auth.currentUser?.id;
-    if (userId == null) throw Exception("User not authenticated");
-
-    final profile = await _client.from('profiles').select().eq('id', userId).maybeSingle();
-    
-    if (profile == null) {
-      // Create profile if it doesn't exist
-      final newProfile = {
-        'id': userId,
-        'full_name': _client.auth.currentUser?.email?.split('@')[0] ?? 'User',
-      };
-      await _client.from('profiles').insert(newProfile);
-      return newProfile;
-    }
-    
-    return profile;
+  // --- User Profile ---
+  Future<Map<String, dynamic>?> getProfile() async {
+    final user = _client.auth.currentUser;
+    if (user == null) return null;
+    return await _client.from('profiles').select().eq('id', user.id).maybeSingle();
   }
 
   Future<void> updateProfile({String? fullName, String? avatarUrl, Map<String, dynamic>? preferences}) async {
-    final userId = _client.auth.currentUser?.id;
-    if (userId == null) throw Exception("User not authenticated");
-
-    await _client.from('profiles').update({
+    final user = _client.auth.currentUser;
+    if (user == null) return;
+    await _client.from('profiles').upsert({
+      'id': user.id,
       if (fullName != null) 'full_name': fullName,
       if (avatarUrl != null) 'avatar_url': avatarUrl,
       if (preferences != null) 'preferences': preferences,
       'updated_at': DateTime.now().toIso8601String(),
-    }).eq('id', userId);
+    });
   }
 }

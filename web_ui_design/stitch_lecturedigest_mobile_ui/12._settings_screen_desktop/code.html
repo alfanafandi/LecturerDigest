@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=Inter:wght@400;500;600&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "outline-variant": "#bbcac4",
+                    "on-surface-variant": "#3c4a46",
+                    "inverse-on-surface": "#f0f1f2",
+                    "tertiary-container": "#fe896a",
+                    "surface-container-lowest": "#ffffff",
+                    "on-tertiary": "#ffffff",
+                    "on-tertiary-container": "#74220b",
+                    "surface-container-low": "#f3f4f5",
+                    "primary-container": "#00bfa5",
+                    "tertiary-fixed-dim": "#ffb4a1",
+                    "primary-fixed-dim": "#44ddc1",
+                    "on-primary-fixed-variant": "#005145",
+                    "inverse-surface": "#2e3132",
+                    "error": "#ba1a1a",
+                    "surface-dim": "#d9dadb",
+                    "on-secondary-fixed-variant": "#004786",
+                    "secondary-fixed-dim": "#a5c8ff",
+                    "surface-container-highest": "#e1e3e4",
+                    "primary-fixed": "#68fadd",
+                    "on-primary-container": "#00473c",
+                    "outline": "#6c7a76",
+                    "on-background": "#191c1d",
+                    "surface-bright": "#f8f9fa",
+                    "surface": "#f8f9fa",
+                    "error-container": "#ffdad6",
+                    "surface-container-high": "#e7e8e9",
+                    "secondary": "#005faf",
+                    "on-tertiary-fixed-variant": "#7f2a13",
+                    "on-secondary-fixed": "#001c3a",
+                    "on-tertiary-fixed": "#3c0800",
+                    "on-secondary": "#ffffff",
+                    "inverse-primary": "#44ddc1",
+                    "on-primary-fixed": "#00201a",
+                    "secondary-container": "#54a0fe",
+                    "background": "#f8f9fa",
+                    "on-primary": "#ffffff",
+                    "tertiary": "#9f4128",
+                    "surface-container": "#edeeef",
+                    "on-secondary-container": "#003567",
+                    "on-error-container": "#93000a",
+                    "on-error": "#ffffff",
+                    "tertiary-fixed": "#ffdbd2",
+                    "surface-tint": "#006b5c",
+                    "secondary-fixed": "#d4e3ff",
+                    "surface-variant": "#e1e3e4",
+                    "on-surface": "#191c1d",
+                    "primary": "#006b5c"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "fontFamily": {
+                    "headline": ["Plus Jakarta Sans"],
+                    "body": ["Inter"],
+                    "label": ["Inter"]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .custom-shadow {
+            box-shadow: 0px 12px 32px rgba(0, 107, 92, 0.08);
+        }
+        .soft-blur {
+            backdrop-filter: blur(24px);
+        }
+    </style>
+</head>
+<body class="bg-surface font-body text-on-surface">
+<!-- SideNavBar -->
+<aside class="h-screen w-64 fixed left-0 top-0 z-50 bg-[#E7E8E9] dark:bg-[#1D1F20] flex flex-col py-8 px-4 font-['Plus_Jakarta_Sans'] text-sm font-semibold">
+<div class="mb-10 px-4">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-primary-container flex items-center justify-center text-white shadow-lg">
+<span class="material-symbols-outlined" data-icon="auto_stories">auto_stories</span>
+</div>
+<div>
+<h1 class="text-xl font-extrabold text-[#006B5C] dark:text-[#00BFA5] tracking-tighter">LectureDigest</h1>
+<p class="text-[10px] uppercase tracking-widest text-slate-500 font-bold">Academic Synthesis</p>
+</div>
+</div>
+</div>
+<nav class="flex-1 space-y-2">
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl transition-all text-slate-600 dark:text-slate-400 opacity-70 hover:bg-white/40 dark:hover:bg-white/10 hover:opacity-100" href="#">
+<span class="material-symbols-outlined" data-icon="home">home</span>
+<span>Home</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl transition-all text-slate-600 dark:text-slate-400 opacity-70 hover:bg-white/40 dark:hover:bg-white/10 hover:opacity-100" href="#">
+<span class="material-symbols-outlined" data-icon="library_books">library_books</span>
+<span>Courses</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl transition-all text-slate-600 dark:text-slate-400 opacity-70 hover:bg-white/40 dark:hover:bg-white/10 hover:opacity-100" href="#">
+<span class="material-symbols-outlined" data-icon="auto_awesome">auto_awesome</span>
+<span>AI Tools</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl transition-all text-slate-600 dark:text-slate-400 opacity-70 hover:bg-white/40 dark:hover:bg-white/10 hover:opacity-100" href="#">
+<span class="material-symbols-outlined" data-icon="groups">groups</span>
+<span>Collab</span>
+</a>
+<!-- Active State: Profile/Settings -->
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl transition-all text-[#006B5C] dark:text-[#00BFA5] border-r-4 border-[#006B5C] bg-white/50 dark:bg-white/5 translate-x-1" href="#">
+<span class="material-symbols-outlined" data-icon="account_circle" style="font-variation-settings: 'FILL' 1;">account_circle</span>
+<span>Profile</span>
+</a>
+</nav>
+<div class="mt-auto pt-6 space-y-2">
+<button class="w-full mb-6 py-3 px-4 bg-gradient-to-r from-primary to-primary-container text-white rounded-xl font-bold flex items-center justify-center gap-2 custom-shadow hover:opacity-90 transition-opacity">
+<span class="material-symbols-outlined" data-icon="add_circle">add_circle</span>
+                Summarize New
+            </button>
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl transition-all text-slate-600 dark:text-slate-400 opacity-70 hover:bg-white/40 dark:hover:bg-white/10 hover:opacity-100" href="#">
+<span class="material-symbols-outlined" data-icon="help">help</span>
+<span>Help</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl transition-all text-slate-600 dark:text-slate-400 opacity-70 hover:bg-white/40 dark:hover:bg-white/10 hover:opacity-100" href="#">
+<span class="material-symbols-outlined" data-icon="logout">logout</span>
+<span>Logout</span>
+</a>
+</div>
+</aside>
+<!-- TopAppBar -->
+<header class="fixed top-0 left-64 right-0 z-40 bg-[#F8F9FA]/80 dark:bg-[#191C1D]/80 backdrop-blur-md flex justify-between items-center px-8 py-4">
+<div class="flex items-center gap-4 flex-1">
+<div class="relative w-full max-w-md">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline" data-icon="search">search</span>
+<input class="w-full bg-surface-container-high border-none rounded-full py-2.5 pl-10 pr-4 text-sm focus:ring-2 focus:ring-primary/20 placeholder:text-outline font-body" placeholder="Search settings, courses, or digests..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<button class="p-2 rounded-full hover:bg-[#E7E8E9] dark:hover:bg-slate-800 transition-colors text-on-surface-variant">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+</button>
+<button class="p-2 rounded-full hover:bg-[#E7E8E9] dark:hover:bg-slate-800 transition-colors text-primary">
+<span class="material-symbols-outlined" data-icon="settings" style="font-variation-settings: 'FILL' 1;">settings</span>
+</button>
+<div class="flex items-center gap-3 pl-4 border-l border-outline-variant/30">
+<div class="text-right">
+<p class="text-sm font-bold font-headline text-on-surface leading-none">Budi Santoso</p>
+<p class="text-[10px] text-primary font-bold uppercase tracking-tighter">Informatics '24</p>
+</div>
+<img alt="Student Profile" class="w-10 h-10 rounded-full border-2 border-primary-container object-cover" data-alt="professional studio portrait of a young south east asian male student wearing a neat shirt with a neutral background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAzWwh6UmFoxr8eS5lh_Z1mfp4-ciJ6oUcEgXCo2lqnn8yeUrrlxVtXODBK7LDFSYEFcLHdvbFBeiqh1xumPOem7v3dqMvGiEowmAUimpQOCieMH_Q4D3GHDrBxiULbnKO2851I-9Ex9axjFx235jbEHdrn6lLQjCljPkW51tjWq4q-koVKvaXBh8greyvkuXQIVp0D0kyeiVtjpnoiw-QVeNctlsmv8C2U9zIhrO0H1z6amHsltKVA2_hGz7gYKHqVSaZoKZ9t5tHy"/>
+</div>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="ml-64 pt-24 pb-12 px-10 min-h-screen">
+<!-- Breadcrumb & Header -->
+<div class="mb-8">
+<div class="flex items-center gap-2 text-primary font-bold text-xs uppercase tracking-widest mb-2">
+<span>Account</span>
+<span class="material-symbols-outlined text-[14px]" data-icon="chevron_right">chevron_right</span>
+<span>Settings</span>
+</div>
+<h2 class="text-4xl font-extrabold font-headline tracking-tight text-on-background">System Preferences</h2>
+</div>
+<!-- Bento Grid Layout -->
+<div class="grid grid-cols-12 gap-6">
+<!-- Profile Card (Span 8) -->
+<div class="col-span-12 lg:col-span-8 bg-surface-container-lowest rounded-[2rem] p-8 custom-shadow flex flex-col md:flex-row items-start md:items-center gap-8 relative overflow-hidden">
+<div class="absolute top-0 right-0 w-64 h-64 bg-primary/5 rounded-full -translate-y-1/2 translate-x-1/2 blur-3xl"></div>
+<div class="relative">
+<img alt="Student Profile Large" class="w-32 h-32 rounded-3xl object-cover shadow-xl border-4 border-white" data-alt="close up headshot of young indonesian university student smiling slightly with soft natural lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDB2Wgvpzyx1c5oMqGzgIhrwy6QIQB6Hci5T-N-VRrqOD_AZBMd6QbVsZJG4H9m_0qBJm3Df22ibbM3JToeP4W9IHBXVIrdugHVBIhs7LYamxDlx1B1cZXJPgMN4iyzdMYghoZdp8qnueDHJGAQB4TteQ8SehLRZuB92msVB0oluFaLYwAi4he6pBgiKegEYus9hlL6-nkRCpmFmVJr8W181eU0i6VupGIAaYSaqPi1auVt60EPMNSTQpzZelZpmPYwSTzaoDPIjjbc"/>
+<div class="absolute -bottom-2 -right-2 bg-primary-container text-on-primary-container px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest shadow-md">
+                        Premium
+                    </div>
+</div>
+<div class="flex-1 space-y-4">
+<div>
+<div class="flex items-center gap-3">
+<h3 class="text-2xl font-bold font-headline">Budi Santoso</h3>
+<span class="bg-secondary/10 text-secondary px-3 py-0.5 rounded-full text-xs font-bold">Premium Member</span>
+</div>
+<p class="text-on-surface-variant text-sm">budi.santoso@univ-informatics.ac.id</p>
+</div>
+<div class="flex flex-wrap gap-3">
+<button class="bg-primary text-white px-6 py-2 rounded-xl text-sm font-bold flex items-center gap-2 hover:opacity-90 transition-all">
+<span class="material-symbols-outlined text-sm" data-icon="edit">edit</span>
+                            Edit Profile
+                        </button>
+<button class="bg-surface-container-high text-on-surface px-6 py-2 rounded-xl text-sm font-bold hover:bg-surface-container-highest transition-all">
+                            Manage Subscription
+                        </button>
+</div>
+</div>
+</div>
+<!-- Storage & Cloud Usage (Span 4) -->
+<div class="col-span-12 lg:col-span-4 bg-surface-container-lowest rounded-[2rem] p-8 custom-shadow flex flex-col justify-between">
+<div>
+<div class="flex justify-between items-center mb-6">
+<h3 class="text-lg font-bold font-headline">Cloud Storage</h3>
+<span class="material-symbols-outlined text-primary" data-icon="cloud_done">cloud_done</span>
+</div>
+<div class="space-y-4">
+<div class="flex justify-between text-sm">
+<span class="text-on-surface-variant font-medium">Used Space</span>
+<span class="font-bold text-on-surface">12.4 GB / 50 GB</span>
+</div>
+<div class="w-full h-3 bg-surface-container-high rounded-full overflow-hidden">
+<div class="h-full bg-gradient-to-r from-primary to-primary-container w-[25%] rounded-full"></div>
+</div>
+<div class="grid grid-cols-2 gap-4 pt-2">
+<div class="text-center p-3 rounded-2xl bg-surface-container-low">
+<p class="text-[10px] uppercase font-bold text-outline">PDFs</p>
+<p class="text-lg font-black text-primary">8.2 GB</p>
+</div>
+<div class="text-center p-3 rounded-2xl bg-surface-container-low">
+<p class="text-[10px] uppercase font-bold text-outline">Media</p>
+<p class="text-lg font-black text-secondary">4.2 GB</p>
+</div>
+</div>
+</div>
+</div>
+<button class="mt-6 text-primary text-xs font-bold flex items-center gap-1 hover:underline">
+                    Upgrade Storage <span class="material-symbols-outlined text-xs" data-icon="arrow_forward">arrow_forward</span>
+</button>
+</div>
+<!-- AI Summarization Preferences (Span 5) -->
+<div class="col-span-12 lg:col-span-5 bg-surface-container-lowest rounded-[2rem] p-8 custom-shadow">
+<div class="flex items-center gap-3 mb-6">
+<div class="w-10 h-10 rounded-xl bg-tertiary/10 flex items-center justify-center text-tertiary">
+<span class="material-symbols-outlined" data-icon="psychology" style="font-variation-settings: 'FILL' 1;">psychology</span>
+</div>
+<h3 class="text-lg font-bold font-headline">AI Preferences</h3>
+</div>
+<div class="space-y-6">
+<div>
+<label class="text-sm font-bold text-on-surface-variant block mb-4">Summary Depth</label>
+<div class="grid grid-cols-2 gap-3 p-1 bg-surface-container-low rounded-2xl">
+<button class="py-3 px-4 rounded-xl text-sm font-bold transition-all text-on-surface hover:bg-white/50">
+                                Concise
+                            </button>
+<button class="py-3 px-4 rounded-xl text-sm font-bold transition-all bg-white text-primary shadow-sm">
+                                Detailed
+                            </button>
+</div>
+</div>
+<div class="space-y-4">
+<div class="flex items-center justify-between">
+<div class="flex flex-col">
+<span class="text-sm font-bold text-on-surface">Auto-tagging</span>
+<span class="text-[11px] text-on-surface-variant">Classify by course automatically</span>
+</div>
+<div class="w-12 h-6 bg-primary rounded-full relative cursor-pointer">
+<div class="absolute right-1 top-1 w-4 h-4 bg-white rounded-full"></div>
+</div>
+</div>
+<div class="flex items-center justify-between">
+<div class="flex flex-col">
+<span class="text-sm font-bold text-on-surface">Key Concept Extraction</span>
+<span class="text-[11px] text-on-surface-variant">Identify complex terminology</span>
+</div>
+<div class="w-12 h-6 bg-primary rounded-full relative cursor-pointer">
+<div class="absolute right-1 top-1 w-4 h-4 bg-white rounded-full"></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- App Settings Grid (Span 7) -->
+<div class="col-span-12 lg:col-span-7 bg-surface-container-lowest rounded-[2rem] p-8 custom-shadow">
+<h3 class="text-lg font-bold font-headline mb-6">App Preferences</h3>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+<!-- Dark Mode -->
+<div class="p-6 rounded-[1.5rem] bg-surface-container-low group hover:bg-surface-container-high transition-all">
+<div class="flex items-center gap-4 mb-4">
+<div class="w-10 h-10 rounded-full bg-white flex items-center justify-center text-on-surface shadow-sm">
+<span class="material-symbols-outlined" data-icon="dark_mode">dark_mode</span>
+</div>
+<div>
+<p class="text-sm font-bold">Dark Mode</p>
+<p class="text-[11px] text-on-surface-variant">System default</p>
+</div>
+</div>
+<select class="w-full bg-white border-none rounded-xl text-sm py-2 px-3 font-semibold text-on-surface-variant focus:ring-primary/20">
+<option>Light</option>
+<option>Dark</option>
+<option selected="">System</option>
+</select>
+</div>
+<!-- Language -->
+<div class="p-6 rounded-[1.5rem] bg-surface-container-low group hover:bg-surface-container-high transition-all">
+<div class="flex items-center gap-4 mb-4">
+<div class="w-10 h-10 rounded-full bg-white flex items-center justify-center text-secondary shadow-sm">
+<span class="material-symbols-outlined" data-icon="translate">translate</span>
+</div>
+<div>
+<p class="text-sm font-bold">Language</p>
+<p class="text-[11px] text-on-surface-variant">Content localization</p>
+</div>
+</div>
+<select class="w-full bg-white border-none rounded-xl text-sm py-2 px-3 font-semibold text-on-surface-variant focus:ring-primary/20">
+<option selected="">English (US)</option>
+<option>Bahasa Indonesia</option>
+<option>Japanese</option>
+</select>
+</div>
+<!-- Notifications -->
+<div class="p-6 rounded-[1.5rem] bg-surface-container-low flex items-center justify-between group hover:bg-surface-container-high transition-all cursor-pointer">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded-full bg-white flex items-center justify-center text-tertiary shadow-sm">
+<span class="material-symbols-outlined" data-icon="notifications_active">notifications_active</span>
+</div>
+<div>
+<p class="text-sm font-bold">Notifications</p>
+<p class="text-[11px] text-on-surface-variant">Manage all alerts</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-outline" data-icon="chevron_right">chevron_right</span>
+</div>
+<!-- Help & Support -->
+<div class="p-6 rounded-[1.5rem] bg-surface-container-low flex items-center justify-between group hover:bg-surface-container-high transition-all cursor-pointer">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded-full bg-white flex items-center justify-center text-primary shadow-sm">
+<span class="material-symbols-outlined" data-icon="help_center">help_center</span>
+</div>
+<div>
+<p class="text-sm font-bold">Help &amp; Center</p>
+<p class="text-[11px] text-on-surface-variant">Guides &amp; Support</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-outline" data-icon="chevron_right">chevron_right</span>
+</div>
+</div>
+</div>
+<!-- Dangerous Area / Bottom Actions -->
+<div class="col-span-12 flex items-center justify-between pt-4">
+<div class="flex gap-4">
+<button class="text-error text-sm font-bold flex items-center gap-2 px-6 py-3 rounded-2xl hover:bg-error/5 transition-all">
+<span class="material-symbols-outlined" data-icon="delete_forever">delete_forever</span>
+                        Deactivate Account
+                    </button>
+<button class="text-on-surface-variant text-sm font-bold flex items-center gap-2 px-6 py-3 rounded-2xl hover:bg-surface-container-high transition-all">
+<span class="material-symbols-outlined" data-icon="history">history</span>
+                        Login Activity
+                    </button>
+</div>
+<button class="bg-error text-white px-8 py-3 rounded-2xl font-bold flex items-center gap-2 custom-shadow hover:opacity-90 transition-all">
+<span class="material-symbols-outlined" data-icon="logout">logout</span>
+                    Logout from Session
+                </button>
+</div>
+</div>
+</main>
+<!-- Background Decoration -->
+<div class="fixed top-0 right-0 -z-10 w-[500px] h-[500px] bg-primary/5 rounded-full blur-[100px] pointer-events-none"></div>
+<div class="fixed bottom-0 left-64 -z-10 w-[300px] h-[300px] bg-secondary/5 rounded-full blur-[80px] pointer-events-none"></div>
+</body></html>

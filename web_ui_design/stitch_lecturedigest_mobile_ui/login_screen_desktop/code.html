@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Login - LectureDigest</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=Inter:wght@300;400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "primary-container": "#00bfa5",
+                        "inverse-surface": "#2e3132",
+                        "inverse-on-surface": "#f0f1f2",
+                        "on-secondary-fixed-variant": "#004786",
+                        "on-primary-fixed": "#00201a",
+                        "surface-container-highest": "#e1e3e4",
+                        "on-secondary-fixed": "#001c3a",
+                        "on-surface": "#191c1d",
+                        "surface-bright": "#f8f9fa",
+                        "secondary-fixed": "#d4e3ff",
+                        "primary": "#006b5c",
+                        "surface-container-low": "#f3f4f5",
+                        "tertiary-container": "#fe896a",
+                        "tertiary-fixed": "#ffdbd2",
+                        "error": "#ba1a1a",
+                        "surface": "#f8f9fa",
+                        "secondary": "#005faf",
+                        "on-primary-container": "#00473c",
+                        "primary-fixed": "#68fadd",
+                        "tertiary": "#9f4128",
+                        "surface-dim": "#d9dadb",
+                        "background": "#f8f9fa",
+                        "secondary-fixed-dim": "#a5c8ff",
+                        "tertiary-fixed-dim": "#ffb4a1",
+                        "surface-container": "#edeeef",
+                        "on-secondary": "#ffffff",
+                        "surface-container-lowest": "#ffffff",
+                        "on-tertiary-container": "#74220b",
+                        "primary-fixed-dim": "#44ddc1",
+                        "secondary-container": "#54a0fe",
+                        "on-primary": "#ffffff",
+                        "inverse-primary": "#44ddc1",
+                        "on-surface-variant": "#3c4a46",
+                        "surface-container-high": "#e7e8e9",
+                        "on-tertiary-fixed-variant": "#7f2a13",
+                        "outline": "#6c7a76",
+                        "on-primary-fixed-variant": "#005145",
+                        "on-error": "#ffffff",
+                        "error-container": "#ffdad6",
+                        "outline-variant": "#bbcac4",
+                        "on-error-container": "#93000a",
+                        "on-tertiary": "#ffffff",
+                        "surface-tint": "#006b5c",
+                        "on-tertiary-fixed": "#3c0800",
+                        "on-secondary-container": "#003567",
+                        "surface-variant": "#e1e3e4",
+                        "on-background": "#191c1d"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "fontFamily": {
+                        "headline": ["Plus Jakarta Sans"],
+                        "body": ["Inter"],
+                        "label": ["Inter"]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .jewel-button {
+            background: linear-gradient(135deg, #006b5c 0%, #00bfa5 100%);
+            box-shadow: 0px 12px 32px rgba(0, 107, 92, 0.12);
+        }
+        .glass-effect {
+            background: rgba(248, 249, 250, 0.8);
+            backdrop-filter: blur(24px);
+        }
+    </style>
+</head>
+<body class="bg-surface font-body text-on-surface antialiased overflow-hidden">
+<!-- Main Viewport Wrapper -->
+<main class="min-h-screen w-full flex overflow-hidden">
+<!-- Left Side: Editorial & Illustration Canvas -->
+<section class="hidden lg:flex lg:w-7/12 relative items-center justify-center bg-surface-container-low overflow-hidden">
+<!-- Background Texture Layer -->
+<div class="absolute inset-0 z-0 opacity-40" data-alt="Abstract soft-focus gradients in teal and mint hues with subtle grain texture suggesting digital fluidity and intelligence" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBfBOHFlDFh1ROv4dpnykPbHcEjYhcdMCzvnjXVqeKrvZa-hbT7C02M_jQAMnLtW3g0kFZVlwScWSBye518BIQ9SM7mmfmNYkRdmmlXvIfve41hCrwxSuwsnLpKu7v3UlVKSVMaBGFvNIGJHEua-EbV1plWQrNB0flIx-WsCtj-VkvswX-AT5-s-PdYcomC6dd5EHbZgxHl9bUS8jsHQuKCB3VvQjsUvsArm8vNeWKgtnrblNIBfougg8kwI1iQGtz57KaxwEYt5UdV'); background-size: cover; background-position: center;">
+</div>
+<!-- Floating Academic Elements (Glassmorphism Bento Concept) -->
+<div class="relative z-10 w-full max-w-2xl px-12">
+<div class="mb-12">
+<span class="inline-block px-4 py-2 rounded-full bg-primary-fixed-dim/20 text-on-primary-fixed-variant text-sm font-semibold tracking-wide font-headline mb-4 uppercase">
+                        Academic Synthesis
+                    </span>
+<h1 class="text-5xl xl:text-6xl font-headline font-extrabold tracking-tight text-on-surface leading-tight">
+                        Synthesis <br/>
+<span class="text-primary italic">Intelligence</span> for <br/>
+                        Informatics Students
+                    </h1>
+</div>
+<!-- Asymmetric Bento Display -->
+<div class="grid grid-cols-12 gap-4">
+<!-- Feature Card 1 -->
+<div class="col-span-7 bg-surface-container-lowest p-6 rounded-xl shadow-sm border border-outline-variant/10">
+<div class="flex items-center gap-3 mb-4">
+<span class="material-symbols-outlined text-primary bg-primary-container/20 p-2 rounded-lg">psychology</span>
+<span class="font-headline font-bold text-on-surface">AI Extraction</span>
+</div>
+<p class="text-on-surface-variant text-sm leading-relaxed">
+                            Convert complex technical lectures into streamlined informatics digests in seconds.
+                        </p>
+</div>
+<!-- Feature Card 2 -->
+<div class="col-span-5 bg-primary-container p-6 rounded-xl shadow-sm">
+<div class="flex flex-col h-full justify-between">
+<span class="material-symbols-outlined text-on-primary-container text-4xl" data-weight="fill" style="font-variation-settings: 'FILL' 1;">terminal</span>
+<p class="text-on-primary-container font-headline font-semibold text-xs leading-none">Code-First Summaries</p>
+</div>
+</div>
+<!-- Feature Card 3 -->
+<div class="col-span-12 glass-effect p-6 rounded-xl border border-outline-variant/20 shadow-lg">
+<div class="flex items-center gap-4">
+<img alt="User" class="w-12 h-12 rounded-full object-cover grayscale" data-alt="Professional headshot of a computer science student with a neutral, focused expression in a modern setting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCR0YFp9aTkWqCUPHvgLm6DiQaO3jUj9u22RGPjFF7HfDFPB_77i-iesccWU_IBVp_ahwgFpat2fEmDHE3XUCWrHb3DWV8exJCMJUNmdkeSFML956Av7T04Foh2dLc-KygVg5mMnPCobr2L6GRDHwXf_Zw-Hmi6NiZFkzyGOcYSE_eWxDp5XqSDhzUB-5Tdf_EMSLGKocr-4DcjV2HqV4wY3FYdh5zbLAxbEbHyxF4CIhIGXC194kNI5mlZtKKmtQPs3ODS7mKyKkGE"/>
+<div>
+<p class="text-on-surface font-semibold text-sm italic">"The Digest Pulse helped me ace my Distributed Systems exam. It caught nuances I missed in class."</p>
+<p class="text-primary font-headline font-bold text-xs mt-1 uppercase tracking-widest">— Rizky, UI Student</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Decorative Accent -->
+<div class="absolute bottom-12 left-12 flex items-center gap-2 text-on-surface-variant/50">
+<span class="w-12 h-px bg-outline-variant/30"></span>
+<span class="text-xs font-headline font-medium tracking-tighter">EST. 2024 DEPOK, ID</span>
+</div>
+</section>
+<!-- Right Side: Focused Login Form Canvas -->
+<section class="w-full lg:w-5/12 bg-surface-container-lowest flex flex-col justify-between p-8 md:p-16 lg:p-20 relative overflow-y-auto">
+<!-- Top Anchor: Brand & Help -->
+<div class="flex justify-between items-center mb-12">
+<div class="flex items-center gap-2">
+<div class="w-10 h-10 jewel-button rounded-xl flex items-center justify-center">
+<span class="material-symbols-outlined text-white text-2xl" data-weight="fill" style="font-variation-settings: 'FILL' 1;">menu_book</span>
+</div>
+<span class="text-2xl font-headline font-extrabold tracking-tighter text-primary">LectureDigest</span>
+</div>
+<a class="text-primary text-sm font-semibold hover:underline decoration-primary-container underline-offset-8 transition-all" href="#">Support</a>
+</div>
+<!-- Central Form Anchor -->
+<div class="max-w-md mx-auto w-full">
+<div class="mb-10">
+<h2 class="text-3xl font-headline font-bold text-on-surface tracking-tight">Welcome back</h2>
+<p class="text-on-surface-variant mt-2 text-sm">Please enter your academic credentials to continue.</p>
+</div>
+<form class="space-y-6">
+<!-- Input: Email -->
+<div class="space-y-2">
+<label class="text-sm font-semibold text-on-surface-variant font-headline px-1" for="email">Email Address</label>
+<div class="relative group">
+<span class="absolute left-4 top-1/2 -translate-y-1/2 material-symbols-outlined text-outline transition-colors group-focus-within:text-primary">mail</span>
+<input class="w-full pl-12 pr-4 py-4 bg-surface-container-high border-none rounded-xl text-on-surface focus:ring-2 focus:ring-primary/20 transition-all placeholder:text-outline/50" id="email" placeholder="student@ui.ac.id" type="email"/>
+</div>
+</div>
+<!-- Input: Password -->
+<div class="space-y-2">
+<div class="flex justify-between px-1">
+<label class="text-sm font-semibold text-on-surface-variant font-headline" for="password">Password</label>
+<a class="text-xs font-semibold text-primary hover:text-primary-container transition-colors" href="#">Forgot Password?</a>
+</div>
+<div class="relative group">
+<span class="absolute left-4 top-1/2 -translate-y-1/2 material-symbols-outlined text-outline transition-colors group-focus-within:text-primary">lock</span>
+<input class="w-full pl-12 pr-4 py-4 bg-surface-container-high border-none rounded-xl text-on-surface focus:ring-2 focus:ring-primary/20 transition-all placeholder:text-outline/50" id="password" placeholder="••••••••" type="password"/>
+<button class="absolute right-4 top-1/2 -translate-y-1/2 material-symbols-outlined text-outline hover:text-on-surface transition-colors" type="button">visibility</button>
+</div>
+</div>
+<!-- Checkbox -->
+<div class="flex items-center px-1">
+<input class="w-5 h-5 rounded border-outline-variant text-primary focus:ring-primary focus:ring-offset-0 bg-surface-container-high transition-all" id="remember" type="checkbox"/>
+<label class="ml-3 text-sm font-medium text-on-surface-variant" for="remember">Stay logged in for 30 days</label>
+</div>
+<!-- Primary Action -->
+<button class="w-full py-4 jewel-button text-white font-headline font-bold rounded-xl text-lg hover:scale-[1.01] active:scale-95 transition-all" type="submit">
+                        Sign In
+                    </button>
+</form>
+<!-- Social Login Separator -->
+<div class="relative my-10 text-center">
+<span aria-hidden="true" class="absolute inset-0 flex items-center">
+<span class="w-full border-t border-outline-variant/30"></span>
+</span>
+<span class="relative bg-surface-container-lowest px-4 text-xs font-headline font-bold text-outline uppercase tracking-widest">or connect with</span>
+</div>
+<!-- Social Buttons -->
+<div class="grid grid-cols-2 gap-4">
+<button class="flex items-center justify-center gap-3 py-3 border border-outline-variant/40 rounded-xl hover:bg-surface-container-low transition-colors group">
+<img alt="Google" class="w-5 h-5 grayscale group-hover:grayscale-0 transition-all" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCjVmjlAqdMErnP34WqWgB0ZqJeeoPUtHwxB1B4hDpFJ31KbUlU01FbuCqCrenYBg3eWG8H1Qp3-wB_U1F3XnTgtKNPcbZyZOsLUo-kCMXjYcdbqN1ZnASUdNlMW0wpsTwBFMP5LrqC5932dOMxSy9aLuvsA4eAt4UfNZyvP6iKOomL_y8T7oUnIlDnOpu09BDG0OopHN-RQDHmyvB1aFasCxyJzM30H4GeKs9izi9vRKrJ30Y1xxk53KC2YNz-zhb1nVd4WkC7r3nm"/>
+<span class="text-sm font-bold text-on-surface-variant font-headline">Google</span>
+</button>
+<button class="flex items-center justify-center gap-3 py-3 border border-outline-variant/40 rounded-xl hover:bg-surface-container-low transition-colors group">
+<span class="material-symbols-outlined text-on-surface-variant" data-weight="fill" style="font-variation-settings: 'FILL' 1;">terminal</span>
+<span class="text-sm font-bold text-on-surface-variant font-headline">GitHub</span>
+</button>
+</div>
+</div>
+<!-- Bottom Anchor: Footer CTA -->
+<div class="mt-12 flex flex-col md:flex-row justify-between items-center gap-4 border-t border-outline-variant/10 pt-8">
+<p class="text-on-surface-variant text-sm">Don't have an account yet?</p>
+<a class="px-6 py-2 rounded-full border-2 border-primary text-primary font-bold text-sm hover:bg-primary hover:text-white transition-all" href="#">
+                    Sign Up
+                </a>
+</div>
+<!-- Background Gradient Accent (Subtle) -->
+<div class="absolute -bottom-24 -right-24 w-64 h-64 bg-primary-container/10 blur-[100px] rounded-full"></div>
+</section>
+</main>
+<!-- Generic Footer component mapping from JSON (Minimized for Login screen) -->
+<footer class="fixed bottom-0 w-full bg-transparent z-50 pointer-events-none">
+<div class="w-full flex justify-end p-6">
+<p class="text-[10px] font-['Inter'] text-outline opacity-40 uppercase tracking-widest">© 2024 LectureDigest. Built for Indonesian Informatics Students.</p>
+</div>
+</footer>
+</body></html>

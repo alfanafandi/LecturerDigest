@@ -7,6 +7,8 @@ import 'package:lecturer_digest/screens/home_dashboard.dart';
 import 'package:lecturer_digest/screens/my_courses.dart';
 import 'package:lecturer_digest/screens/new_lecture_recording.dart';
 import 'package:lecturer_digest/screens/profile_screen.dart';
+import 'package:lecturer_digest/core/utils/responsive.dart';
+import 'package:lecturer_digest/widgets/navigation/web_sidebar.dart';
 
 class MainWrapper extends StatefulWidget {
   const MainWrapper({super.key});
@@ -28,11 +30,19 @@ class _MainWrapperState extends State<MainWrapper> {
     return Consumer<AppProvider>(
       builder: (context, provider, child) {
         final currentIndex = provider.currentTabIndex;
+        final bool isDesktop = Responsive.isDesktop(context);
 
         return Scaffold(
           extendBody: true,
-          body: _pages[currentIndex],
-          floatingActionButton: currentIndex == 0 ? FloatingActionButton(
+          body: Row(
+            children: [
+              if (isDesktop) const WebSidebar(),
+              Expanded(
+                child: _pages[currentIndex],
+              ),
+            ],
+          ),
+          floatingActionButton: (currentIndex == 0 && !isDesktop) ? FloatingActionButton(
             onPressed: () {
               Navigator.of(context).push(MaterialPageRoute(builder: (_) => const NewLectureRecording()));
             },
@@ -55,7 +65,7 @@ class _MainWrapperState extends State<MainWrapper> {
             ),
           ) : null,
           floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
-          bottomNavigationBar: Container(
+          bottomNavigationBar: isDesktop ? null : Container(
             margin: const EdgeInsets.only(top: 12),
             decoration: BoxDecoration(
               color: AppTheme.background.withOpacity(0.9),

@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>LectureDigest - AI Processing</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "outline-variant": "#bbcac4",
+                        "on-surface-variant": "#3c4a46",
+                        "inverse-on-surface": "#f0f1f2",
+                        "tertiary-container": "#fe896a",
+                        "surface-container-lowest": "#ffffff",
+                        "on-tertiary": "#ffffff",
+                        "on-tertiary-container": "#74220b",
+                        "surface-container-low": "#f3f4f5",
+                        "primary-container": "#00bfa5",
+                        "tertiary-fixed-dim": "#ffb4a1",
+                        "primary-fixed-dim": "#44ddc1",
+                        "on-primary-fixed-variant": "#005145",
+                        "inverse-surface": "#2e3132",
+                        "error": "#ba1a1a",
+                        "surface-dim": "#d9dadb",
+                        "on-secondary-fixed-variant": "#004786",
+                        "secondary-fixed-dim": "#a5c8ff",
+                        "surface-container-highest": "#e1e3e4",
+                        "primary-fixed": "#68fadd",
+                        "on-primary-container": "#00473c",
+                        "outline": "#6c7a76",
+                        "on-background": "#191c1d",
+                        "surface-bright": "#f8f9fa",
+                        "surface": "#f8f9fa",
+                        "error-container": "#ffdad6",
+                        "surface-container-high": "#e7e8e9",
+                        "secondary": "#005faf",
+                        "on-tertiary-fixed-variant": "#7f2a13",
+                        "on-secondary-fixed": "#001c3a",
+                        "on-tertiary-fixed": "#3c0800",
+                        "on-secondary": "#ffffff",
+                        "inverse-primary": "#44ddc1",
+                        "on-primary-fixed": "#00201a",
+                        "secondary-container": "#54a0fe",
+                        "background": "#f8f9fa",
+                        "on-primary": "#ffffff",
+                        "tertiary": "#9f4128",
+                        "surface-container": "#edeeef",
+                        "on-secondary-container": "#003567",
+                        "on-error-container": "#93000a",
+                        "on-error": "#ffffff",
+                        "tertiary-fixed": "#ffdbd2",
+                        "surface-tint": "#006b5c",
+                        "secondary-fixed": "#d4e3ff",
+                        "surface-variant": "#e1e3e4",
+                        "on-surface": "#191c1d",
+                        "primary": "#006b5c"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "fontFamily": {
+                        "headline": ["Plus Jakarta Sans"],
+                        "body": ["Inter"],
+                        "label": ["Inter"]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .loading-pulse {
+            background: radial-gradient(circle, #44ddc1 0%, transparent 70%);
+            opacity: 0.15;
+        }
+        .glass-nav {
+            background: rgba(248, 249, 250, 0.8);
+            backdrop-filter: blur(24px);
+        }
+    </style>
+</head>
+<body class="bg-surface font-body text-on-surface">
+<!-- SideNavBar Shell -->
+<aside class="h-screen w-64 fixed left-0 top-0 z-50 bg-[#E7E8E9] flex flex-col py-8 px-4 font-headline text-sm font-semibold">
+<div class="mb-12 px-2">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-primary-container flex items-center justify-center text-white shadow-lg">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">auto_awesome</span>
+</div>
+<div>
+<h1 class="text-xl font-extrabold text-[#006B5C] leading-none">LectureDigest</h1>
+<p class="text-[10px] text-slate-500 font-medium tracking-widest uppercase mt-1">Academic Synthesis</p>
+</div>
+</div>
+</div>
+<nav class="flex-1 space-y-2">
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl transition-all hover:bg-white/40 opacity-70 text-slate-600" href="#">
+<span class="material-symbols-outlined">home</span>
+<span>Home</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl transition-all hover:bg-white/40 opacity-70 text-slate-600" href="#">
+<span class="material-symbols-outlined">library_books</span>
+<span>Courses</span>
+</a>
+<!-- Active State Logic: AI Tools represents processing -->
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl transition-all bg-white/50 text-[#006B5C] border-r-4 border-[#006B5C] translate-x-1" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">auto_awesome</span>
+<span>AI Tools</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl transition-all hover:bg-white/40 opacity-70 text-slate-600" href="#">
+<span class="material-symbols-outlined">groups</span>
+<span>Collab</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl transition-all hover:bg-white/40 opacity-70 text-slate-600" href="#">
+<span class="material-symbols-outlined">account_circle</span>
+<span>Profile</span>
+</a>
+</nav>
+<button class="mb-8 w-full py-4 rounded-xl bg-gradient-to-r from-primary to-primary-container text-white font-bold flex items-center justify-center gap-2 shadow-[0px_12px_32px_rgba(0,107,92,0.15)] hover:opacity-90 transition-opacity">
+<span class="material-symbols-outlined">add_circle</span>
+            Summarize New
+        </button>
+<div class="border-t border-outline-variant/20 pt-6 space-y-2">
+<a class="flex items-center gap-3 px-4 py-2 rounded-xl transition-all hover:bg-white/40 opacity-70 text-slate-600" href="#">
+<span class="material-symbols-outlined">help</span>
+<span>Help</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-2 rounded-xl transition-all hover:bg-white/40 opacity-70 text-slate-600" href="#">
+<span class="material-symbols-outlined">logout</span>
+<span>Logout</span>
+</a>
+</div>
+</aside>
+<!-- Main Content Canvas -->
+<main class="ml-64 p-8 min-h-screen">
+<!-- Top Navigation Anchor -->
+<header class="fixed top-0 right-0 left-64 z-40 bg-[#F8F9FA]/80 backdrop-blur-md flex justify-between items-center px-8 py-4">
+<div class="flex items-center gap-4 bg-surface-container-high px-4 py-2 rounded-full w-96">
+<span class="material-symbols-outlined text-outline">search</span>
+<input class="bg-transparent border-none focus:ring-0 text-sm font-medium w-full" placeholder="Search lectures, topics, or AI summaries..." type="text"/>
+</div>
+<div class="flex items-center gap-4">
+<button class="w-10 h-10 rounded-full flex items-center justify-center text-slate-500 hover:bg-[#E7E8E9] transition-colors">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<button class="w-10 h-10 rounded-full flex items-center justify-center text-slate-500 hover:bg-[#E7E8E9] transition-colors">
+<span class="material-symbols-outlined">settings</span>
+</button>
+<div class="h-8 w-[1px] bg-outline-variant/30 mx-2"></div>
+<img alt="Student Profile" class="w-10 h-10 rounded-full border-2 border-primary-container" data-alt="portrait of a confident university student with glasses in a modern campus library setting, soft daylight" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDk7WfNdxMc8M0O3nv-utZto5Av3Yq5t-QaAL0KY4hwEhDAifr6gCwkSa-H9K8Gn3ogbgkADYKFtNUk5fIfzWe_lFMPmBtog8OE8jPIHUdd3WJFR7GMNS0OUM_AGZsm_x2WA5Sh6bz64QDgqzA0HJ8lo-sZ3Ca6WgHVPKiqbru9qDFXWrSL_L2ExqrXnTHmIdInuWcEx8UUn5l1EVrQgcD0Xo15RL7kd7EQxh6J-zu4dpuxrrXY6zNHTmWyz92aRkoNSklERVd6yWQ7"/>
+</div>
+</header>
+<!-- Content Area -->
+<div class="mt-20 max-w-6xl mx-auto flex flex-col gap-12">
+<!-- Hero Processing Section -->
+<section class="flex flex-col md:flex-row items-center gap-12 pt-8">
+<!-- Asymmetric Circular Progress -->
+<div class="relative w-72 h-72 flex items-center justify-center">
+<div class="absolute inset-0 loading-pulse rounded-full animate-pulse"></div>
+<svg class="w-full h-full transform -rotate-90">
+<circle class="text-surface-container-high" cx="144" cy="144" fill="transparent" r="130" stroke="currentColor" stroke-width="12"></circle>
+<circle class="text-primary transition-all duration-1000 ease-out" cx="144" cy="144" fill="transparent" r="130" stroke="currentColor" stroke-dasharray="816" stroke-dashoffset="244" stroke-width="12"></circle>
+</svg>
+<div class="absolute flex flex-col items-center">
+<span class="text-5xl font-extrabold font-headline tracking-tighter text-on-surface">72%</span>
+<span class="text-sm font-semibold text-primary uppercase tracking-widest mt-1">Sustaining</span>
+</div>
+</div>
+<!-- Status & Title -->
+<div class="flex-1 space-y-6">
+<div>
+<span class="label-md text-primary font-bold tracking-widest uppercase mb-2 block">Processing Architecture</span>
+<h2 class="text-4xl font-extrabold font-headline text-on-surface tracking-tight leading-tight">Generating Summary...</h2>
+<p class="text-on-surface-variant mt-2 max-w-lg">Our AI is currently synthesizing the core concepts from "Advanced Algorithm Analysis - Week 4". Hang tight while we structure your study material.</p>
+</div>
+<!-- Steps List -->
+<div class="space-y-4">
+<div class="flex items-center gap-4 bg-surface-container-lowest p-4 rounded-xl shadow-[0px_4px_12px_rgba(0,107,92,0.04)]">
+<div class="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center">
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+</div>
+<span class="font-semibold text-on-surface">Transcribing Audio Stream</span>
+<span class="ml-auto text-xs font-bold text-primary/60 uppercase">Completed</span>
+</div>
+<div class="flex items-center gap-4 bg-surface-container-lowest p-4 rounded-xl shadow-[0px_4px_12px_rgba(0,107,92,0.04)] border-l-4 border-primary">
+<div class="w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center animate-spin">
+<span class="material-symbols-outlined text-sm">sync</span>
+</div>
+<span class="font-semibold text-on-surface">Summarizing Core Principles</span>
+<span class="ml-auto text-xs font-bold text-primary animate-pulse uppercase">In Progress</span>
+</div>
+<div class="flex items-center gap-4 bg-surface-container-low/50 p-4 rounded-xl opacity-60">
+<div class="w-8 h-8 rounded-full bg-outline-variant/30 text-outline flex items-center justify-center">
+<span class="material-symbols-outlined text-sm">pending</span>
+</div>
+<span class="font-semibold text-on-surface">Generating Flashcards</span>
+<span class="ml-auto text-xs font-bold text-outline-variant uppercase">Queued</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Study Smart Section (Bento Grid) -->
+<section class="space-y-8 pb-12">
+<div class="flex items-end justify-between border-b border-outline-variant/10 pb-4">
+<div>
+<h3 class="text-2xl font-extrabold font-headline text-on-surface">Study Smart While You Wait</h3>
+<p class="text-on-surface-variant">Maximize your time with these rapid insights.</p>
+</div>
+<button class="text-primary font-bold text-sm hover:underline underline-offset-4 decoration-2">View Library</button>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+<!-- Pro-Tip Card -->
+<div class="bg-primary text-white p-8 rounded-3xl flex flex-col justify-between relative overflow-hidden group shadow-lg">
+<div class="absolute -right-10 -top-10 w-40 h-40 bg-white/10 rounded-full blur-3xl group-hover:bg-white/20 transition-all"></div>
+<span class="material-symbols-outlined text-4xl mb-4" style="font-variation-settings: 'FILL' 1;">lightbulb</span>
+<div>
+<h4 class="text-xl font-bold font-headline mb-2 leading-tight">The Pomodoro Flow</h4>
+<p class="text-white/80 text-sm leading-relaxed">Study for 25 minutes, then take a 5-minute break. This keeps your brain's "encoding" phase optimal for complex informatics.</p>
+</div>
+</div>
+<!-- Trivia Card 1 -->
+<div class="bg-surface-container-lowest p-8 rounded-3xl shadow-sm hover:shadow-md transition-shadow flex flex-col gap-4">
+<div class="w-12 h-12 rounded-2xl bg-secondary/10 text-secondary flex items-center justify-center">
+<span class="material-symbols-outlined">psychology</span>
+</div>
+<div>
+<span class="text-[10px] font-bold text-secondary uppercase tracking-widest block mb-2">Did You Know?</span>
+<h4 class="text-lg font-bold font-headline text-on-surface leading-tight">Spaced Repetition</h4>
+<p class="text-on-surface-variant text-sm mt-2 leading-relaxed">Reviewing a summary 24 hours later increases retention by up to 80% compared to cramming right before an exam.</p>
+</div>
+</div>
+<!-- Visual Tip Card -->
+<div class="bg-surface-container-lowest rounded-3xl shadow-sm overflow-hidden flex flex-col h-full group">
+<div class="h-32 w-full relative overflow-hidden">
+<img alt="Study Aesthetics" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" data-alt="overhead shot of a minimalist study desk with a notebook, pen, and a cup of coffee, clean aesthetics" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCNkNScQTv77GXQ7c8HBfb_kG1vG2rWxYpKB8GcrrSYF4N8pOOd49XAwpajL5WJ__ud_9Y_w6RPQfOq-jBoBlLosVaFMZ2Gdjm1bye8qBzaW21uFHTQg7al-LMaF_Yo93vHS67SuTMy-lWmSgKWreHJaC__iGwKQy0CurhnAH033HLKz3-P8hCRWY5knK9pQqHWvtXvCyD47dJ_bJq9TmcUA6i0BHXSgDd3fyiYmTOUxTRCBSn4CxgA18-0dVhpBhw4Y50Bnxg1Ki5I"/>
+<div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+<span class="absolute bottom-3 left-4 text-white text-[10px] font-bold uppercase tracking-widest">Environment</span>
+</div>
+<div class="p-6">
+<h4 class="text-lg font-bold font-headline text-on-surface leading-tight">Active Recall</h4>
+<p class="text-on-surface-variant text-sm mt-2 leading-relaxed">Once your summary is ready, try to explain it out loud. If you can't, you don't know it yet.</p>
+</div>
+</div>
+</div>
+<!-- Wide Trivia/Quote Card -->
+<div class="bg-surface-container-low rounded-3xl p-10 flex flex-col md:flex-row items-center gap-10">
+<div class="flex-1 space-y-4">
+<div class="flex items-center gap-2 text-tertiary">
+<span class="material-symbols-outlined">auto_awesome</span>
+<span class="font-bold text-xs uppercase tracking-widest">Informatics Insight</span>
+</div>
+<h3 class="text-3xl font-extrabold font-headline text-on-surface leading-tight italic">"The best way to predict the future is to invent it."</h3>
+<p class="text-on-surface-variant font-medium">— Alan Kay</p>
+</div>
+<div class="w-full md:w-64 aspect-video rounded-2xl overflow-hidden bg-white shadow-inner flex items-center justify-center p-4">
+<div class="text-center">
+<span class="text-5xl font-black text-primary/10 select-none block mb-2">CODE</span>
+<p class="text-xs font-semibold text-on-surface-variant uppercase tracking-tighter">Stay focused, Inventor.</p>
+</div>
+</div>
+</div>
+</section>
+</div>
+</main>
+<!-- Floating Action State (Suppressed on this task-focused screen per shell rules, but including for brand alignment) -->
+<!-- Suppressed: Shell Visibility & Relevance Policy applied -->
+</body></html>

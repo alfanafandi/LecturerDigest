@@ -19,6 +19,7 @@ CREATE TABLE IF NOT EXISTS lectures (
   status VARCHAR(50) DEFAULT 'Recorded',
   raw_transcript TEXT,
   audio_url TEXT,
+  share_code VARCHAR(10) UNIQUE,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -41,6 +42,8 @@ CREATE TABLE IF NOT EXISTS flashcards (
   front_concept TEXT NOT NULL,
   back_detail TEXT NOT NULL,
   status VARCHAR(50) DEFAULT 'Learning',
+  next_review_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+  review_interval INTEGER DEFAULT 0,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -95,6 +98,13 @@ CREATE POLICY "Users can manage their own flashcards" ON flashcards FOR ALL USIN
 CREATE POLICY "Users can manage their own quizzes" ON quizzes FOR ALL USING (auth.uid() = user_id);
 CREATE POLICY "Users can manage their own attempts" ON quiz_attempts FOR ALL USING (auth.uid() = user_id);
 CREATE POLICY "Users can manage their own chat messages" ON chat_messages FOR ALL USING (auth.uid() = user_id);
+
+-- Sharing Policies (Allows users to view shared content by others)
+CREATE POLICY "Allow read access to lectures by share_code" ON lectures FOR SELECT USING (share_code IS NOT NULL);
+CREATE POLICY "Allow read access to summaries by shared lecture" ON summaries FOR SELECT USING (lecture_id IN (SELECT id FROM lectures WHERE share_code IS NOT NULL));
+CREATE POLICY "Allow read access to flashcards by shared lecture" ON flashcards FOR SELECT USING (lecture_id IN (SELECT id FROM lectures WHERE share_code IS NOT NULL));
+CREATE POLICY "Allow read access to quizzes by shared lecture" ON quizzes FOR SELECT USING (lecture_id IN (SELECT id FROM lectures WHERE share_code IS NOT NULL));
+CREATE POLICY "Allow read access to courses name for shared lectures" ON courses FOR SELECT USING (id IN (SELECT course_id FROM lectures WHERE share_code IS NOT NULL));
 
 -- Indices for performance
 create index idx_lectures_course_id on lectures(course_id);

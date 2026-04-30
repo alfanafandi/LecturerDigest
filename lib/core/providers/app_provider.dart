@@ -125,6 +125,8 @@ class AppProvider extends ChangeNotifier {
 
   Future<void> signOut() async {
     await _auth.signOut();
+    currentTabIndex = 0;
+    _clearData();
   }
 
   Future<void> changePassword(String newPassword) async {
@@ -181,6 +183,50 @@ class AppProvider extends ChangeNotifier {
       error = e.toString();
     }
     _setLoading(false);
+  }
+
+  Future<void> deleteCourse(String courseId) async {
+    _setLoading(true);
+    try {
+      await _db.deleteCourse(courseId);
+      await fetchCourses();
+      await fetchAllLectures();
+      await fetchDueFlashcards();
+      error = null;
+    } catch (e) {
+      error = "Gagal menghapus kelas: ${e.toString()}";
+    }
+    _setLoading(false);
+  }
+
+  Future<void> updateCourseName(String courseId, String newName) async {
+    try {
+      await _db.updateCourseName(courseId, newName);
+      
+      // Update local state directly
+      int index = courses.indexWhere((c) => c['id'] == courseId);
+      if (index != -1) {
+        final updated = Map<String, dynamic>.from(courses[index]);
+        updated['name'] = newName;
+        courses[index] = updated;
+      }
+      
+      // Also update any lecture objects that might have courses(name) joined
+      for (int i = 0; i < lectures.length; i++) {
+        if (lectures[i]['course_id'] == courseId && lectures[i].containsKey('courses')) {
+          final updatedLec = Map<String, dynamic>.from(lectures[i]);
+          final updatedCourse = Map<String, dynamic>.from(updatedLec['courses']);
+          updatedCourse['name'] = newName;
+          updatedLec['courses'] = updatedCourse;
+          lectures[i] = updatedLec;
+        }
+      }
+
+      notifyListeners();
+      error = null;
+    } catch (e) {
+      error = "Gagal memperbarui nama kelas: ${e.toString()}";
+    }
   }
 
   Future<void> login(String email, String password) async {
@@ -268,6 +314,38 @@ class AppProvider extends ChangeNotifier {
     }
   }
 
+  Future<void> deleteLecture(String lectureId) async {
+    _setLoading(true);
+    try {
+      await _db.deleteLecture(lectureId);
+      await fetchAllLectures();
+      await fetchDueFlashcards();
+      error = null;
+    } catch (e) {
+      error = "Gagal menghapus materi: ${e.toString()}";
+    }
+    _setLoading(false);
+  }
+
+  Future<void> updateLectureTitle(String lectureId, String newTitle) async {
+    try {
+      await _db.updateLectureTitle(lectureId, newTitle);
+      
+      // Update local state directly
+      int index = lectures.indexWhere((l) => l['id'] == lectureId);
+      if (index != -1) {
+        final updated = Map<String, dynamic>.from(lectures[index]);
+        updated['title'] = newTitle;
+        lectures[index] = updated;
+      }
+      
+      notifyListeners();
+      error = null;
+    } catch (e) {
+      error = "Gagal memperbarui judul materi: ${e.toString()}";
+    }
+  }
+
   Future<void> fetchSummary(String lectureId) async {
     _setLoading(true);
     try {
@@ -319,7 +397,7 @@ class AppProvider extends ChangeNotifier {
       if (courseId == null) {
         // Fallback: Fetch lecture details if they aren't in memory
         final details = await _db.getLectureDetails(lectureId);
-        courseId = details['course_id'];
+        courseId = details?['course_id'];
       }
 
       if (courseId != null) {
@@ -360,8 +438,19 @@ class AppProvider extends ChangeNotifier {
   Future<void> fetchDueFlashcards() async {
     try {
       dueFlashcards = await _db.getFlashcardsDue();
+      notifyListeners();
     } catch (e) {
       error = e.toString();
+    }
+  }
+
+  Future<void> updateFlashcardStatus(String cardId, String status, {int intervalDays = 0}) async {
+    try {
+      await _db.updateFlashcardSRS(cardId, intervalDays, status);
+      await fetchDueFlashcards(); // Refresh list
+    } catch (e) {
+      error = e.toString();
+      notifyListeners();
     }
   }
 
@@ -433,6 +522,43 @@ class AppProvider extends ChangeNotifier {
       error = e.toString();
     }
     _setLoading(false);
+  }
+
+  Future<String?> getShareCode(String lectureId) async {
+    try {
+      return await _db.getOrCreateShareCode(lectureId);
+    } catch (e) {
+      error = e.toString();
+      notifyListeners();
+      return null;
+    }
+  }
+
+  Future<bool> importSharedLecture(String code, String targetCourseId) async {
+    isLoading = true;
+    error = null;
+    notifyListeners();
+
+    try {
+      final data = await _db.getFullLectureByCode(code);
+      if (data == null) {
+        error = "Kode tidak ditemukan atau salah.";
+        isLoading = false;
+        notifyListeners();
+        return false;
+      }
+
+      await _db.importLecture(targetCourseId, data);
+      await fetchAllLectures();
+      isLoading = false;
+      notifyListeners();
+      return true;
+    } catch (e) {
+      error = e.toString();
+      isLoading = false;
+      notifyListeners();
+      return false;
+    }
   }
 
   Future<void> sendChatMessage(String text) async {
@@ -594,7 +720,7 @@ class AppProvider extends ChangeNotifier {
         contextText = jsonEncode(summaryData);
       } else {
         final lecture = await _db.getLectureDetails(lectureId);
-        contextText = lecture['raw_transcript'] ?? '';
+        contextText = lecture?['raw_transcript'] ?? '';
       }
       
       if (contextText.isEmpty) throw Exception("Tidak ada materi untuk membuat kuis.");

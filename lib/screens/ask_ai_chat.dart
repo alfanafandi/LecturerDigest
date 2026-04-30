@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:lecturer_digest/core/theme/app_theme.dart';
 import 'package:lecturer_digest/core/providers/app_provider.dart';
 import 'package:lecturer_digest/core/widgets/brand_logo.dart';
+import 'package:lecturer_digest/core/utils/responsive.dart';
 
 class AskAiChat extends StatefulWidget {
   final bool isTab;
@@ -12,13 +13,18 @@ class AskAiChat extends StatefulWidget {
   State<AskAiChat> createState() => _AskAiChatState();
 }
 
-class _AskAiChatState extends State<AskAiChat> {
+class _AskAiChatState extends State<AskAiChat> with WidgetsBindingObserver {
   final TextEditingController _messageController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
-
+  final FocusNode _focusNode = FocusNode();
+ 
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
+    _focusNode.addListener(() {
+      if (mounted) setState(() {});
+    });
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _scrollToBottom();
     });
@@ -36,9 +42,16 @@ class _AskAiChatState extends State<AskAiChat> {
 
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     _messageController.dispose();
     _scrollController.dispose();
+    _focusNode.dispose();
     super.dispose();
+  }
+
+  @override
+  void didChangeMetrics() {
+    if (mounted) setState(() {});
   }
 
   @override
@@ -54,6 +67,7 @@ class _AskAiChatState extends State<AskAiChat> {
         WidgetsBinding.instance.addPostFrameCallback((_) => _scrollToBottom());
 
         return Scaffold(
+          resizeToAvoidBottomInset: false,
           backgroundColor: AppTheme.surface,
           appBar: AppBar(
             backgroundColor: AppTheme.background.withOpacity(0.9),
@@ -84,158 +98,176 @@ class _AskAiChatState extends State<AskAiChat> {
               const SizedBox(width: 8),
             ],
           ),
-          body: Column(
-            children: [
-              Expanded(
-                child: !hasContext 
-                ? _buildEmptyState(context, provider)
-                : ListView(
-                  controller: _scrollController,
-                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.all(24),
-                      decoration: BoxDecoration(
-                        color: AppTheme.surfaceContainerLowest,
-                        borderRadius: BorderRadius.circular(24),
-                        boxShadow: [BoxShadow(color: AppTheme.primary.withOpacity(0.05), blurRadius: 24)],
+          body: Center(
+            child: ConstrainedBox(
+              constraints: BoxConstraints(maxWidth: Responsive.isDesktop(context) ? 900 : double.infinity),
+              child: Column(
+                children: [
+                  Expanded(
+                    child: !hasContext 
+                    ? _buildEmptyState(context, provider)
+                    : ListView(
+                      controller: _scrollController,
+                      padding: EdgeInsets.symmetric(
+                        horizontal: Responsive.isDesktop(context) ? 48 : 24, 
+                        vertical: 32
                       ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Text('DISKUSI AKTIF', style: TextStyle(color: AppTheme.primary, fontSize: 10, fontWeight: FontWeight.bold, letterSpacing: 1.0)),
-                          const SizedBox(height: 4),
-                          Text(
-                            lecture != null ? lecture['title'] : course!['name'], 
-                            style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w800)
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.all(24),
+                          decoration: BoxDecoration(
+                            color: AppTheme.surfaceContainerLowest,
+                            borderRadius: BorderRadius.circular(24),
+                            boxShadow: [BoxShadow(color: AppTheme.primary.withOpacity(0.05), blurRadius: 24)],
                           ),
-                          const SizedBox(height: 12),
-                          Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                            decoration: BoxDecoration(color: AppTheme.surfaceContainer, borderRadius: BorderRadius.circular(12)),
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Icon(course != null ? Icons.school_rounded : Icons.auto_awesome, color: AppTheme.primary, size: 16),
-                                const SizedBox(width: 8),
-                                Text(
-                                  course != null ? 'Mode Seluruh Kelas Aktif' : 'Asisten AI Siap membantu', 
-                                  style: const TextStyle(color: AppTheme.onSurfaceVariant, fontSize: 12, fontWeight: FontWeight.w500)
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Text('DISKUSI AKTIF', style: TextStyle(color: AppTheme.primary, fontSize: 10, fontWeight: FontWeight.bold, letterSpacing: 1.0)),
+                              const SizedBox(height: 4),
+                              Text(
+                                lecture != null ? lecture['title'] : course!['name'], 
+                                style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w800)
+                              ),
+                              const SizedBox(height: 12),
+                              Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                                decoration: BoxDecoration(color: AppTheme.surfaceContainer, borderRadius: BorderRadius.circular(12)),
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Icon(course != null ? Icons.school_rounded : Icons.auto_awesome, color: AppTheme.primary, size: 16),
+                                    const SizedBox(width: 8),
+                                    Text(
+                                      course != null ? 'Mode Seluruh Kelas Aktif' : 'Asisten AI Siap membantu', 
+                                      style: const TextStyle(color: AppTheme.onSurfaceVariant, fontSize: 12, fontWeight: FontWeight.w500)
+                                    ),
+                                  ],
                                 ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(height: 32),
+                        ...messages.map((m) {
+                            if (m['role'] == 'bot') {
+                              return Padding(
+                                padding: const EdgeInsets.only(bottom: 24.0),
+                                child: _buildAIMessage(context, m['text']),
+                              );
+                            } else {
+                              return Padding(
+                                padding: const EdgeInsets.only(bottom: 24.0),
+                                child: _buildUserMessage(context, m['text'], provider.userProfile?['avatar_url']),
+                              );
+                            }
+                          }).toList(),
+                        if (provider.isLoading)
+                          Padding(
+                            padding: const EdgeInsets.only(top: 8.0),
+                            child: Row(
+                              children: [
+                                const SizedBox(width: 48), 
+                                const Icon(Icons.more_horiz, color: AppTheme.primary),
+                                const SizedBox(width: 8),
+                                Text('DigestBot sedang berpikir...', style: TextStyle(color: AppTheme.primary.withOpacity(0.6), fontSize: 10, fontWeight: FontWeight.bold, letterSpacing: 1.0)),
                               ],
                             ),
                           ),
-                        ],
-                      ),
+                        const SizedBox(height: 100),
+                      ],
                     ),
-                    const SizedBox(height: 32),
-                    ...messages.map((m) {
-                        if (m['role'] == 'bot') {
-                          return Padding(
-                            padding: const EdgeInsets.only(bottom: 24.0),
-                            child: _buildAIMessage(context, m['text']),
-                          );
-                        } else {
-                          return Padding(
-                            padding: const EdgeInsets.only(bottom: 24.0),
-                            child: _buildUserMessage(context, m['text'], 'https://avatar.iran.liara.run/public/boy'),
-                          );
-                        }
-                      }).toList(),
-                    if (provider.isLoading)
-                      Padding(
-                        padding: const EdgeInsets.only(top: 8.0),
-                        child: Row(
-                          children: [
-                            const SizedBox(width: 48), 
-                            const Icon(Icons.more_horiz, color: AppTheme.primary),
-                            const SizedBox(width: 8),
-                            Text('DigestBot sedang berpikir...', style: TextStyle(color: AppTheme.primary.withOpacity(0.6), fontSize: 10, fontWeight: FontWeight.bold, letterSpacing: 1.0)),
-                          ],
-                        ),
-                      ),
-                    const SizedBox(height: 100),
-                  ],
-                ),
-              ),
-              Container(
-                padding: EdgeInsets.only(
-                  top: 16, 
-                  bottom: widget.isTab ? 120 : 32, 
-                  left: 24, 
-                  right: 24
-                ),
-                decoration: BoxDecoration(color: AppTheme.background.withOpacity(0.9)),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    SingleChildScrollView(
-                      scrollDirection: Axis.horizontal,
-                      child: Row(
-                        children: [
-                          _buildSuggestionChip('Apa poin utamanya?', () => provider.sendChatMessage('Apa poin utama dari materi ini?')),
-                          const SizedBox(width: 8),
-                          _buildSuggestionChip('Ringkaskan bagian penting.', () => provider.sendChatMessage('Tolong ringkaskan bagian penting dari materi ini.')),
-                          const SizedBox(width: 8),
-                          _buildSuggestionChip('Ada tips ujian?', () => provider.sendChatMessage('Apakah ada tips khusus untuk ujian terkait materi ini?')),
-                        ],
-                      ),
+                  ),
+                  Container(
+                    padding: EdgeInsets.only(
+                      top: 16, 
+                      bottom: View.of(context).viewInsets.bottom > 0 
+                          ? 16 
+                          : (widget.isTab ? 120 : 32), 
+                      left: Responsive.isDesktop(context) ? 48 : 24, 
+                      right: Responsive.isDesktop(context) ? 48 : 24
                     ),
-                    const SizedBox(height: 16),
-                    Row(
+                    decoration: BoxDecoration(
+                      color: AppTheme.surface,
+                      border: Border(top: BorderSide(color: AppTheme.outlineVariant.withOpacity(0.1))),
+                    ),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
                       children: [
-                        Container(
-                          width: 48,
-                          height: 48,
-                          decoration: BoxDecoration(color: AppTheme.surfaceContainerHigh, borderRadius: BorderRadius.circular(16)),
-                          child: const Icon(Icons.attach_file, color: AppTheme.onSurfaceVariant),
+                        SingleChildScrollView(
+                          scrollDirection: Axis.horizontal,
+                          child: Row(
+                            children: [
+                              _buildSuggestionChip('Apa poin utamanya?', () => provider.sendChatMessage('Apa poin utama dari materi ini?')),
+                              const SizedBox(width: 8),
+                              _buildSuggestionChip('Ringkaskan bagian penting.', () => provider.sendChatMessage('Tolong ringkaskan bagian penting dari materi ini.')),
+                              const SizedBox(width: 8),
+                              _buildSuggestionChip('Ada tips ujian?', () => provider.sendChatMessage('Apakah ada tips khusus untuk ujian terkait materi ini?')),
+                            ],
+                          ),
                         ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 16),
-                            height: 48,
-                            decoration: BoxDecoration(color: AppTheme.surfaceContainerHigh, borderRadius: BorderRadius.circular(16)),
-                            child: TextField(
-                              controller: _messageController,
-                              decoration: const InputDecoration(
-                                hintText: 'Tanya tentang materi ini...',
-                                border: InputBorder.none,
+                        const SizedBox(height: 16),
+                        Row(
+                          children: [
+                            Container(
+                              width: 56,
+                              height: 56,
+                              decoration: BoxDecoration(color: AppTheme.surfaceContainerHigh, borderRadius: BorderRadius.circular(16)),
+                              child: const Icon(Icons.attach_file, color: AppTheme.onSurfaceVariant),
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 20),
+                                height: 56,
+                                decoration: BoxDecoration(
+                                  color: AppTheme.surfaceContainerHigh, 
+                                  borderRadius: BorderRadius.circular(16),
+                                  border: Border.all(color: AppTheme.outlineVariant.withOpacity(0.1)),
+                                ),
+                                child: TextField(
+                                  controller: _messageController,
+                                  focusNode: _focusNode,
+                                  decoration: const InputDecoration(
+                                    hintText: 'Tanya tentang materi ini...',
+                                    border: InputBorder.none,
+                                  ),
+                                  onSubmitted: (_) {
+                                    if (_messageController.text.isNotEmpty) {
+                                      provider.sendChatMessage(_messageController.text);
+                                      _messageController.clear();
+                                    }
+                                  },
+                                ),
                               ),
-                              onSubmitted: (_) {
+                            ),
+                            const SizedBox(width: 12),
+                            GestureDetector(
+                              onTap: () {
                                 if (_messageController.text.isNotEmpty) {
                                   provider.sendChatMessage(_messageController.text);
                                   _messageController.clear();
                                 }
                               },
+                              child: Container(
+                                width: 56,
+                                height: 56,
+                                decoration: BoxDecoration(
+                                  gradient: const LinearGradient(colors: [AppTheme.primary, AppTheme.primaryContainer]),
+                                  borderRadius: BorderRadius.circular(16),
+                                  boxShadow: [BoxShadow(color: AppTheme.primary.withOpacity(0.3), blurRadius: 12, offset: const Offset(0, 4))],
+                                ),
+                                child: const Icon(Icons.send, color: Colors.white),
+                              ),
                             ),
-                          ),
-                        ),
-                        const SizedBox(width: 12),
-                        GestureDetector(
-                          onTap: () {
-                            if (_messageController.text.isNotEmpty) {
-                              provider.sendChatMessage(_messageController.text);
-                              _messageController.clear();
-                            }
-                          },
-                          child: Container(
-                            width: 48,
-                            height: 48,
-                            decoration: BoxDecoration(
-                              gradient: const LinearGradient(colors: [AppTheme.primary, AppTheme.primaryContainer]),
-                              borderRadius: BorderRadius.circular(16),
-                              boxShadow: [BoxShadow(color: AppTheme.primary.withOpacity(0.3), blurRadius: 12, offset: const Offset(0, 4))],
-                            ),
-                            child: const Icon(Icons.send, color: Colors.white),
-                          ),
+                          ],
                         ),
                       ],
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
-            ],
+            ),
           ),
         );
       },
@@ -264,7 +296,7 @@ class _AskAiChatState extends State<AskAiChat> {
     );
   }
 
-  Widget _buildUserMessage(BuildContext context, String text, String avatarUrl) {
+  Widget _buildUserMessage(BuildContext context, String text, String? avatarUrl) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.end,
       children: [
@@ -282,7 +314,9 @@ class _AskAiChatState extends State<AskAiChat> {
         const SizedBox(width: 12),
         CircleAvatar(
           radius: 16,
-          backgroundImage: NetworkImage(avatarUrl),
+          backgroundColor: AppTheme.primary.withOpacity(0.1),
+          backgroundImage: avatarUrl != null ? AssetImage(avatarUrl) : null,
+          child: avatarUrl == null ? const Icon(Icons.person, size: 16, color: AppTheme.primary) : null,
         ),
       ],
     );
@@ -306,42 +340,44 @@ class _AskAiChatState extends State<AskAiChat> {
 
   Widget _buildEmptyState(BuildContext context, AppProvider provider) {
     return Center(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 40),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Container(
-              padding: const EdgeInsets.all(24),
-              decoration: BoxDecoration(
-                color: AppTheme.primary.withOpacity(0.05),
-                shape: BoxShape.circle,
+      child: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 24),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Container(
+                padding: const EdgeInsets.all(24),
+                decoration: BoxDecoration(
+                  color: AppTheme.primary.withOpacity(0.05),
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(Icons.forum_outlined, size: 48, color: AppTheme.primary),
               ),
-              child: const Icon(Icons.forum_outlined, size: 48, color: AppTheme.primary),
-            ),
-            const SizedBox(height: 24),
-            Text(
-              'Belum ada obrolan aktif',
-              style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 12),
-            const Text(
-              'Silakan pilih materi atau kelas untuk mulai berdiskusi dengan DigestBot.',
-              style: TextStyle(color: AppTheme.onSurfaceVariant),
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 32),
-            ElevatedButton.icon(
-              onPressed: () => _showContextPicker(context, provider),
-              icon: const Icon(Icons.add_comment_rounded),
-              label: const Text('Pilih Konteks Materi'),
-              style: ElevatedButton.styleFrom(
-                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+              const SizedBox(height: 24),
+              Text(
+                'Belum ada obrolan aktif',
+                style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+                textAlign: TextAlign.center,
               ),
-            ),
-          ],
+              const SizedBox(height: 12),
+              const Text(
+                'Silakan pilih materi atau kelas untuk mulai berdiskusi dengan DigestBot.',
+                style: TextStyle(color: AppTheme.onSurfaceVariant),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 32),
+              ElevatedButton.icon(
+                onPressed: () => _showContextPicker(context, provider),
+                icon: const Icon(Icons.add_comment_rounded),
+                label: const Text('Pilih Konteks Materi'),
+                style: ElevatedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

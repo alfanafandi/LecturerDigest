@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "outline-variant": "#bbcac4",
+            "on-surface-variant": "#3c4a46",
+            "inverse-on-surface": "#f0f1f2",
+            "tertiary-container": "#fe896a",
+            "surface-container-lowest": "#ffffff",
+            "on-tertiary": "#ffffff",
+            "on-tertiary-container": "#74220b",
+            "surface-container-low": "#f3f4f5",
+            "primary-container": "#00bfa5",
+            "tertiary-fixed-dim": "#ffb4a1",
+            "primary-fixed-dim": "#44ddc1",
+            "on-primary-fixed-variant": "#005145",
+            "inverse-surface": "#2e3132",
+            "error": "#ba1a1a",
+            "surface-dim": "#d9dadb",
+            "on-secondary-fixed-variant": "#004786",
+            "secondary-fixed-dim": "#a5c8ff",
+            "surface-container-highest": "#e1e3e4",
+            "primary-fixed": "#68fadd",
+            "on-primary-container": "#00473c",
+            "outline": "#6c7a76",
+            "on-background": "#191c1d",
+            "surface-bright": "#f8f9fa",
+            "surface": "#f8f9fa",
+            "error-container": "#ffdad6",
+            "surface-container-high": "#e7e8e9",
+            "secondary": "#005faf",
+            "on-tertiary-fixed-variant": "#7f2a13",
+            "on-secondary-fixed": "#001c3a",
+            "on-tertiary-fixed": "#3c0800",
+            "on-secondary": "#ffffff",
+            "inverse-primary": "#44ddc1",
+            "on-primary-fixed": "#00201a",
+            "secondary-container": "#54a0fe",
+            "background": "#f8f9fa",
+            "on-primary": "#ffffff",
+            "tertiary": "#9f4128",
+            "surface-container": "#edeeef",
+            "on-secondary-container": "#003567",
+            "on-error-container": "#93000a",
+            "on-error": "#ffffff",
+            "tertiary-fixed": "#ffdbd2",
+            "surface-tint": "#006b5c",
+            "secondary-fixed": "#d4e3ff",
+            "surface-variant": "#e1e3e4",
+            "on-surface": "#191c1d",
+            "primary": "#006b5c"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "full": "9999px"
+          },
+          "fontFamily": {
+            "headline": ["Plus Jakarta Sans"],
+            "body": ["Inter"],
+            "label": ["Inter"]
+          }
+        },
+      },
+    }
+  </script>
+<style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    }
+    body { font-family: 'Inter', sans-serif; }
+    h1, h2, h3, .brand-font { font-family: 'Plus Jakarta Sans', sans-serif; }
+    .glass-nav {
+      backdrop-filter: blur(24px);
+    }
+    .flashcard-shadow {
+      box-shadow: 0px 12px 32px rgba(0, 107, 92, 0.08);
+    }
+    .custom-scrollbar::-webkit-scrollbar {
+      width: 4px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: #bbcac4;
+      border-radius: 10px;
+    }
+  </style>
+</head>
+<body class="bg-surface text-on-surface selection:bg-primary-container selection:text-on-primary-container">
+<!-- SideNavBar Anchor -->
+<aside class="h-screen w-64 fixed left-0 top-0 z-50 bg-[#E7E8E9] flex flex-col h-full py-8 px-4">
+<div class="mb-10 px-4">
+<div class="flex items-center gap-3 mb-1">
+<div class="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
+<span class="material-symbols-outlined text-white text-sm" style="font-variation-settings: 'FILL' 1;">auto_stories</span>
+</div>
+<span class="text-xl font-extrabold text-[#006B5C] brand-font">LectureDigest</span>
+</div>
+<p class="text-xs text-slate-600 font-medium opacity-70 ml-11">Academic Synthesis</p>
+</div>
+<nav class="flex-1 space-y-1">
+<a class="flex items-center gap-4 px-4 py-3 rounded-xl text-slate-600 opacity-70 font-semibold text-sm hover:bg-white/40 hover:opacity-100 transition-all" href="#">
+<span class="material-symbols-outlined">home</span>
+<span>Home</span>
+</a>
+<a class="flex items-center gap-4 px-4 py-3 rounded-xl text-[#006B5C] border-r-4 border-[#006B5C] bg-white/50 font-semibold text-sm transition-all translate-x-1" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">library_books</span>
+<span>Courses</span>
+</a>
+<a class="flex items-center gap-4 px-4 py-3 rounded-xl text-slate-600 opacity-70 font-semibold text-sm hover:bg-white/40 hover:opacity-100 transition-all" href="#">
+<span class="material-symbols-outlined">auto_awesome</span>
+<span>AI Tools</span>
+</a>
+<a class="flex items-center gap-4 px-4 py-3 rounded-xl text-slate-600 opacity-70 font-semibold text-sm hover:bg-white/40 hover:opacity-100 transition-all" href="#">
+<span class="material-symbols-outlined">groups</span>
+<span>Collab</span>
+</a>
+<a class="flex items-center gap-4 px-4 py-3 rounded-xl text-slate-600 opacity-70 font-semibold text-sm hover:bg-white/40 hover:opacity-100 transition-all" href="#">
+<span class="material-symbols-outlined">account_circle</span>
+<span>Profile</span>
+</a>
+</nav>
+<div class="mt-auto pt-6 space-y-1">
+<button class="w-full mb-6 bg-gradient-to-br from-[#006B5C] to-[#00BFA5] text-white py-3 px-4 rounded-xl font-bold text-sm shadow-lg shadow-primary/20 flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-sm">add</span>
+        Summarize New
+      </button>
+<a class="flex items-center gap-4 px-4 py-3 rounded-xl text-slate-600 opacity-70 font-semibold text-sm hover:bg-white/40 hover:opacity-100 transition-all" href="#">
+<span class="material-symbols-outlined">help</span>
+<span>Help</span>
+</a>
+<a class="flex items-center gap-4 px-4 py-3 rounded-xl text-slate-600 opacity-70 font-semibold text-sm hover:bg-white/40 hover:opacity-100 transition-all" href="#">
+<span class="material-symbols-outlined">logout</span>
+<span>Logout</span>
+</a>
+</div>
+</aside>
+<!-- TopAppBar Anchor -->
+<header class="fixed top-0 right-0 left-64 z-40 bg-[#F8F9FA]/80 backdrop-blur-md px-8 py-4 flex justify-between items-center">
+<div class="flex items-center gap-4">
+<button class="p-2 rounded-full hover:bg-[#E7E8E9] transition-colors">
+<span class="material-symbols-outlined text-on-surface-variant">arrow_back</span>
+</button>
+<div>
+<h2 class="text-sm font-label text-primary font-bold">Algorithms &amp; Data Structures</h2>
+<h1 class="text-xl font-bold tracking-tight text-on-surface">Flashcards: Graph Traversal</h1>
+</div>
+</div>
+<div class="flex items-center gap-6">
+<div class="flex items-center gap-3 px-4 py-2 bg-surface-container-low rounded-full">
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-tertiary text-lg" style="font-variation-settings: 'FILL' 1;">local_fire_department</span>
+<span class="text-sm font-bold text-on-surface">12 Day Streak</span>
+</div>
+<div class="w-[1px] h-4 bg-outline-variant/30"></div>
+<div class="flex items-center gap-2">
+<span class="text-xs font-semibold text-on-surface-variant uppercase tracking-wider">Goal</span>
+<div class="w-24 h-2 bg-outline-variant/20 rounded-full overflow-hidden">
+<div class="h-full bg-primary rounded-full" style="width: 65%;"></div>
+</div>
+<span class="text-xs font-bold text-primary">13/20</span>
+</div>
+</div>
+<div class="flex items-center gap-2">
+<button class="p-2 rounded-full hover:bg-[#E7E8E9] transition-colors relative">
+<span class="material-symbols-outlined text-on-surface-variant">notifications</span>
+<span class="absolute top-2 right-2 w-2 h-2 bg-tertiary rounded-full border-2 border-surface"></span>
+</button>
+<button class="p-2 rounded-full hover:bg-[#E7E8E9] transition-colors">
+<span class="material-symbols-outlined text-on-surface-variant">settings</span>
+</button>
+<img alt="Student Profile" class="w-8 h-8 rounded-full border-2 border-primary-container ml-2 object-cover" data-alt="portrait of a focused university student with a modern academic aesthetic, soft natural lighting in a library setting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDAQSOlqQazdCYQ3FJMqtLviZR8mh8t9o_xuPb8Ee45P76FQb7_fgRbI-9JShJsmpEmuXiMX6mdOsXQG86vSiNTP5wdxlj7Y0PNP1kTpEn_Yi-RlM413wxNnACbo8ytoINuavWGkdfzVNYIOhP8WxxCh5kvhQuWiHj5BjcytfKbwdNhz1RE63jT6zo9OgyCWoEmWVorPNTy5GRjRXYIG-N7R2EZAogIKtWqKaEFGOlNJ3X4wRAYUMXw6FnaiH3wPzybsPsNJoHwS80H"/>
+</div>
+</div>
+</header>
+<!-- Main Canvas -->
+<main class="ml-64 pt-24 min-h-screen flex flex-col p-8">
+<!-- Progress Indicator -->
+<div class="w-full max-w-4xl mx-auto mb-8 flex items-center justify-between px-2">
+<div class="flex items-center gap-2">
+<span class="text-xs font-bold text-on-surface-variant uppercase tracking-widest">Flashcard</span>
+<span class="px-2 py-0.5 bg-primary-container/20 text-on-primary-container text-xs font-black rounded">8 / 42</span>
+</div>
+<div class="flex-1 mx-8 h-1.5 bg-surface-container-high rounded-full overflow-hidden">
+<div class="h-full bg-primary-container" style="width: 19%;"></div>
+</div>
+<div class="text-xs font-medium text-on-surface-variant italic">Estimated 15 mins remaining</div>
+</div>
+<!-- Centered Flashcard Workspace -->
+<div class="flex-1 flex flex-col items-center justify-center max-w-5xl mx-auto w-full gap-12">
+<!-- The Big Flashcard (Asymmetric Layout) -->
+<div class="relative group w-full max-w-2xl aspect-[4/3] perspective-1000">
+<!-- Floating Backdrop Effect -->
+<div class="absolute -inset-4 bg-primary/5 blur-3xl rounded-full opacity-50"></div>
+<!-- Card Front/Main Content -->
+<div class="relative w-full h-full bg-surface-container-lowest rounded-[2rem] flashcard-shadow p-12 flex flex-col items-center justify-center border border-outline-variant/10 text-center">
+<div class="absolute top-8 left-8 flex items-center gap-2 opacity-40">
+<span class="material-symbols-outlined text-sm">psychology</span>
+<span class="text-[10px] font-bold uppercase tracking-widest">Theoretical Foundation</span>
+</div>
+<div class="space-y-6">
+<h3 class="text-3xl font-bold tracking-tight text-on-surface leading-snug max-w-md mx-auto">
+              Explain the difference between <span class="text-primary italic">BFS</span> and <span class="text-secondary italic">DFS</span> space complexity in a balanced tree?
+            </h3>
+<p class="text-on-surface-variant text-lg font-medium opacity-60">Recall the maximum width vs. maximum depth of the graph structure.</p>
+</div>
+<!-- Interaction Layer -->
+<button class="mt-12 group/reveal relative px-8 py-4 rounded-full overflow-hidden transition-all hover:scale-105 active:scale-95">
+<div class="absolute inset-0 bg-surface-container-high group-hover/reveal:bg-primary-container/20 transition-colors"></div>
+<div class="relative flex items-center gap-3">
+<span class="material-symbols-outlined text-primary group-hover/reveal:animate-bounce">visibility</span>
+<span class="text-sm font-bold text-on-surface tracking-tight">Tap to reveal answer</span>
+</div>
+</button>
+<div class="absolute bottom-8 right-8">
+<span class="material-symbols-outlined text-primary-fixed-dim text-4xl opacity-30">terminal</span>
+</div>
+</div>
+<!-- Overlapping Metadata Component -->
+<div class="absolute -bottom-6 -right-6 bg-white p-4 rounded-2xl shadow-xl border border-outline-variant/10 max-w-[180px] hidden lg:block">
+<div class="flex items-center gap-3 mb-2">
+<div class="w-2 h-2 rounded-full bg-tertiary"></div>
+<span class="text-[10px] font-bold uppercase text-on-surface-variant">Common Pitfall</span>
+</div>
+<p class="text-[11px] leading-relaxed text-on-surface-variant">Don't forget that BFS uses a Queue, while DFS typically uses a Stack/Recursion.</p>
+</div>
+</div>
+<!-- Action Response Buttons -->
+<div class="w-full max-w-2xl grid grid-cols-3 gap-6">
+<!-- Still Learning -->
+<button class="group flex flex-col items-center gap-3 p-6 rounded-3xl bg-surface-container-low hover:bg-error-container transition-all hover:-translate-y-1">
+<div class="w-12 h-12 rounded-full bg-white flex items-center justify-center text-error shadow-sm group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined">restart_alt</span>
+</div>
+<div class="text-center">
+<p class="text-sm font-bold text-on-surface">Still Learning</p>
+<p class="text-[10px] font-medium text-on-surface-variant opacity-60 uppercase tracking-tighter">Review in 1m</p>
+</div>
+</button>
+<!-- Got It! -->
+<button class="group flex flex-col items-center gap-3 p-6 rounded-3xl bg-surface-container-low hover:bg-primary-container/20 transition-all hover:-translate-y-1">
+<div class="w-12 h-12 rounded-full bg-white flex items-center justify-center text-primary shadow-sm group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined">check_circle</span>
+</div>
+<div class="text-center">
+<p class="text-sm font-bold text-on-surface">Got It!</p>
+<p class="text-[10px] font-medium text-on-surface-variant opacity-60 uppercase tracking-tighter">Review in 2d</p>
+</div>
+</button>
+<!-- Mastered -->
+<button class="group flex flex-col items-center gap-3 p-6 rounded-3xl bg-surface-container-low hover:bg-secondary-container/20 transition-all hover:-translate-y-1">
+<div class="w-12 h-12 rounded-full bg-white flex items-center justify-center text-secondary shadow-sm group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">verified</span>
+</div>
+<div class="text-center">
+<p class="text-sm font-bold text-on-surface">Mastered</p>
+<p class="text-[10px] font-medium text-on-surface-variant opacity-60 uppercase tracking-tighter">Review in 14d</p>
+</div>
+</button>
+</div>
+</div>
+<!-- Contextual Info / Bento Footer -->
+<div class="mt-auto pt-12 grid grid-cols-1 md:grid-cols-4 gap-6">
+<div class="col-span-2 bg-surface-container-low rounded-[2rem] p-6 flex items-center gap-6">
+<div class="w-20 h-20 rounded-2xl bg-white p-3 flex items-center justify-center flashcard-shadow">
+<img alt="Concept Visualization" class="w-full h-full object-cover rounded-lg" data-alt="abstract digital representation of a network graph with connected nodes and glowing edges on a clean light background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDsP7R0x54WBfyW72Kj3CG8zN464b2KwvH9NlrJUrF_C0bDgPHGYqEfaHoSxApPH2ja_vgHqj4VNHvZbMVBg1FLOjKdw1A5k6ZjFFZWViNRns4xNsea2oUHik3zOUEYf1f52eIpKlwlrBYQLZj6qIpIaOsXaLQiFDmzbLYVMJ5vqtn8aFi74oIjZzzgDD7k5NeIE6Uq9tvgDoCcFn9g3QZ-M5JiJ4PYJi-5Fh4oTHnxjaFlLJNvzx1r-khhBproIYall50fElZEx16f"/>
+</div>
+<div class="flex-1">
+<h4 class="text-sm font-bold text-on-surface">Visual context available</h4>
+<p class="text-xs text-on-surface-variant mt-1 leading-relaxed">This card belongs to the "Binary Tree Properties" sub-module. Check lecture 04 summary for detailed diagrams.</p>
+</div>
+<button class="px-4 py-2 bg-white rounded-xl text-xs font-bold text-primary shadow-sm hover:shadow-md transition-all">View Notes</button>
+</div>
+<div class="bg-[#00473C] rounded-[2rem] p-6 flex flex-col justify-between text-white">
+<span class="text-[10px] font-bold uppercase tracking-widest opacity-60">Daily Efficiency</span>
+<div class="flex items-end gap-2">
+<span class="text-3xl font-black brand-font">94%</span>
+<span class="text-primary-container text-xs font-bold mb-1 flex items-center"><span class="material-symbols-outlined text-xs">trending_up</span> 4%</span>
+</div>
+<p class="text-[10px] opacity-70 leading-tight">Your recall speed is improving in this topic.</p>
+</div>
+<div class="bg-tertiary-container/10 border border-tertiary-container/20 rounded-[2rem] p-6 flex flex-col items-center justify-center gap-2">
+<span class="material-symbols-outlined text-tertiary text-3xl">keyboard</span>
+<div class="text-center">
+<p class="text-[10px] font-bold text-on-surface uppercase tracking-tight">Pro Tip</p>
+<p class="text-[11px] text-on-surface-variant font-medium">Use [1] [2] [3] for quick responses</p>
+</div>
+</div>
+</div>
+</main>
+<!-- Key Action Pulse (AI Feedback) -->
+<div class="fixed bottom-10 right-10 flex flex-col items-end gap-4 pointer-events-none">
+<div class="flex items-center gap-3 bg-white/90 backdrop-blur-md px-4 py-3 rounded-2xl flashcard-shadow pointer-events-auto border border-primary/10">
+<div class="w-2 h-2 rounded-full bg-primary relative">
+<div class="absolute inset-0 bg-primary rounded-full animate-ping opacity-75"></div>
+</div>
+<span class="text-xs font-bold text-on-surface tracking-tight">AI is optimizing your next card...</span>
+</div>
+</div>
+</body></html>

@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "outline-variant": "#bbcac4",
+                    "on-surface-variant": "#3c4a46",
+                    "inverse-on-surface": "#f0f1f2",
+                    "tertiary-container": "#fe896a",
+                    "surface-container-lowest": "#ffffff",
+                    "on-tertiary": "#ffffff",
+                    "on-tertiary-container": "#74220b",
+                    "surface-container-low": "#f3f4f5",
+                    "primary-container": "#00bfa5",
+                    "tertiary-fixed-dim": "#ffb4a1",
+                    "primary-fixed-dim": "#44ddc1",
+                    "on-primary-fixed-variant": "#005145",
+                    "inverse-surface": "#2e3132",
+                    "error": "#ba1a1a",
+                    "surface-dim": "#d9dadb",
+                    "on-secondary-fixed-variant": "#004786",
+                    "secondary-fixed-dim": "#a5c8ff",
+                    "surface-container-highest": "#e1e3e4",
+                    "primary-fixed": "#68fadd",
+                    "on-primary-container": "#00473c",
+                    "outline": "#6c7a76",
+                    "on-background": "#191c1d",
+                    "surface-bright": "#f8f9fa",
+                    "surface": "#f8f9fa",
+                    "error-container": "#ffdad6",
+                    "surface-container-high": "#e7e8e9",
+                    "secondary": "#005faf",
+                    "on-tertiary-fixed-variant": "#7f2a13",
+                    "on-secondary-fixed": "#001c3a",
+                    "on-tertiary-fixed": "#3c0800",
+                    "on-secondary": "#ffffff",
+                    "inverse-primary": "#44ddc1",
+                    "on-primary-fixed": "#00201a",
+                    "secondary-container": "#54a0fe",
+                    "background": "#f8f9fa",
+                    "on-primary": "#ffffff",
+                    "tertiary": "#9f4128",
+                    "surface-container": "#edeeef",
+                    "on-secondary-container": "#003567",
+                    "on-error-container": "#93000a",
+                    "on-error": "#ffffff",
+                    "tertiary-fixed": "#ffdbd2",
+                    "surface-tint": "#006b5c",
+                    "secondary-fixed": "#d4e3ff",
+                    "surface-variant": "#e1e3e4",
+                    "on-surface": "#191c1d",
+                    "primary": "#006b5c"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "fontFamily": {
+                    "headline": ["Plus Jakarta Sans"],
+                    "body": ["Inter"],
+                    "label": ["Inter"]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .digest-pulse {
+            animation: pulse-ring 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+        @keyframes pulse-ring {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: .5; transform: scale(1.05); }
+        }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+    </style>
+</head>
+<body class="bg-surface font-body text-on-surface h-screen overflow-hidden">
+<!-- Global Layout Wrapper -->
+<div class="flex h-full w-full">
+<!-- Predicted Component: SideNavBar -->
+<aside class="bg-[#E7E8E9] dark:bg-[#1D1F20] h-screen w-64 fixed left-0 top-0 z-50 flex flex-col h-full py-8 px-4 font-['Plus_Jakarta_Sans'] text-sm font-semibold">
+<div class="mb-10 px-4">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-primary-container flex items-center justify-center text-white">
+<span class="material-symbols-outlined" data-icon="auto_awesome" style="font-variation-settings: 'FILL' 1;">auto_awesome</span>
+</div>
+<div>
+<h1 class="text-xl font-extrabold text-[#006B5C] dark:text-[#00BFA5]">LectureDigest</h1>
+<p class="text-[10px] uppercase tracking-widest opacity-60">Academic Synthesis</p>
+</div>
+</div>
+</div>
+<nav class="flex-1 space-y-2">
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl transition-all text-slate-600 dark:text-slate-400 opacity-70 hover:bg-white/40 dark:hover:bg-white/10 hover:opacity-100" href="#">
+<span class="material-symbols-outlined" data-icon="home">home</span>
+                    Home
+                </a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl transition-all text-slate-600 dark:text-slate-400 opacity-70 hover:bg-white/40 dark:hover:bg-white/10 hover:opacity-100" href="#">
+<span class="material-symbols-outlined" data-icon="library_books">library_books</span>
+                    Courses
+                </a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl transition-all text-[#006B5C] dark:text-[#00BFA5] border-r-4 border-[#006B5C] bg-white/50 dark:bg-white/5 translate-x-1 duration-150" href="#">
+<span class="material-symbols-outlined" data-icon="auto_awesome" style="font-variation-settings: 'FILL' 1;">auto_awesome</span>
+                    AI Tools
+                </a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl transition-all text-slate-600 dark:text-slate-400 opacity-70 hover:bg-white/40 dark:hover:bg-white/10 hover:opacity-100" href="#">
+<span class="material-symbols-outlined" data-icon="groups">groups</span>
+                    Collab
+                </a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl transition-all text-slate-600 dark:text-slate-400 opacity-70 hover:bg-white/40 dark:hover:bg-white/10 hover:opacity-100" href="#">
+<span class="material-symbols-outlined" data-icon="account_circle">account_circle</span>
+                    Profile
+                </a>
+</nav>
+<div class="mt-auto pt-6 space-y-2 border-t border-outline-variant/10">
+<button class="w-full mb-4 py-3 px-4 bg-gradient-to-r from-primary to-primary-container text-white rounded-xl font-bold flex items-center justify-center gap-2 shadow-[0px_12px_32px_rgba(0,107,92,0.08)]">
+<span class="material-symbols-outlined text-sm" data-icon="add">add</span>
+                    Summarize New
+                </button>
+<a class="flex items-center gap-3 px-4 py-2 rounded-xl text-slate-600 dark:text-slate-400 opacity-70 hover:bg-white/40" href="#">
+<span class="material-symbols-outlined" data-icon="help">help</span>
+                    Help
+                </a>
+<a class="flex items-center gap-3 px-4 py-2 rounded-xl text-slate-600 dark:text-slate-400 opacity-70 hover:bg-white/40" href="#">
+<span class="material-symbols-outlined" data-icon="logout">logout</span>
+                    Logout
+                </a>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="ml-64 flex-1 flex flex-col bg-surface overflow-hidden relative">
+<!-- Predicted Component: TopAppBar -->
+<header class="fixed top-0 right-0 left-64 z-40 bg-[#F8F9FA]/80 dark:bg-[#191C1D]/80 backdrop-blur-md flex justify-between items-center w-full px-8 py-4">
+<div class="flex items-center gap-4 bg-surface-container-high px-4 py-2 rounded-full w-96">
+<span class="material-symbols-outlined text-on-surface-variant" data-icon="search">search</span>
+<input class="bg-transparent border-none focus:ring-0 text-sm w-full font-medium" placeholder="Search insights..." type="text"/>
+</div>
+<div class="flex items-center gap-6">
+<div class="flex items-center gap-1">
+<button class="p-2 rounded-full text-slate-500 hover:bg-[#E7E8E9] transition-colors"><span class="material-symbols-outlined" data-icon="notifications">notifications</span></button>
+<button class="p-2 rounded-full text-slate-500 hover:bg-[#E7E8E9] transition-colors"><span class="material-symbols-outlined" data-icon="settings">settings</span></button>
+</div>
+<div class="flex items-center gap-3 pl-4 border-l border-outline-variant/30">
+<div class="text-right">
+<p class="text-sm font-bold text-on-surface leading-tight">Budi Santoso</p>
+<p class="text-[11px] text-primary font-bold uppercase tracking-wider">Informatics '22</p>
+</div>
+<img alt="Student Profile" class="w-10 h-10 rounded-full border-2 border-primary/20" data-alt="portrait of a young indonesian male university student with short black hair wearing a professional polo shirt" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD6Bi0TmJKImHF05w98nWhBbv_R4X1KSw1ZZJgIHvgZ45uxau6V38aRTUS49YjSYgWbNVLy65f452Y29ELQ5YdjF736lksOwk3L2FV2W6c4tP9IjY5LCDFubi3IgvzjQ_GUh1yxcJTjKHYNi2A1ggulf8dNWNcC7doPZQo4F3ITlURX98ZribARJHc9RHQ_n_M-2grJ4t0qQjjxWYed_prMjqQCAyxsKzilzWTE17hC-x-6t9fJJMNqQJFVj74L6GATV63DAofb8jiu"/>
+</div>
+</div>
+</header>
+<!-- Layout Content: Sidebar + Chat Area -->
+<div class="flex-1 mt-20 flex overflow-hidden">
+<!-- Chat Context Sidebar (Bento Style) -->
+<aside class="w-80 bg-surface-container-low p-6 overflow-y-auto no-scrollbar flex flex-col gap-4">
+<div class="bg-surface-container-lowest p-5 rounded-2xl shadow-sm border border-outline-variant/5">
+<span class="text-[10px] font-bold text-primary tracking-widest uppercase mb-1 block">Active Lecture</span>
+<h2 class="headline-sm font-bold text-on-surface mb-2 leading-tight">Complexity &amp; Hash Maps</h2>
+<div class="flex gap-2 items-center text-xs text-on-surface-variant font-medium">
+<span class="material-symbols-outlined text-sm" data-icon="timer">timer</span>
+                            45:20 Remaining
+                        </div>
+</div>
+<div class="bg-surface-container-lowest p-5 rounded-2xl shadow-sm border border-outline-variant/5">
+<h3 class="text-xs font-bold text-on-surface-variant uppercase mb-4 tracking-tighter flex items-center justify-between">
+                            Recent Synopses
+                            <span class="material-symbols-outlined text-xs" data-icon="history">history</span>
+</h3>
+<div class="space-y-4">
+<div class="group cursor-pointer">
+<p class="text-sm font-semibold text-on-surface group-hover:text-primary transition-colors">O(n) vs O(log n)</p>
+<p class="text-xs text-on-surface-variant line-clamp-1">Analysis of binary search vs linear search in unsorted lists.</p>
+</div>
+<div class="group cursor-pointer">
+<p class="text-sm font-semibold text-on-surface group-hover:text-primary transition-colors">Hash Collision Avoidance</p>
+<p class="text-xs text-on-surface-variant line-clamp-1">Techniques for linear probing and chaining.</p>
+</div>
+<div class="group cursor-pointer">
+<p class="text-sm font-semibold text-on-surface group-hover:text-primary transition-colors">Amortized Analysis</p>
+<p class="text-xs text-on-surface-variant line-clamp-1">Understanding the true cost of operations.</p>
+</div>
+</div>
+</div>
+<div class="bg-primary/5 p-5 rounded-2xl border border-primary/10">
+<div class="flex items-center gap-3 mb-3">
+<span class="material-symbols-outlined text-primary" data-icon="school" style="font-variation-settings: 'FILL' 1;">school</span>
+<span class="text-sm font-bold text-primary">Exam Readiness</span>
+</div>
+<div class="w-full bg-outline-variant/20 h-1.5 rounded-full overflow-hidden mb-2">
+<div class="bg-primary h-full w-[72%]"></div>
+</div>
+<p class="text-xs text-on-primary-container font-medium">You've covered 72% of this topic's key concepts.</p>
+</div>
+</aside>
+<!-- Main Chat Interface -->
+<section class="flex-1 flex flex-col relative bg-surface-container-lowest m-4 rounded-[2rem] shadow-sm border border-outline-variant/5">
+<!-- Chat Header -->
+<div class="px-8 py-5 border-b border-outline-variant/5 flex items-center justify-between">
+<div class="flex items-center gap-4">
+<div class="relative">
+<div class="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-2xl" data-icon="smart_toy">smart_toy</span>
+</div>
+<div class="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 border-4 border-white rounded-full"></div>
+</div>
+<div>
+<h3 class="font-bold text-on-surface">DigestBot</h3>
+<p class="text-xs text-primary font-semibold flex items-center gap-1">
+<span class="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
+                                    Contextual AI Active
+                                </p>
+</div>
+</div>
+<div class="flex gap-2">
+<button class="p-2 hover:bg-surface-container-high rounded-lg text-on-surface-variant transition-colors">
+<span class="material-symbols-outlined" data-icon="ios_share">ios_share</span>
+</button>
+<button class="p-2 hover:bg-surface-container-high rounded-lg text-on-surface-variant transition-colors">
+<span class="material-symbols-outlined" data-icon="more_vert">more_vert</span>
+</button>
+</div>
+</div>
+<!-- Messages Window -->
+<div class="flex-1 overflow-y-auto p-8 space-y-8 no-scrollbar">
+<!-- User Message -->
+<div class="flex justify-end gap-4 max-w-[85%] ml-auto">
+<div class="flex flex-col items-end">
+<div class="bg-primary text-white p-4 rounded-2xl rounded-tr-none text-sm font-medium shadow-sm leading-relaxed">
+                                    Bisakah kamu jelaskan perbedaan antara Open Addressing dan Separate Chaining dengan contoh analogi sederhana?
+                                </div>
+<span class="text-[10px] mt-1 font-bold text-outline uppercase">Sent 10:42 AM</span>
+</div>
+<img alt="Student Profile" class="w-8 h-8 rounded-full flex-shrink-0" data-alt="close-up of student avatar icon" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDOx24kI5JvP_4wl1ixmj0G2vrRGoawOU5claOgUPdZcVK8ya3JyeY2ymPKNU9Z2jVti14-Pbe2Tc1E27Bvw7Z3ewLneAOAQJXXjvskl-4V-UTVkOKUBO-GWqkYmuZk9kGJ3nvupI7yfNabSUsp06mEK9ig41lSOqIbqbLUaMMh1P5M37pvWyddQdjtGcURzv_2altwrRvE5f43uHie4YySI3dxGD8xp6yTA6tmgseMh3fLltq7BQq8YkcE0sHYquxYyfksiU0JFWFO"/>
+</div>
+<!-- AI Response -->
+<div class="flex justify-start gap-4 max-w-[85%]">
+<div class="w-8 h-8 rounded-xl bg-primary/10 flex items-center justify-center text-primary flex-shrink-0">
+<span class="material-symbols-outlined text-lg" data-icon="smart_toy">smart_toy</span>
+</div>
+<div class="flex flex-col">
+<div class="bg-surface-container-low text-on-surface p-6 rounded-2xl rounded-tl-none shadow-sm border border-outline-variant/10">
+<p class="text-sm font-medium leading-relaxed mb-4">Tentu, Budi! Bayangkan Hash Map adalah sebuah <strong>Asrama Mahasiswa</strong>:</p>
+<ul class="space-y-4 text-sm font-medium">
+<li class="flex gap-3">
+<span class="material-symbols-outlined text-primary text-sm mt-1" data-icon="check_circle">check_circle</span>
+<span><strong>Separate Chaining:</strong> Seperti setiap kamar memiliki tempat tidur susun (bunk beds). Jika kamar sudah terisi, penghuni baru tetap di kamar yang sama tapi menggunakan kasur di atasnya.</span>
+</li>
+<li class="flex gap-3">
+<span class="material-symbols-outlined text-primary text-sm mt-1" data-icon="check_circle">check_circle</span>
+<span><strong>Open Addressing:</strong> Seperti aturan satu kamar satu orang. Jika kamar tujuanmu penuh, kamu berjalan ke kamar berikutnya (Linear Probing) sampai menemukan kamar kosong.</span>
+</li>
+</ul>
+<div class="mt-6 p-4 bg-surface-container-lowest rounded-xl border border-outline-variant/5">
+<p class="text-xs font-bold text-primary uppercase mb-2">Verdict</p>
+<p class="text-sm italic">Separate chaining lebih fleksibel untuk beban data tinggi, sedangkan Open Addressing lebih hemat memori karena tidak perlu pointer tambahan.</p>
+</div>
+</div>
+<div class="flex items-center gap-3 mt-2">
+<button class="text-xs font-bold text-on-surface-variant hover:text-primary flex items-center gap-1">
+<span class="material-symbols-outlined text-xs" data-icon="thumb_up">thumb_up</span>
+                                        Helpful
+                                    </button>
+<button class="text-xs font-bold text-on-surface-variant hover:text-primary flex items-center gap-1">
+<span class="material-symbols-outlined text-xs" data-icon="content_copy">content_copy</span>
+                                        Copy
+                                    </button>
+</div>
+</div>
+</div>
+<!-- Typing Indicator -->
+<div class="flex justify-start gap-4">
+<div class="w-8 h-8 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-lg" data-icon="smart_toy">smart_toy</span>
+</div>
+<div class="bg-surface-container-low px-4 py-3 rounded-2xl rounded-tl-none flex items-center gap-1">
+<span class="w-1.5 h-1.5 bg-primary/40 rounded-full animate-bounce"></span>
+<span class="w-1.5 h-1.5 bg-primary/60 rounded-full animate-bounce [animation-delay:0.2s]"></span>
+<span class="w-1.5 h-1.5 bg-primary rounded-full animate-bounce [animation-delay:0.4s]"></span>
+</div>
+</div>
+</div>
+<!-- Input Section -->
+<div class="p-6 bg-surface-container-lowest border-t border-outline-variant/5">
+<!-- Suggested Chips -->
+<div class="flex gap-3 mb-6 overflow-x-auto no-scrollbar pb-2">
+<button class="whitespace-nowrap px-4 py-2 rounded-full bg-surface-container-low text-xs font-bold text-on-surface hover:bg-primary/10 hover:text-primary transition-all border border-outline-variant/10">
+                                Berikan kode Python-nya
+                            </button>
+<button class="whitespace-nowrap px-4 py-2 rounded-full bg-surface-container-low text-xs font-bold text-on-surface hover:bg-primary/10 hover:text-primary transition-all border border-outline-variant/10">
+                                Apa itu Big O complexity-nya?
+                            </button>
+<button class="whitespace-nowrap px-4 py-2 rounded-full bg-surface-container-low text-xs font-bold text-on-surface hover:bg-primary/10 hover:text-primary transition-all border border-outline-variant/10">
+                                Buat kuis singkat
+                            </button>
+</div>
+<!-- Main Input Bar -->
+<div class="bg-surface-container-high rounded-2xl p-2 flex items-end gap-2 group focus-within:ring-2 focus-within:ring-primary/20 transition-all">
+<div class="flex gap-1 p-2">
+<button class="p-2 text-on-surface-variant hover:text-primary transition-colors">
+<span class="material-symbols-outlined" data-icon="add_circle">add_circle</span>
+</button>
+</div>
+<textarea class="flex-1 bg-transparent border-none focus:ring-0 text-sm font-medium py-3 min-h-[44px] max-h-32 resize-none no-scrollbar" placeholder="Ask follow-up question..." rows="1"></textarea>
+<div class="flex gap-1 p-2">
+<button class="p-2 text-on-surface-variant hover:text-primary transition-colors">
+<span class="material-symbols-outlined" data-icon="mic">mic</span>
+</button>
+<button class="bg-gradient-to-br from-primary to-primary-container text-white w-10 h-10 rounded-xl flex items-center justify-center shadow-lg hover:opacity-90 transition-opacity">
+<span class="material-symbols-outlined" data-icon="send" style="font-variation-settings: 'FILL' 1;">send</span>
+</button>
+</div>
+</div>
+<p class="text-[10px] text-center text-on-surface-variant mt-3 font-medium opacity-60">DigestBot can make mistakes. Verify important academic information.</p>
+</div>
+</section>
+</div>
+</main>
+</div>
+<!-- AI Signature Loading Asset (Floating Hidden) -->
+<div class="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none z-0 opacity-10">
+<div class="w-96 h-96 bg-primary-fixed-dim blur-[120px] rounded-full digest-pulse"></div>
+</div>
+</body></html>

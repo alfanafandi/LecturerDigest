@@ -39,11 +39,12 @@ Dokumen ini melacak status pengembangan fitur dan rencana masa depan aplikasi **
 ## 🛠️ Fitur dalam Proses / Rencana Mendatang
 
 ### 🕙 Prioritas Tinggi (Next)
+- [x] **Ekspor Catatan ke PDF**: Fitur untuk menyimpan ringkasan materi ke format PDF (Selesai 18 April 2026).
 - [x] **Upload Materi (PDF)**: Mengaktifkan tombol upload agar AI bisa memproses dokumen tanpa harus merekam suara (Batas 30 halaman).
-- [ ] **Refined Chat AI**: Meningkatkan memori bot saat sesi tanya jawab materi kuliah.
+- [x] **Refined Chat AI**: Meningkatkan memori bot saat sesi tanya jawab materi kuliah dan persistensi riwayat chat (Selesai 18 April 2026).
 
 ### 🚀 Pengembangan Jangka Panjang
-- [ ] **User Authentication**: Sistem Login/Register via Supabase Auth agar data per user terpisah.
+- [x] **User Authentication**: Sistem Login/Register via Supabase Auth agar data per user terpisah (Terintegrasi dengan Real User Flow).
 - [ ] **Spaced Repetition System (SRS)**: Algoritma untuk pengulangan kartu hafalan di waktu yang tepat.
 - [ ] **Ekspor Catatan**: Fitur untuk mengekspor ringkasan ke format PDF atau Notion.
 

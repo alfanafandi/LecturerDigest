@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>New Lecture Recording - LectureDigest</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "outline-variant": "#bbcac4",
+                        "on-surface-variant": "#3c4a46",
+                        "inverse-on-surface": "#f0f1f2",
+                        "tertiary-container": "#fe896a",
+                        "surface-container-lowest": "#ffffff",
+                        "on-tertiary": "#ffffff",
+                        "on-tertiary-container": "#74220b",
+                        "surface-container-low": "#f3f4f5",
+                        "primary-container": "#00bfa5",
+                        "tertiary-fixed-dim": "#ffb4a1",
+                        "primary-fixed-dim": "#44ddc1",
+                        "on-primary-fixed-variant": "#005145",
+                        "inverse-surface": "#2e3132",
+                        "error": "#ba1a1a",
+                        "surface-dim": "#d9dadb",
+                        "on-secondary-fixed-variant": "#004786",
+                        "secondary-fixed-dim": "#a5c8ff",
+                        "surface-container-highest": "#e1e3e4",
+                        "primary-fixed": "#68fadd",
+                        "on-primary-container": "#00473c",
+                        "outline": "#6c7a76",
+                        "on-background": "#191c1d",
+                        "surface-bright": "#f8f9fa",
+                        "surface": "#f8f9fa",
+                        "error-container": "#ffdad6",
+                        "surface-container-high": "#e7e8e9",
+                        "secondary": "#005faf",
+                        "on-tertiary-fixed-variant": "#7f2a13",
+                        "on-secondary-fixed": "#001c3a",
+                        "on-tertiary-fixed": "#3c0800",
+                        "on-secondary": "#ffffff",
+                        "inverse-primary": "#44ddc1",
+                        "on-primary-fixed": "#00201a",
+                        "secondary-container": "#54a0fe",
+                        "background": "#f8f9fa",
+                        "on-primary": "#ffffff",
+                        "tertiary": "#9f4128",
+                        "surface-container": "#edeeef",
+                        "on-secondary-container": "#003567",
+                        "on-error-container": "#93000a",
+                        "on-error": "#ffffff",
+                        "tertiary-fixed": "#ffdbd2",
+                        "surface-tint": "#006b5c",
+                        "secondary-fixed": "#d4e3ff",
+                        "surface-variant": "#e1e3e4",
+                        "on-surface": "#191c1d",
+                        "primary": "#006b5c"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "fontFamily": {
+                        "headline": ["Plus Jakarta Sans"],
+                        "body": ["Inter"],
+                        "label": ["Inter"]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .waveform-bar {
+            width: 4px;
+            background-color: #00BFA5;
+            border-radius: 2px;
+            margin: 0 2px;
+        }
+        .glass-panel {
+            background: rgba(248, 249, 250, 0.8);
+            backdrop-filter: blur(24px);
+        }
+    </style>
+</head>
+<body class="bg-surface text-on-surface font-body selection:bg-primary-container/30">
+<!-- SideNavBar -->
+<aside class="h-screen w-64 fixed left-0 top-0 z-50 bg-[#E7E8E9] dark:bg-[#1D1F20] flex flex-col py-8 px-4">
+<div class="mb-10 px-2">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-primary-container flex items-center justify-center text-white shadow-lg">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">auto_awesome</span>
+</div>
+<div>
+<h1 class="text-xl font-extrabold text-[#006B5C] dark:text-[#00BFA5] font-headline tracking-tighter">LectureDigest</h1>
+<p class="text-[10px] font-bold uppercase tracking-widest opacity-50">Academic Synthesis</p>
+</div>
+</div>
+</div>
+<nav class="flex-1 space-y-2">
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl transition-all text-slate-600 dark:text-slate-400 opacity-70 hover:bg-white/40 dark:hover:bg-white/10 hover:opacity-100 font-['Plus_Jakarta_Sans'] text-sm font-semibold" href="#">
+<span class="material-symbols-outlined">home</span>
+<span>Home</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl transition-all text-[#006B5C] dark:text-[#00BFA5] border-r-4 border-[#006B5C] bg-white/50 dark:bg-white/5 font-['Plus_Jakarta_Sans'] text-sm font-semibold translate-x-1" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">library_books</span>
+<span>Courses</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl transition-all text-slate-600 dark:text-slate-400 opacity-70 hover:bg-white/40 dark:hover:bg-white/10 hover:opacity-100 font-['Plus_Jakarta_Sans'] text-sm font-semibold" href="#">
+<span class="material-symbols-outlined">auto_awesome</span>
+<span>AI Tools</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl transition-all text-slate-600 dark:text-slate-400 opacity-70 hover:bg-white/40 dark:hover:bg-white/10 hover:opacity-100 font-['Plus_Jakarta_Sans'] text-sm font-semibold" href="#">
+<span class="material-symbols-outlined">groups</span>
+<span>Collab</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl transition-all text-slate-600 dark:text-slate-400 opacity-70 hover:bg-white/40 dark:hover:bg-white/10 hover:opacity-100 font-['Plus_Jakarta_Sans'] text-sm font-semibold" href="#">
+<span class="material-symbols-outlined">account_circle</span>
+<span>Profile</span>
+</a>
+</nav>
+<div class="mt-auto space-y-2 border-t border-outline-variant/20 pt-6">
+<button class="w-full py-4 rounded-xl bg-gradient-to-r from-primary to-primary-container text-white font-bold text-sm shadow-[0px_12px_32px_rgba(0,107,92,0.15)] flex items-center justify-center gap-2 mb-4">
+<span class="material-symbols-outlined text-sm">add_circle</span>
+                Summarize New
+            </button>
+<a class="flex items-center gap-3 px-4 py-2 text-slate-600 opacity-70 hover:opacity-100 text-sm font-semibold" href="#">
+<span class="material-symbols-outlined">help</span>
+<span>Help</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-2 text-error opacity-70 hover:opacity-100 text-sm font-semibold" href="#">
+<span class="material-symbols-outlined">logout</span>
+<span>Logout</span>
+</a>
+</div>
+</aside>
+<!-- Main Content Canvas -->
+<main class="ml-64 min-h-screen relative p-12 flex flex-col">
+<!-- Header / Control Bar -->
+<header class="flex justify-between items-start mb-12">
+<div class="space-y-1">
+<div class="flex items-center gap-2 text-primary font-semibold text-sm">
+<span class="material-symbols-outlined text-sm">mic_external_on</span>
+                    Live Recording session
+                </div>
+<h2 class="text-4xl font-headline font-extrabold text-on-surface tracking-tight">Advanced Algorithms</h2>
+<p class="text-on-surface-variant font-medium">CS302 • Faculty of Informatics</p>
+</div>
+<div class="flex items-center gap-4">
+<div class="bg-surface-container-high px-4 py-2 rounded-xl flex items-center gap-3">
+<div class="w-2 h-2 rounded-full bg-primary animate-pulse"></div>
+<span class="text-xs font-bold text-on-surface-variant tracking-wider uppercase">Syncing to Cloud</span>
+</div>
+<div class="w-12 h-12 rounded-full overflow-hidden border-2 border-primary-container">
+<img class="w-full h-full object-cover" data-alt="portrait of a focused student with short hair in a bright studio setting, soft professional lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCxD8KaoHzGaXd4GbYVVwgR7gcTFVpJY_zBOOaor8PwNT070ItD2cb59b0Rr03afhINkXTntvD8hEL29l-5Uv5JBN5igwX2FVyUMgLTA5rIToUYEViI2pH6-zpJVv-uxcK34UC9mmdDPqoD4-Ol1jmyO5yAC3XfK4YAkGGCa5OfY6F9GFyu7i2vPClzzUMiULtHFA05emsiUDQBdy9QrI3qZHrdhFlUBTIk5kDHYvqUuiwO1l7cFy1If_vZWMY3JqlSlm0QriyTozd3"/>
+</div>
+</div>
+</header>
+<!-- Recording Main Area: Bento Grid Layout -->
+<div class="grid grid-cols-12 gap-6 flex-1">
+<!-- Left Panel: The Core Recorder -->
+<div class="col-span-12 lg:col-span-8 flex flex-col gap-6">
+<!-- Large Timer & Waveform Card -->
+<section class="bg-surface-container-lowest rounded-[2rem] p-10 flex flex-col items-center justify-center relative overflow-hidden group shadow-sm">
+<!-- Subtle background decoration -->
+<div class="absolute top-0 right-0 w-64 h-64 bg-primary/5 rounded-full blur-3xl -mr-20 -mt-20"></div>
+<div class="text-center mb-8 relative z-10">
+<span class="text-[7rem] font-headline font-black text-on-surface leading-none tracking-tighter tabular-nums">00:42:18</span>
+<div class="flex items-center justify-center gap-2 text-primary font-bold mt-2">
+<span class="material-symbols-outlined fill text-lg" style="font-variation-settings: 'FILL' 1;">fiber_manual_record</span>
+                            REC
+                        </div>
+</div>
+<!-- Visual Waveform -->
+<div class="w-full h-32 flex items-center justify-center gap-[2px] mb-12 relative z-10">
+<!-- Simulated Waveform Bars -->
+<div class="waveform-bar h-8"></div><div class="waveform-bar h-12"></div><div class="waveform-bar h-16"></div><div class="waveform-bar h-24"></div><div class="waveform-bar h-20"></div><div class="waveform-bar h-14"></div><div class="waveform-bar h-28"></div><div class="waveform-bar h-32"></div><div class="waveform-bar h-20"></div><div class="waveform-bar h-24"></div><div class="waveform-bar h-16"></div><div class="waveform-bar h-28"></div><div class="waveform-bar h-22"></div><div class="waveform-bar h-12"></div><div class="waveform-bar h-24"></div><div class="waveform-bar h-32"></div><div class="waveform-bar h-18"></div><div class="waveform-bar h-14"></div><div class="waveform-bar h-26"></div><div class="waveform-bar h-20"></div><div class="waveform-bar h-12"></div><div class="waveform-bar h-8"></div><div class="waveform-bar h-16"></div><div class="waveform-bar h-24"></div><div class="waveform-bar h-20"></div><div class="waveform-bar h-14"></div><div class="waveform-bar h-28"></div><div class="waveform-bar h-32"></div><div class="waveform-bar h-20"></div><div class="waveform-bar h-24"></div>
+<div class="waveform-bar h-16 opacity-50"></div><div class="waveform-bar h-28 opacity-30"></div><div class="waveform-bar h-22 opacity-20"></div>
+</div>
+<!-- Centered Controls -->
+<div class="flex items-center gap-8 relative z-10">
+<button class="w-14 h-14 rounded-full flex items-center justify-center text-on-surface-variant hover:bg-surface-container-high transition-all">
+<span class="material-symbols-outlined text-3xl">mic_off</span>
+</button>
+<div class="relative">
+<div class="absolute inset-0 bg-primary/20 rounded-full blur-xl scale-125 group-hover:scale-150 transition-transform"></div>
+<button class="w-24 h-24 rounded-full bg-gradient-to-br from-primary to-primary-container text-white flex items-center justify-center shadow-xl relative z-10 active:scale-95 transition-transform">
+<span class="material-symbols-outlined text-5xl" style="font-variation-settings: 'FILL' 1;">pause</span>
+</button>
+</div>
+<button class="w-14 h-14 rounded-full flex items-center justify-center text-on-surface-variant hover:bg-surface-container-high transition-all">
+<span class="material-symbols-outlined text-3xl">add_alert</span>
+</button>
+</div>
+</section>
+<!-- Transcription Preview -->
+<section class="bg-surface-container-lowest rounded-[2rem] p-8 flex-1 shadow-sm border border-outline-variant/10">
+<div class="flex items-center justify-between mb-6">
+<h3 class="font-headline font-bold text-lg text-on-surface flex items-center gap-2">
+<span class="material-symbols-outlined text-primary">description</span>
+                            Real-time Transcription
+                        </h3>
+<div class="flex gap-2">
+<span class="px-3 py-1 bg-surface-container rounded-full text-[10px] font-bold text-on-surface-variant uppercase tracking-widest">Confidence: 98%</span>
+</div>
+</div>
+<div class="space-y-4 text-on-surface-variant leading-relaxed font-medium">
+<p class="opacity-40">...so the complexity of this recursive calls will lead us to O(2^n).</p>
+<p><span class="text-primary font-bold">[10:42]</span> Now, let's look at the Dynamic Programming approach to optimize this. We use a table to store the results of subproblems, which we call memoization. This reduces the time complexity significantly to O(n) because each subproblem is only solved once.</p>
+<p class="text-on-surface animate-pulse border-l-4 border-primary pl-4">Informatics students should pay attention to the space-time tradeoff here. While we save time, we are using more memory to store the table... <span class="inline-block w-2 h-5 bg-primary align-middle ml-1"></span></p>
+</div>
+</section>
+</div>
+<!-- Right Panel: Metadata & Status -->
+<div class="col-span-12 lg:col-span-4 flex flex-col gap-6">
+<!-- Settings/Subject Selector -->
+<section class="bg-surface-container-high rounded-[2rem] p-8 shadow-sm">
+<h3 class="font-headline font-bold text-on-surface mb-6 uppercase text-xs tracking-widest opacity-60">Recording Metadata</h3>
+<div class="space-y-6">
+<div>
+<label class="block text-xs font-bold text-on-surface-variant mb-2 uppercase tracking-wide">Course Subject</label>
+<div class="bg-white/50 p-4 rounded-xl flex justify-between items-center cursor-pointer border border-transparent hover:border-primary/20 transition-all">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-lg bg-secondary-container flex items-center justify-center text-on-secondary-container">
+<span class="material-symbols-outlined text-sm">code</span>
+</div>
+<span class="font-bold text-sm">Advanced Algorithms</span>
+</div>
+<span class="material-symbols-outlined">expand_more</span>
+</div>
+</div>
+<div>
+<label class="block text-xs font-bold text-on-surface-variant mb-2 uppercase tracking-wide">Auto-Tagging Detection</label>
+<div class="flex flex-wrap gap-2">
+<span class="px-3 py-1.5 bg-primary/10 text-primary rounded-lg text-xs font-bold flex items-center gap-1">
+                                    #dynamic_programming
+                                    <span class="material-symbols-outlined text-[14px]">bolt</span>
+</span>
+<span class="px-3 py-1.5 bg-primary/10 text-primary rounded-lg text-xs font-bold flex items-center gap-1">
+                                    #memoization
+                                    <span class="material-symbols-outlined text-[14px]">bolt</span>
+</span>
+<span class="px-3 py-1.5 bg-secondary/10 text-secondary rounded-lg text-xs font-bold">#recursion</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Storage & Health -->
+<section class="bg-surface-container-low rounded-[2rem] p-8 border border-outline-variant/10">
+<h3 class="font-headline font-bold text-on-surface mb-6 uppercase text-xs tracking-widest opacity-60">System Status</h3>
+<div class="space-y-6">
+<div class="flex justify-between items-end mb-1">
+<span class="text-sm font-bold text-on-surface-variant">Cloud Storage</span>
+<span class="text-xs font-bold text-primary">82% Full</span>
+</div>
+<div class="h-2 w-full bg-surface-container-highest rounded-full overflow-hidden">
+<div class="h-full bg-primary rounded-full" style="width: 82%"></div>
+</div>
+<div class="grid grid-cols-2 gap-4 pt-4">
+<div class="p-4 bg-white/40 rounded-2xl">
+<span class="material-symbols-outlined text-primary mb-2">wifi</span>
+<p class="text-[10px] font-bold text-on-surface-variant uppercase">Network</p>
+<p class="text-sm font-bold">Stable</p>
+</div>
+<div class="p-4 bg-white/40 rounded-2xl">
+<span class="material-symbols-outlined text-secondary mb-2">battery_charging_full</span>
+<p class="text-[10px] font-bold text-on-surface-variant uppercase">Power</p>
+<p class="text-sm font-bold">94%</p>
+</div>
+</div>
+</div>
+</section>
+<!-- Quick Actions -->
+<div class="mt-auto">
+<button class="w-full p-6 rounded-[2rem] bg-inverse-surface text-inverse-on-surface font-headline font-extrabold text-lg flex items-center justify-center gap-3 shadow-2xl hover:bg-on-background transition-all">
+<span class="material-symbols-outlined">stop_circle</span>
+                        Finish &amp; Summarize
+                    </button>
+</div>
+</div>
+</div>
+</main>
+<!-- FAB for quick notes - Absolute positioned within canvas -->
+<button class="fixed bottom-10 right-10 w-16 h-16 rounded-full glass-panel border border-white/20 shadow-[0px_12px_32px_rgba(0,107,92,0.1)] text-primary flex items-center justify-center hover:scale-110 transition-transform z-50">
+<span class="material-symbols-outlined text-3xl">edit_note</span>
+</button>
+</body></html>

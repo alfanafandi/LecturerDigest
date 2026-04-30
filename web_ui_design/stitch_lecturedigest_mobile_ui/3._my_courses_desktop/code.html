@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "outline-variant": "#bbcac4",
+                    "on-surface-variant": "#3c4a46",
+                    "inverse-on-surface": "#f0f1f2",
+                    "tertiary-container": "#fe896a",
+                    "surface-container-lowest": "#ffffff",
+                    "on-tertiary": "#ffffff",
+                    "on-tertiary-container": "#74220b",
+                    "surface-container-low": "#f3f4f5",
+                    "primary-container": "#00bfa5",
+                    "tertiary-fixed-dim": "#ffb4a1",
+                    "primary-fixed-dim": "#44ddc1",
+                    "on-primary-fixed-variant": "#005145",
+                    "inverse-surface": "#2e3132",
+                    "error": "#ba1a1a",
+                    "surface-dim": "#d9dadb",
+                    "on-secondary-fixed-variant": "#004786",
+                    "secondary-fixed-dim": "#a5c8ff",
+                    "surface-container-highest": "#e1e3e4",
+                    "primary-fixed": "#68fadd",
+                    "on-primary-container": "#00473c",
+                    "outline": "#6c7a76",
+                    "on-background": "#191c1d",
+                    "surface-bright": "#f8f9fa",
+                    "surface": "#f8f9fa",
+                    "error-container": "#ffdad6",
+                    "surface-container-high": "#e7e8e9",
+                    "secondary": "#005faf",
+                    "on-tertiary-fixed-variant": "#7f2a13",
+                    "on-secondary-fixed": "#001c3a",
+                    "on-tertiary-fixed": "#3c0800",
+                    "on-secondary": "#ffffff",
+                    "inverse-primary": "#44ddc1",
+                    "on-primary-fixed": "#00201a",
+                    "secondary-container": "#54a0fe",
+                    "background": "#f8f9fa",
+                    "on-primary": "#ffffff",
+                    "tertiary": "#9f4128",
+                    "surface-container": "#edeeef",
+                    "on-secondary-container": "#003567",
+                    "on-error-container": "#93000a",
+                    "on-error": "#ffffff",
+                    "tertiary-fixed": "#ffdbd2",
+                    "surface-tint": "#006b5c",
+                    "secondary-fixed": "#d4e3ff",
+                    "surface-variant": "#e1e3e4",
+                    "on-surface": "#191c1d",
+                    "primary": "#006b5c"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "fontFamily": {
+                    "headline": ["Plus Jakarta Sans"],
+                    "body": ["Inter"],
+                    "label": ["Inter"]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .bg-glass {
+            background: rgba(248, 249, 250, 0.8);
+            backdrop-filter: blur(12px);
+        }
+        .shadow-ambient {
+            box-shadow: 0px 12px 32px rgba(0, 107, 92, 0.08);
+        }
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+    </style>
+</head>
+<body class="bg-surface font-body text-on-surface">
+<!-- SideNavBar (Authority: JSON & Design System) -->
+<aside class="h-screen w-64 fixed left-0 top-0 z-50 bg-[#E7E8E9] flex flex-col py-8 px-4 font-['Plus_Jakarta_Sans'] text-sm font-semibold">
+<div class="mb-10 px-4">
+<div class="flex items-center gap-3 mb-1">
+<div class="w-10 h-10 rounded-xl bg-primary flex items-center justify-center">
+<span class="material-symbols-outlined text-white" style="font-variation-settings: 'FILL' 1;">auto_awesome</span>
+</div>
+<div class="flex flex-col">
+<span class="text-xl font-extrabold text-[#006B5C]">LectureDigest</span>
+<span class="text-[10px] uppercase tracking-widest opacity-60">Academic Synthesis</span>
+</div>
+</div>
+</div>
+<nav class="flex-1 space-y-2">
+<!-- Home -->
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl transition-all hover:bg-white/40 text-slate-600 opacity-70" href="#">
+<span class="material-symbols-outlined" data-icon="home">home</span>
+<span>Home</span>
+</a>
+<!-- Courses (Active) -->
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl transition-all text-[#006B5C] border-r-4 border-[#006B5C] bg-white/50 translate-x-1 duration-150" href="#">
+<span class="material-symbols-outlined" data-icon="library_books" style="font-variation-settings: 'FILL' 1;">library_books</span>
+<span>Courses</span>
+</a>
+<!-- AI Tools -->
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl transition-all hover:bg-white/40 text-slate-600 opacity-70" href="#">
+<span class="material-symbols-outlined" data-icon="auto_awesome">auto_awesome</span>
+<span>AI Tools</span>
+</a>
+<!-- Collab -->
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl transition-all hover:bg-white/40 text-slate-600 opacity-70" href="#">
+<span class="material-symbols-outlined" data-icon="groups">groups</span>
+<span>Collab</span>
+</a>
+<!-- Profile -->
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl transition-all hover:bg-white/40 text-slate-600 opacity-70" href="#">
+<span class="material-symbols-outlined" data-icon="account_circle">account_circle</span>
+<span>Profile</span>
+</a>
+</nav>
+<div class="mt-auto space-y-2 border-t border-outline-variant/10 pt-6">
+<button class="w-full mb-4 py-4 px-6 bg-gradient-to-br from-primary to-primary-container text-white rounded-xl font-bold flex items-center justify-center gap-2 shadow-ambient hover:opacity-90 transition-opacity">
+<span class="material-symbols-outlined text-sm">add</span>
+<span>Summarize New</span>
+</button>
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl transition-all hover:bg-white/40 text-slate-600 opacity-70" href="#">
+<span class="material-symbols-outlined" data-icon="help">help</span>
+<span>Help</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl transition-all hover:bg-white/40 text-slate-600 opacity-70" href="#">
+<span class="material-symbols-outlined" data-icon="logout">logout</span>
+<span>Logout</span>
+</a>
+</div>
+</aside>
+<!-- TopAppBar (Authority: JSON & Design System) -->
+<header class="fixed top-0 right-0 left-64 z-40 bg-[#F8F9FA]/80 backdrop-blur-md flex justify-between items-center px-8 py-4">
+<div class="flex items-center gap-4 flex-1">
+<div class="relative w-full max-w-md">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant">search</span>
+<input class="w-full pl-10 pr-4 py-2 bg-surface-container-high rounded-full border-none focus:ring-2 focus:ring-primary/20 text-sm font-['Plus_Jakarta_Sans'] transition-all" placeholder="Search your courses..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-6">
+<div class="flex gap-4">
+<button class="p-2 rounded-full hover:bg-[#E7E8E9] transition-colors duration-200 text-on-surface-variant">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+</button>
+<button class="p-2 rounded-full hover:bg-[#E7E8E9] transition-colors duration-200 text-on-surface-variant">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+</button>
+</div>
+<div class="h-10 w-10 rounded-full overflow-hidden border-2 border-primary/20">
+<img alt="Student Profile" class="object-cover h-full w-full" data-alt="Portrait of a young adult male student with glasses looking thoughtfully at the camera in a modern campus library setting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuATtm2jqn-mUHdDnaSiqO-mNNKmQUo6EPqioje4HPdMcZaNvn-z4OiLnfk8rWQHsUX_brhB2cfUV1Rx3q4YXuwOrunTcpCVBJLj_Cq_skzGegJTfLVB8dnt2_S1dMlvU_3ZcI-jH1aTJsiIF0GBzBBrMNrOzmgbaKluBIPdX6CJeEXI1gOLy4deYfMFD8MS2p8RJBoSS_cAeEKJWD31RFi6TUOogtygUGB06aV06Lt9r9mx5Sg6anSz3bDEJr-Of3qIvz3jEw0kCcTI"/>
+</div>
+</div>
+</header>
+<!-- Main Canvas -->
+<main class="ml-64 pt-24 min-h-screen px-10 pb-20">
+<!-- Header Section -->
+<section class="mb-12">
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-6">
+<div class="max-w-2xl">
+<span class="text-primary font-label font-bold text-sm tracking-wider uppercase mb-2 block">Your Academic Hub</span>
+<h1 class="font-headline text-5xl font-extrabold text-on-surface tracking-tight leading-tight">
+                        My <span class="text-primary italic">Courses</span>
+</h1>
+<p class="mt-4 text-on-surface-variant text-lg leading-relaxed max-w-xl">
+                        Synthesize complex informatics concepts into readable insights. Stay on top of your semester with AI-powered lecture digests.
+                    </p>
+</div>
+<!-- Filter Pills -->
+<div class="flex gap-2 p-1 bg-surface-container-high rounded-xl">
+<button class="px-6 py-2 bg-surface-container-lowest text-primary rounded-lg font-bold text-sm shadow-sm">All</button>
+<button class="px-6 py-2 text-on-surface-variant hover:bg-surface-container-highest rounded-lg font-medium text-sm transition-colors">Computer Science</button>
+<button class="px-6 py-2 text-on-surface-variant hover:bg-surface-container-highest rounded-lg font-medium text-sm transition-colors">Information Systems</button>
+</div>
+</div>
+</section>
+<!-- Bento Grid of Courses -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+<!-- Card 1: Struktur Data -->
+<article class="group relative bg-surface-container-lowest rounded-3xl overflow-hidden shadow-ambient transition-all hover:-translate-y-2">
+<div class="h-48 relative overflow-hidden">
+<img alt="Data Structures" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" data-alt="Abstract visualization of complex data nodes connected by glowing lines in a deep teal digital space with soft bokeh light" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA8W4hc9b1BgMPX0PHRw16VETj0i8tHfGUFe6zPvDWQiDId_n8efv6N93kAJu04ye8UixmDK-TtbxBUik_S4PTrhyyKazxUtlMhD1UCL860_-JzaAqzGPWeHBN8-GmN6MtaEzHso23_h50i_z3Jn2pwAuOgXm1fGy8cRu9TFZEj7-pvZhRX2pX3qkm6bqtVAmjWu1Ww3Xrlonnb621fZUYk97J1eZmJW_kt0PwvmgauOOilzbTtcLPC3jnY05FvLwu8VIpQQT5iQBGh"/>
+<div class="absolute inset-0 bg-gradient-to-t from-surface-container-lowest via-transparent to-transparent opacity-90"></div>
+<div class="absolute top-4 left-4">
+<span class="bg-primary/90 backdrop-blur-md text-white text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-tighter">IF-2110</span>
+</div>
+</div>
+<div class="p-8">
+<h3 class="font-headline text-2xl font-bold text-on-surface mb-2 group-hover:text-primary transition-colors">Struktur Data</h3>
+<div class="flex items-center gap-6 mb-8 text-on-surface-variant text-sm">
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-primary text-lg" style="font-variation-settings: 'FILL' 1;">description</span>
+<span class="font-semibold">24 Lectures</span>
+</div>
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-primary text-lg" style="font-variation-settings: 'FILL' 1;">update</span>
+<span>2 hours ago</span>
+</div>
+</div>
+<button class="w-full py-4 bg-surface-container-low text-primary rounded-2xl font-bold flex items-center justify-center gap-2 group-hover:bg-primary group-hover:text-white transition-all">
+<span>View Digest</span>
+<span class="material-symbols-outlined text-sm">arrow_forward_ios</span>
+</button>
+</div>
+</article>
+<!-- Card 2: Algoritma -->
+<article class="group relative bg-surface-container-lowest rounded-3xl overflow-hidden shadow-ambient transition-all hover:-translate-y-2">
+<div class="h-48 relative overflow-hidden">
+<img alt="Algorithms" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" data-alt="Macro photo of glowing motherboard circuits with bright white data streams pulsing through cyan channels" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDlSmKmUI0n-cvM0y7_a3QKIvio2JhGNki_v8VKwFucjHXjfYJxOP3XpGdg1g1ZtJKuPYq5X4QaH11-wPkF9hbGesPugppF2r3DFFYAvONYe5SCfyhpdCu5gn1x8O3bT1l5m_DFSFVKisng9qSGcXkZ8-7n7AnQ0i-FMqZ_prKnR4VapYpOYgfOhAMLkY73O4oq9U-eY_T-SuWIj1OuMx4FDbGQ1a1C6-SWrMapTV7PVivKCP4qZCTql3OP8_K77Tq0lX881SmW-lGk"/>
+<div class="absolute inset-0 bg-gradient-to-t from-surface-container-lowest via-transparent to-transparent opacity-90"></div>
+<div class="absolute top-4 left-4">
+<span class="bg-primary/90 backdrop-blur-md text-white text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-tighter">IF-2120</span>
+</div>
+</div>
+<div class="p-8">
+<h3 class="font-headline text-2xl font-bold text-on-surface mb-2 group-hover:text-primary transition-colors">Algoritma</h3>
+<div class="flex items-center gap-6 mb-8 text-on-surface-variant text-sm">
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-primary text-lg" style="font-variation-settings: 'FILL' 1;">description</span>
+<span class="font-semibold">18 Lectures</span>
+</div>
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-primary text-lg" style="font-variation-settings: 'FILL' 1;">update</span>
+<span>Yesterday</span>
+</div>
+</div>
+<button class="w-full py-4 bg-surface-container-low text-primary rounded-2xl font-bold flex items-center justify-center gap-2 group-hover:bg-primary group-hover:text-white transition-all">
+<span>View Digest</span>
+<span class="material-symbols-outlined text-sm">arrow_forward_ios</span>
+</button>
+</div>
+</article>
+<!-- Card 3: Basis Data -->
+<article class="group relative bg-surface-container-lowest rounded-3xl overflow-hidden shadow-ambient transition-all hover:-translate-y-2 lg:col-span-1">
+<div class="h-48 relative overflow-hidden">
+<img alt="Databases" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" data-alt="Orderly rows of modern server towers in a dark room with blinking blue and green status LEDs" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC2Hmum2NThc2PiUMhKsWVRkt_gBHiTf1KLOQ4-DioEDC4CNHGnXR999VNAvAEmHjG8mTCqVCpoxgDyZI7B9gJv2ZT10n0zxXI-A9ft0F_PBvk-1F7v9DzkgBpD4yreKHSvkf1jHdEbpsU5p9DPizaH1osf6IW-q3ypP14WcJId-uxuPS0AUk2ivUcBDWA4OnvbPY8hprXQjpITHmgBh3FNantiTAoLlFxEXK-itYjEbi0O7gyLtkzeU-B5GuU7_ZyiPCwPfggeJtdk"/>
+<div class="absolute inset-0 bg-gradient-to-t from-surface-container-lowest via-transparent to-transparent opacity-90"></div>
+<div class="absolute top-4 left-4">
+<span class="bg-primary/90 backdrop-blur-md text-white text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-tighter">IF-3110</span>
+</div>
+</div>
+<div class="p-8">
+<h3 class="font-headline text-2xl font-bold text-on-surface mb-2 group-hover:text-primary transition-colors">Basis Data</h3>
+<div class="flex items-center gap-6 mb-8 text-on-surface-variant text-sm">
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-primary text-lg" style="font-variation-settings: 'FILL' 1;">description</span>
+<span class="font-semibold">12 Lectures</span>
+</div>
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-primary text-lg" style="font-variation-settings: 'FILL' 1;">update</span>
+<span>3 days ago</span>
+</div>
+</div>
+<button class="w-full py-4 bg-surface-container-low text-primary rounded-2xl font-bold flex items-center justify-center gap-2 group-hover:bg-primary group-hover:text-white transition-all">
+<span>View Digest</span>
+<span class="material-symbols-outlined text-sm">arrow_forward_ios</span>
+</button>
+</div>
+</article>
+<!-- Card 4: Feature Card (Asymmetric Layout) -->
+<article class="md:col-span-2 lg:col-span-3 bg-gradient-to-r from-primary to-primary-container rounded-[2.5rem] p-12 text-white relative overflow-hidden shadow-ambient flex flex-col lg:flex-row items-center gap-12">
+<div class="relative z-10 flex-1">
+<span class="bg-white/20 backdrop-blur-sm text-xs font-bold px-4 py-1 rounded-full uppercase mb-6 inline-block">AI New Feature</span>
+<h2 class="font-headline text-4xl font-extrabold mb-6 leading-tight">Multi-Course Synthesis is here.</h2>
+<p class="text-white/80 text-xl max-w-xl mb-10 leading-relaxed font-light">
+                        Bridge the gap between subjects. Our new "Cross-Synthesis" tool analyzes overlapping concepts in <span class="text-white font-bold italic">Struktur Data</span> and <span class="text-white font-bold italic">Algoritma</span> to give you a holistic understanding.
+                    </p>
+<button class="bg-white text-primary px-8 py-4 rounded-full font-extrabold flex items-center gap-3 hover:scale-105 transition-transform">
+<span>Try Cross-Synthesis</span>
+<span class="material-symbols-outlined">auto_awesome</span>
+</button>
+</div>
+<div class="relative z-10 w-full lg:w-1/3 aspect-video bg-white/10 backdrop-blur-md rounded-3xl p-6 border border-white/20 shadow-xl overflow-hidden">
+<div class="absolute top-0 right-0 p-4">
+<div class="w-3 h-3 bg-white/40 rounded-full"></div>
+</div>
+<div class="space-y-4">
+<div class="h-3 w-3/4 bg-white/20 rounded-full animate-pulse"></div>
+<div class="h-3 w-1/2 bg-white/20 rounded-full animate-pulse"></div>
+<div class="pt-4 flex gap-2">
+<div class="h-10 w-10 bg-primary-container rounded-lg"></div>
+<div class="h-10 w-10 bg-white/20 rounded-lg"></div>
+<div class="h-10 w-10 bg-white/20 rounded-lg"></div>
+</div>
+<div class="h-20 w-full bg-white/5 rounded-xl mt-4 border border-white/10 flex items-center justify-center">
+<span class="material-symbols-outlined text-white/30 text-4xl">analytics</span>
+</div>
+</div>
+<!-- Decorative Pulse -->
+<div class="absolute -bottom-10 -right-10 w-40 h-40 bg-white/10 rounded-full blur-3xl"></div>
+</div>
+</article>
+<!-- Card 5: Statistics (Small Bento Item) -->
+<article class="bg-surface-container-high rounded-3xl p-8 flex flex-col justify-between">
+<div>
+<h4 class="text-on-surface-variant font-bold text-sm uppercase tracking-widest mb-6">Study Streak</h4>
+<div class="flex items-end gap-3">
+<span class="text-6xl font-extrabold text-primary">14</span>
+<span class="text-lg font-bold text-on-surface-variant mb-2">Days</span>
+</div>
+</div>
+<p class="text-sm text-on-surface-variant/80 mt-4 leading-relaxed">
+                    You're in the top 5% of active users this month. Keep up the momentum!
+                </p>
+</article>
+<!-- Card 6: Quick Summary (Small Bento Item) -->
+<article class="bg-surface-container-lowest border border-outline-variant/20 rounded-3xl p-8 flex flex-col justify-between shadow-sm">
+<div>
+<div class="flex justify-between items-start mb-6">
+<h4 class="text-on-surface-variant font-bold text-sm uppercase tracking-widest">Recent Activity</h4>
+<span class="text-xs text-primary font-bold">Today</span>
+</div>
+<ul class="space-y-4">
+<li class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-tertiary-fixed-dim/30 flex items-center justify-center">
+<span class="material-symbols-outlined text-tertiary text-xs" style="font-variation-settings: 'FILL' 1;">history_edu</span>
+</div>
+<div class="text-xs">
+<p class="font-bold text-on-surface">Summarized Hash Tables</p>
+<p class="text-on-surface-variant/60">Struktur Data</p>
+</div>
+</li>
+<li class="flex items-center gap-3 opacity-60">
+<div class="w-8 h-8 rounded-full bg-surface-container-highest flex items-center justify-center">
+<span class="material-symbols-outlined text-on-surface-variant text-xs">edit_note</span>
+</div>
+<div class="text-xs">
+<p class="font-bold">Annotated Sorting Alg.</p>
+<p>Algoritma</p>
+</div>
+</li>
+</ul>
+</div>
+<button class="text-primary font-bold text-sm flex items-center gap-2 hover:underline">
+                    See All Activity
+                    <span class="material-symbols-outlined text-[10px]">arrow_forward</span>
+</button>
+</article>
+</div>
+</main>
+<!-- FAB for Quick Actions (Authority: Design System) -->
+<button class="fixed bottom-10 right-10 w-16 h-16 bg-gradient-to-br from-primary to-primary-container text-white rounded-full flex items-center justify-center shadow-ambient hover:scale-110 transition-transform z-50 overflow-hidden group">
+<span class="material-symbols-outlined text-3xl group-hover:rotate-90 transition-transform">add</span>
+<!-- Tooltip effect on hover -->
+<span class="absolute right-20 bg-on-surface text-surface text-xs font-bold px-4 py-2 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">New Summary</span>
+</button>
+</body></html>
