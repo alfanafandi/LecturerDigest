@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'dart:async';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:lecturer_digest/core/theme/app_theme.dart';
@@ -21,9 +23,24 @@ class _LoginScreenState extends State<LoginScreen> {
   final _passwordController = TextEditingController();
   bool _isPasswordVisible = false;
   String? _localError;
+  StreamSubscription<AuthState>? _authSubscription;
+
+  @override
+  void initState() {
+    super.initState();
+    _authSubscription = Supabase.instance.client.auth.onAuthStateChange.listen((data) {
+      final session = data.session;
+      if (session != null && mounted) {
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(builder: (_) => const MainWrapper()),
+        );
+      }
+    });
+  }
 
   @override
   void dispose() {
+    _authSubscription?.cancel();
     _emailController.dispose();
     _passwordController.dispose();
     super.dispose();
@@ -53,52 +70,6 @@ class _LoginScreenState extends State<LoginScreen> {
     }
   }
 
-  Future<void> _handleTesterLogin() async {
-    final provider = Provider.of<AppProvider>(context, listen: false);
-    _emailController.text = 'tester@lecturedigest.app';
-    _passwordController.text = 'password123';
-    
-    _setLoading(true);
-    
-    try {
-      // 1. Try Login first
-      await provider.login(_emailController.text, _passwordController.text);
-      
-      if (!provider.isAuthenticated) {
-        // 2. If login fails, try Signup (maybe account doesn't exist yet)
-        await provider.signup(_emailController.text, _passwordController.text);
-        // 3. Try Login again after signup
-        await provider.login(_emailController.text, _passwordController.text);
-      }
-      
-      if (provider.isAuthenticated) {
-        if (mounted) {
-          Navigator.of(context).pushReplacement(
-            MaterialPageRoute(builder: (_) => const MainWrapper()),
-          );
-        }
-      } else {
-        throw Exception(provider.error ?? "Gagal masuk sebagai tester.");
-      }
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text("Tester Login Error: ${e.toString()}\nPastikan 'Confirm Email' di Supabase sudah OFF."),
-            backgroundColor: Colors.redAccent,
-            duration: const Duration(seconds: 5),
-            behavior: SnackBarBehavior.floating,
-          ),
-        );
-      }
-    } finally {
-      _setLoading(false);
-    }
-  }
-
-  void _setLoading(bool val) {
-    // This is just a local helper if needed, but AppProvider handles it usually.
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -129,34 +100,36 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                 ),
                 Center(
-                  child: Padding(
-                    padding: const EdgeInsets.all(64.0),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const BrandLogo(size: 160, hasShadow: true),
-                        const SizedBox(height: 48),
-                        Text(
-                          'LectureDigest',
-                          style: GoogleFonts.plusJakartaSans(
-                            fontSize: 64,
-                            fontWeight: FontWeight.w900,
-                            color: Colors.white,
-                            letterSpacing: -2.0,
+                  child: SingleChildScrollView(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 48.0, vertical: 32.0),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const BrandLogo(size: 160, hasShadow: true),
+                          const SizedBox(height: 48),
+                          Text(
+                            'LectureDigest',
+                            style: GoogleFonts.plusJakartaSans(
+                              fontSize: 64,
+                              fontWeight: FontWeight.w900,
+                              color: Colors.white,
+                              letterSpacing: -2.0,
+                            ),
                           ),
-                        ),
-                        const SizedBox(height: 24),
-                        Text(
-                          'Transformasi cara kamu belajar dengan kecerdasan AI.\nSemua materi kuliahmu dalam satu genggaman.',
-                          textAlign: TextAlign.center,
-                          style: GoogleFonts.inter(
-                            fontSize: 20,
-                            color: Colors.white.withOpacity(0.8),
-                            height: 1.6,
-                            fontWeight: FontWeight.w500,
+                          const SizedBox(height: 24),
+                          Text(
+                            'Transformasi cara kamu belajar dengan kecerdasan AI.\nSemua materi kuliahmu dalam satu genggaman.',
+                            textAlign: TextAlign.center,
+                            style: GoogleFonts.inter(
+                              fontSize: 20,
+                              color: Colors.white.withOpacity(0.8),
+                              height: 1.6,
+                              fontWeight: FontWeight.w500,
+                            ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   ),
                 ),
@@ -332,39 +305,78 @@ class _LoginScreenState extends State<LoginScreen> {
           },
         ),
         
-        const SizedBox(height: 32),
+        const SizedBox(height: 24),
         
         Row(
           children: [
             const Expanded(child: Divider()),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: Text('atau', style: TextStyle(color: AppTheme.onSurfaceVariant.withOpacity(0.5), fontSize: 12)),
+              child: Text(
+                'atau masuk dengan', 
+                style: TextStyle(
+                  color: AppTheme.onSurfaceVariant.withOpacity(0.5), 
+                  fontSize: 12,
+                  fontWeight: FontWeight.w500,
+                )
+              ),
             ),
             const Expanded(child: Divider()),
           ],
         ),
         
-        const SizedBox(height: 32),
+        const SizedBox(height: 24),
         
-        OutlinedButton(
-          onPressed: _handleTesterLogin,
-          style: OutlinedButton.styleFrom(
-            minimumSize: const Size(double.infinity, 60),
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-            side: BorderSide(color: AppTheme.primary.withOpacity(0.2)),
-          ),
-          child: const Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(Icons.psychology_outlined, size: 20),
-              SizedBox(width: 12),
-              Text('Mode Demo (Tester Login)', style: TextStyle(fontWeight: FontWeight.w700)),
-            ],
-          ),
+        // Google Sign In Button
+        Consumer<AppProvider>(
+          builder: (context, provider, child) {
+            return SizedBox(
+              width: double.infinity,
+              height: 60,
+              child: OutlinedButton(
+                onPressed: provider.isLoading ? null : () => provider.loginWithGoogle(),
+                style: OutlinedButton.styleFrom(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  side: BorderSide(
+                    color: AppTheme.outlineVariant.withOpacity(0.4),
+                    width: 1.5,
+                  ),
+                  backgroundColor: AppTheme.surfaceContainerLowest,
+                  foregroundColor: AppTheme.onSurface,
+                  elevation: 0,
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Image.network(
+                      'https://upload.wikimedia.org/wikipedia/commons/thumb/c/c1/Google_%22G%22_logo.svg/48px-Google_%22G%22_logo.svg.png',
+                      height: 24,
+                      width: 24,
+                      errorBuilder: (context, error, stackTrace) => const Icon(
+                        Icons.account_circle_outlined,
+                        color: AppTheme.primary,
+                        size: 24,
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Text(
+                      'Masuk dengan Google',
+                      style: GoogleFonts.inter(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w700,
+                        color: AppTheme.onSurface,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
         ),
-        
-        const SizedBox(height: 48),
+
+        const SizedBox(height: 32),
         
         Center(
           child: TextButton(

@@ -5,6 +5,7 @@ import 'package:lecturer_digest/core/providers/app_provider.dart';
 import 'package:lecturer_digest/screens/quiz_review_screen.dart';
 import 'package:lecturer_digest/core/utils/responsive.dart';
 import 'package:lecturer_digest/core/widgets/brand_logo.dart';
+import 'package:lecturer_digest/screens/learning_diagnostics.dart';
 
 class QuizScreen extends StatefulWidget {
   final String lectureId;
@@ -170,48 +171,50 @@ class _QuizScreenState extends State<QuizScreen> {
           body: Center(
             child: ConstrainedBox(
               constraints: BoxConstraints(maxWidth: isDesktop ? 900 : double.infinity),
-              child: Padding(
-                padding: EdgeInsets.symmetric(horizontal: isDesktop ? 48 : 24.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const SizedBox(height: 16),
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(10),
-                      child: LinearProgressIndicator(
-                        value: progress,
-                        backgroundColor: AppTheme.surfaceContainerHighest,
-                        color: AppTheme.primary,
-                        minHeight: 10,
-                      ),
-                    ),
-                    const SizedBox(height: 32),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          'PERTANYAAN ${_currentIndex + 1} DARI ${provider.currentQuizzes.length}',
-                          style: const TextStyle(color: AppTheme.primary, fontWeight: FontWeight.w900, fontSize: 12, letterSpacing: 1.5),
+              child: SingleChildScrollView(
+                child: Padding(
+                  padding: EdgeInsets.symmetric(horizontal: isDesktop ? 48 : 24.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const SizedBox(height: 16),
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(10),
+                        child: LinearProgressIndicator(
+                          value: progress,
+                          backgroundColor: AppTheme.surfaceContainerHighest,
+                          color: AppTheme.primary,
+                          minHeight: 10,
                         ),
-                        if (isDesktop) Text(
-                          'Skor: $_score',
-                          style: const TextStyle(fontWeight: FontWeight.bold, color: AppTheme.secondary),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 24),
-                    Text(
-                      quiz['question'] ?? '',
-                      style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                        fontWeight: FontWeight.w900, 
-                        height: 1.4,
-                        fontSize: isDesktop ? 32 : 24,
                       ),
-                    ),
-                    const SizedBox(height: 48),
-                    Expanded(
-                      child: isDesktop 
+                      const SizedBox(height: 32),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            'PERTANYAAN ${_currentIndex + 1} DARI ${provider.currentQuizzes.length}',
+                            style: const TextStyle(color: AppTheme.primary, fontWeight: FontWeight.w900, fontSize: 12, letterSpacing: 1.5),
+                          ),
+                          if (isDesktop) Text(
+                            'Skor: $_score',
+                            style: const TextStyle(fontWeight: FontWeight.bold, color: AppTheme.secondary),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 24),
+                      Text(
+                        quiz['question'] ?? '',
+                        style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                          fontWeight: FontWeight.w900, 
+                          height: 1.4,
+                          fontSize: isDesktop ? 32 : 24,
+                        ),
+                      ),
+                      const SizedBox(height: 48),
+                      isDesktop 
                         ? GridView.builder(
+                            shrinkWrap: true,
+                            physics: const NeverScrollableScrollPhysics(),
                             gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                               crossAxisCount: 2,
                               crossAxisSpacing: 24,
@@ -225,37 +228,40 @@ class _QuizScreenState extends State<QuizScreen> {
                             },
                           )
                         : ListView.builder(
+                            shrinkWrap: true,
+                            physics: const NeverScrollableScrollPhysics(),
                             itemCount: (quiz['options'] as List).length,
                             itemBuilder: (context, index) {
                               final option = quiz['options'][index];
                               return _buildOptionCard(option, quiz['correct_answer']);
                             },
                           ),
-                    ),
-                    if (_isAnswered) ...[
-                      _buildFeedbackArea(quiz['explanation'] ?? '', isDesktop),
-                      const SizedBox(height: 32),
-                      SizedBox(
-                        width: double.infinity,
-                        height: 64,
-                        child: ElevatedButton(
-                          onPressed: _nextQuestion,
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: AppTheme.primary,
-                            foregroundColor: Colors.white,
-                            elevation: 8,
-                            shadowColor: AppTheme.primary.withOpacity(0.3),
-                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-                          ),
-                          child: Text(
-                            _currentIndex < provider.currentQuizzes.length - 1 ? 'Pertanyaan Selanjutnya' : 'Selesaikan Kuis',
-                            style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 18),
+                      if (_isAnswered) ...[
+                        const SizedBox(height: 24),
+                        _buildFeedbackArea(quiz['explanation'] ?? '', isDesktop),
+                        const SizedBox(height: 32),
+                        SizedBox(
+                          width: double.infinity,
+                          height: 64,
+                          child: ElevatedButton(
+                            onPressed: _nextQuestion,
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: AppTheme.primary,
+                              foregroundColor: Colors.white,
+                              elevation: 8,
+                              shadowColor: AppTheme.primary.withOpacity(0.3),
+                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                            ),
+                            child: Text(
+                              _currentIndex < provider.currentQuizzes.length - 1 ? 'Pertanyaan Selanjutnya' : 'Selesaikan Kuis',
+                              style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 18),
+                            ),
                           ),
                         ),
-                      ),
+                      ],
+                      const SizedBox(height: 40),
                     ],
-                    const SizedBox(height: 40),
-                  ],
+                  ),
                 ),
               ),
             ),
@@ -364,85 +370,132 @@ class _QuizScreenState extends State<QuizScreen> {
     return Scaffold(
       backgroundColor: AppTheme.surface,
       body: Center(
-        child: ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 600),
-          child: Padding(
-            padding: const EdgeInsets.all(48.0),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(40),
-                  decoration: BoxDecoration(
-                    color: AppTheme.primary.withOpacity(0.1),
-                    shape: BoxShape.circle,
+        child: SingleChildScrollView(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 600),
+            child: Padding(
+              padding: EdgeInsets.symmetric(horizontal: isDesktop ? 48.0 : 24.0, vertical: 32.0),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(40),
+                    decoration: BoxDecoration(
+                      color: AppTheme.primary.withOpacity(0.1),
+                      shape: BoxShape.circle,
+                    ),
+                    child: Icon(icon, size: 100, color: AppTheme.primary),
                   ),
-                  child: Icon(icon, size: 100, color: AppTheme.primary),
-                ),
-                const SizedBox(height: 48),
-                Text(message, style: Theme.of(context).textTheme.displaySmall?.copyWith(fontWeight: FontWeight.w900, color: AppTheme.primary)),
-                const SizedBox(height: 16),
-                Text(
-                  'Anda menjawab $_score dari $totalQuestions soal dengan benar.', 
-                  textAlign: TextAlign.center, 
-                  style: TextStyle(fontSize: 18, height: 1.5, color: AppTheme.onSurfaceVariant, fontWeight: FontWeight.w500)
-                ),
-                const SizedBox(height: 64),
-                Row(
-                  children: [
-                    Expanded(
-                      child: SizedBox(
-                        height: 60,
-                        child: ElevatedButton(
-                          onPressed: () => Navigator.of(context).pop(),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: AppTheme.primary,
-                            foregroundColor: Colors.white,
-                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-                            elevation: 0,
+                  const SizedBox(height: 48),
+                  Text(message, style: Theme.of(context).textTheme.displaySmall?.copyWith(fontWeight: FontWeight.w900, color: AppTheme.primary)),
+                  const SizedBox(height: 16),
+                  Text(
+                    'Anda menjawab $_score dari $totalQuestions soal dengan benar.', 
+                    textAlign: TextAlign.center, 
+                    style: TextStyle(fontSize: 18, height: 1.5, color: AppTheme.onSurfaceVariant, fontWeight: FontWeight.w500)
+                  ),
+                  const SizedBox(height: 32),
+                  if (percentage < 70) ...[
+                    Container(
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFFDF4F5),
+                        borderRadius: BorderRadius.circular(16),
+                        border: Border.all(color: const Color(0xFFF5C2C7)),
+                      ),
+                      child: Column(
+                        children: [
+                          const Text(
+                            'AI mendeteksi beberapa kesulitan pada materi kuis ini. Ingin melihat diagnosis dan solusi perbaikan?',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              fontSize: 13,
+                              fontWeight: FontWeight.w600,
+                              color: Color(0xFF842029),
+                            ),
                           ),
-                          child: const Text('Selesai', style: TextStyle(fontWeight: FontWeight.w800)),
-                        ),
+                          const SizedBox(height: 12),
+                          ElevatedButton.icon(
+                            onPressed: () {
+                              Navigator.of(context).pushReplacement(
+                                MaterialPageRoute(
+                                  builder: (_) => const LearningDiagnosticsScreen(),
+                                ),
+                              );
+                            },
+                            icon: const Icon(Icons.analytics_outlined, size: 16),
+                            label: const Text('Buka Diagnosis AI', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: const Color(0xFF842029),
+                              foregroundColor: Colors.white,
+                              elevation: 0,
+                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                            ),
+                          ),
+                        ],
                       ),
                     ),
-                    const SizedBox(width: 16),
-                    Expanded(
-                      child: SizedBox(
-                        height: 60,
-                        child: ElevatedButton(
-                          onPressed: () {
-                            Navigator.of(context).pushReplacement(
-                              MaterialPageRoute(builder: (_) => QuizReviewScreen(lectureId: widget.lectureId))
-                            );
-                          },
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: AppTheme.secondary,
-                            foregroundColor: Colors.white,
-                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-                            elevation: 0,
-                          ),
-                          child: const Text('Bahas Soal', style: TextStyle(fontWeight: FontWeight.w800)),
-                        ),
-                      ),
-                    ),
+                    const SizedBox(height: 24),
                   ],
-                ),
-                const SizedBox(height: 24),
-                TextButton.icon(
-                  onPressed: () {
-                    setState(() {
-                      _currentIndex = 0;
-                      _score = 0;
-                      _isAnswered = false;
-                      _isFinished = false;
-                      _selectedOption = null;
-                      _userAnswers.clear();
-                    });
-                  },
-                  icon: const Icon(Icons.refresh_rounded),
-                  label: const Text('Ulangi Kuis Sekarang', style: TextStyle(fontWeight: FontWeight.w800)),
-                ),
-              ],
+                  const SizedBox(height: 32),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: SizedBox(
+                          height: 60,
+                          child: ElevatedButton(
+                            onPressed: () => Navigator.of(context).pop(),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: AppTheme.primary,
+                              foregroundColor: Colors.white,
+                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                              elevation: 0,
+                            ),
+                            child: const Text('Selesai', style: TextStyle(fontWeight: FontWeight.w800)),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 16),
+                      Expanded(
+                        child: SizedBox(
+                          height: 60,
+                          child: ElevatedButton(
+                            onPressed: () {
+                              Navigator.of(context).pushReplacement(
+                                MaterialPageRoute(builder: (_) => QuizReviewScreen(lectureId: widget.lectureId))
+                              );
+                            },
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: AppTheme.secondary,
+                              foregroundColor: Colors.white,
+                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                              elevation: 0,
+                            ),
+                            child: const Text('Bahas Soal', style: TextStyle(fontWeight: FontWeight.w800)),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 24),
+                  TextButton.icon(
+                    onPressed: () {
+                      setState(() {
+                        _currentIndex = 0;
+                        _score = 0;
+                        _isAnswered = false;
+                        _isFinished = false;
+                        _selectedOption = null;
+                        _userAnswers.clear();
+                      });
+                    },
+                    icon: const Icon(Icons.refresh_rounded),
+                    label: const Text('Ulangi Kuis Sekarang', style: TextStyle(fontWeight: FontWeight.w800)),
+                  ),
+                ],
+              ),
             ),
           ),
         ),

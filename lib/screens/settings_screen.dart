@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:lecturer_digest/core/theme/app_theme.dart';
 import 'package:lecturer_digest/core/widgets/brand_logo.dart';
 import 'package:lecturer_digest/core/providers/app_provider.dart';
-import 'package:lecturer_digest/screens/login_screen.dart';
+import 'package:lecturer_digest/screens/main_wrapper.dart';
 import 'package:provider/provider.dart';
 import 'package:lecturer_digest/core/utils/responsive.dart';
 
@@ -170,10 +170,10 @@ class SettingsScreen extends StatelessWidget {
                     child: InkWell(
                       onTap: () async {
                         final provider = Provider.of<AppProvider>(context, listen: false);
-                        await provider.logout();
+                        await provider.signOut();
                         if (context.mounted) {
                           Navigator.of(context).pushAndRemoveUntil(
-                            MaterialPageRoute(builder: (_) => const LoginScreen()),
+                            MaterialPageRoute(builder: (_) => MainWrapper()),
                             (route) => false,
                           );
                         }

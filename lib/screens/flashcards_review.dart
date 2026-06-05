@@ -7,7 +7,8 @@ import 'package:lecturer_digest/core/utils/responsive.dart';
 
 class FlashcardsReview extends StatefulWidget {
   final String? lectureId;
-  const FlashcardsReview({super.key, this.lectureId});
+  final String? courseId;
+  const FlashcardsReview({super.key, this.lectureId, this.courseId});
 
   @override
   State<FlashcardsReview> createState() => _FlashcardsReviewState();
@@ -65,7 +66,20 @@ class _FlashcardsReviewState extends State<FlashcardsReview> {
 
     return Consumer<AppProvider>(
       builder: (context, provider, child) {
-        final cards = widget.lectureId != null ? provider.currentFlashcards : provider.dueFlashcards;
+        final List<Map<String, dynamic>> cards;
+        if (widget.lectureId != null) {
+          cards = provider.currentFlashcards;
+        } else if (widget.courseId != null) {
+          final courseLectureIds = provider.lectures
+              .where((l) => l['course_id'] == widget.courseId)
+              .map((l) => l['id'] as String)
+              .toSet();
+          cards = provider.dueFlashcards
+              .where((f) => courseLectureIds.contains(f['lecture_id']))
+              .toList();
+        } else {
+          cards = provider.dueFlashcards;
+        }
         
         if (provider.isLoading) {
           return const Scaffold(body: Center(child: CircularProgressIndicator()));
@@ -255,7 +269,7 @@ class _FlashcardsReviewState extends State<FlashcardsReview> {
       key: const ValueKey(false),
       width: double.infinity,
       height: isDesktop ? 450 : 380,
-      padding: const EdgeInsets.all(40),
+      padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 24),
       decoration: BoxDecoration(
         color: AppTheme.surfaceContainerLowest,
         borderRadius: BorderRadius.circular(32),
@@ -264,19 +278,24 @@ class _FlashcardsReviewState extends State<FlashcardsReview> {
           BoxShadow(color: Colors.black.withOpacity(0.02), blurRadius: 4, offset: const Offset(0, 2)),
         ],
       ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Container(
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(color: AppTheme.primary.withOpacity(0.1), borderRadius: BorderRadius.circular(12)),
-            child: const Icon(Icons.help_outline_rounded, color: AppTheme.primary),
+      child: Center(
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(color: AppTheme.primary.withOpacity(0.1), borderRadius: BorderRadius.circular(12)),
+                child: const Icon(Icons.help_outline_rounded, color: AppTheme.primary),
+              ),
+              const SizedBox(height: 32),
+              Text(concept, textAlign: TextAlign.center, style: TextStyle(fontSize: isDesktop ? 36 : 28, fontWeight: FontWeight.w900, letterSpacing: -0.5)),
+              const SizedBox(height: 48),
+              const Text('KETUK UNTUK JAWABAN', style: TextStyle(color: AppTheme.outlineVariant, fontSize: 10, fontWeight: FontWeight.w900, letterSpacing: 2.0)),
+            ],
           ),
-          const SizedBox(height: 32),
-          Text(concept, textAlign: TextAlign.center, style: TextStyle(fontSize: isDesktop ? 36 : 28, fontWeight: FontWeight.w900, letterSpacing: -0.5)),
-          const SizedBox(height: 48),
-          const Text('KETUK UNTUK JAWABAN', style: TextStyle(color: AppTheme.outlineVariant, fontSize: 10, fontWeight: FontWeight.w900, letterSpacing: 2.0)),
-        ],
+        ),
       ),
     );
   }
@@ -286,25 +305,30 @@ class _FlashcardsReviewState extends State<FlashcardsReview> {
       key: const ValueKey(true),
       width: double.infinity,
       height: isDesktop ? 450 : 380,
-      padding: const EdgeInsets.all(40),
+      padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 24),
       decoration: BoxDecoration(
         color: AppTheme.primary.withOpacity(0.02),
         borderRadius: BorderRadius.circular(32),
         border: Border.all(color: AppTheme.primary.withOpacity(0.1), width: 2),
       ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Container(
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(color: AppTheme.primary.withOpacity(0.1), borderRadius: BorderRadius.circular(12)),
-            child: const Icon(Icons.check_circle_outline_rounded, color: AppTheme.primary),
+      child: Center(
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(color: AppTheme.primary.withOpacity(0.1), borderRadius: BorderRadius.circular(12)),
+                child: const Icon(Icons.check_circle_outline_rounded, color: AppTheme.primary),
+              ),
+              const SizedBox(height: 32),
+              Text(detail, textAlign: TextAlign.center, style: TextStyle(fontSize: isDesktop ? 24 : 18, fontWeight: FontWeight.w600, height: 1.6)),
+              const SizedBox(height: 48),
+              const Text('KETUK UNTUK KEMBALI', style: TextStyle(color: AppTheme.primary, fontSize: 10, fontWeight: FontWeight.w900, letterSpacing: 2.0)),
+            ],
           ),
-          const SizedBox(height: 32),
-          Text(detail, textAlign: TextAlign.center, style: TextStyle(fontSize: isDesktop ? 24 : 18, fontWeight: FontWeight.w600, height: 1.6)),
-          const SizedBox(height: 48),
-          const Text('KETUK UNTUK KEMBALI', style: TextStyle(color: AppTheme.primary, fontSize: 10, fontWeight: FontWeight.w900, letterSpacing: 2.0)),
-        ],
+        ),
       ),
     );
   }

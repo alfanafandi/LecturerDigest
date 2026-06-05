@@ -5,7 +5,6 @@ import 'package:provider/provider.dart';
 import 'package:lecturer_digest/core/theme/app_theme.dart';
 import 'package:lecturer_digest/screens/splash_screen.dart';
 import 'package:lecturer_digest/core/providers/app_provider.dart';
-import 'package:lecturer_digest/screens/splash_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

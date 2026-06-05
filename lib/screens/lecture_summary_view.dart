@@ -252,25 +252,7 @@ class _LectureSummaryViewState extends State<LectureSummaryView> {
                               context,
                               onPressed: () async {
                                 if (provider.currentQuizzes.isEmpty) {
-                                  await provider.generateQuizForLecture(
-                                      widget.lectureId);
-                                  if (context.mounted) {
-                                    if (provider.error != null) {
-                                      ScaffoldMessenger.of(context)
-                                          .showSnackBar(SnackBar(
-                                              content: Text(provider.error!)));
-                                    } else {
-                                      ScaffoldMessenger.of(context)
-                                          .showSnackBar(const SnackBar(
-                                              content: Text(
-                                                  'Kuis AI berhasil dibuat!')));
-                                      
-                                      // Auto-navigate to quiz screen after generation
-                                      Navigator.of(context).push(MaterialPageRoute(
-                                          builder: (_) => QuizScreen(
-                                              lectureId: widget.lectureId)));
-                                    }
-                                  }
+                                  _showQuizConfigSheet(context, provider);
                                 } else {
                                   Navigator.of(context).push(MaterialPageRoute(
                                       builder: (_) => QuizScreen(
@@ -694,6 +676,120 @@ class _LectureSummaryViewState extends State<LectureSummaryView> {
                           fontWeight: FontWeight.bold, fontSize: 13)),
                 ],
               ),
+      ),
+    );
+  }
+
+  void _showQuizConfigSheet(BuildContext context, AppProvider provider) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      builder: (context) => Container(
+        padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 24),
+        decoration: const BoxDecoration(
+          color: AppTheme.background,
+          borderRadius: BorderRadius.vertical(top: Radius.circular(32)),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              'Pilih Jumlah Soal Kuis',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 8),
+            const Text(
+              'Sesuaikan jumlah pertanyaan kuis dengan kebutuhan belajar Anda.',
+              style: TextStyle(fontSize: 13, color: AppTheme.onSurfaceVariant),
+            ),
+            const SizedBox(height: 24),
+            _buildQuizOptionTile(context, provider, 5, 'Kilas Balik Cepat', '5 Pertanyaan'),
+            const SizedBox(height: 12),
+            _buildQuizOptionTile(context, provider, 10, 'Pemahaman Standar', '10 Pertanyaan'),
+            const SizedBox(height: 12),
+            _buildQuizOptionTile(context, provider, 15, 'Simulasi Ujian', '15 Pertanyaan'),
+            const SizedBox(height: 16),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildQuizOptionTile(
+    BuildContext context, 
+    AppProvider provider, 
+    int count, 
+    String modeName, 
+    String description
+  ) {
+    return GestureDetector(
+      onTap: () async {
+        Navigator.pop(context); // Close bottom sheet
+        
+        // Show generating snackbar
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Row(
+              children: [
+                const SizedBox(
+                  width: 16,
+                  height: 16,
+                  child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                ),
+                const SizedBox(width: 12),
+                Text('AI sedang menyusun $count pertanyaan kuis...'),
+              ],
+            ),
+            duration: const Duration(seconds: 15),
+          ),
+        );
+
+        await provider.generateQuizForLecture(widget.lectureId, count: count);
+        
+        if (mounted) {
+          ScaffoldMessenger.of(context).hideCurrentSnackBar();
+          if (provider.error != null) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text(provider.error!), backgroundColor: Colors.red),
+            );
+          } else {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('Kuis AI berhasil dibuat!'), backgroundColor: Colors.green),
+            );
+            Navigator.of(context).push(
+              MaterialPageRoute(builder: (_) => QuizScreen(lectureId: widget.lectureId)),
+            );
+          }
+        }
+      },
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+        decoration: BoxDecoration(
+          color: AppTheme.surfaceContainerHigh,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: AppTheme.outlineVariant.withOpacity(0.12)),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  modeName,
+                  style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  description,
+                  style: const TextStyle(fontSize: 12, color: AppTheme.onSurfaceVariant),
+                ),
+              ],
+            ),
+            const Icon(Icons.arrow_forward_ios_rounded, size: 14, color: AppTheme.primary),
+          ],
+        ),
       ),
     );
   }

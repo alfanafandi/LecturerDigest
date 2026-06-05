@@ -37,7 +37,7 @@ class WebSidebar extends StatelessWidget {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          // Branding
+                           // Branding
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
@@ -46,15 +46,6 @@ class WebSidebar extends StatelessWidget {
                                 style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                                       color: AppTheme.primary,
                                       fontWeight: FontWeight.w900,
-                                    ),
-                              ),
-                              const SizedBox(height: 4),
-                              Text(
-                                'ACADEMIC SYNTHESIS',
-                                style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                                      letterSpacing: 2.0,
-                                      fontWeight: FontWeight.bold,
-                                      color: AppTheme.onSurfaceVariant.withOpacity(0.5),
                                     ),
                               ),
                             ],
@@ -70,25 +61,19 @@ class WebSidebar extends StatelessWidget {
                           ),
                           _SidebarItem(
                             icon: Icons.library_books_rounded,
-                            label: 'Courses',
+                            label: 'Kelas',
                             isActive: currentIndex == 1,
                             onTap: () => provider.setTabIndex(1),
                           ),
                           _SidebarItem(
                             icon: Icons.auto_awesome_rounded,
-                            label: 'AI Tools',
+                            label: 'DigestBot',
                             isActive: currentIndex == 2,
                             onTap: () => provider.setTabIndex(2),
                           ),
                           _SidebarItem(
-                            icon: Icons.groups_rounded,
-                            label: 'Collab',
-                            isActive: false, // Placeholder
-                            onTap: () {},
-                          ),
-                          _SidebarItem(
                             icon: Icons.account_circle_rounded,
-                            label: 'Profile',
+                            label: 'Profil',
                             isActive: currentIndex == 3,
                             onTap: () => provider.setTabIndex(3),
                           ),
@@ -96,48 +81,34 @@ class WebSidebar extends StatelessWidget {
                           const Spacer(),
                           const SizedBox(height: 32),
 
-                          // Action Button
-                          Container(
-                            width: double.infinity,
-                            padding: const EdgeInsets.all(1),
-                            decoration: BoxDecoration(
-                              gradient: const LinearGradient(
-                                colors: [AppTheme.primary, AppTheme.primaryContainer],
-                              ),
-                              borderRadius: BorderRadius.circular(16),
-                            ),
-                            child: ElevatedButton(
-                              onPressed: () {
-                                // Action for Summarize New
-                              },
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.transparent,
-                                shadowColor: Colors.transparent,
-                                foregroundColor: Colors.white,
-                                padding: const EdgeInsets.symmetric(vertical: 20),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(16),
-                                ),
-                                elevation: 0,
-                              ),
-                              child: const Text(
-                                'Summarize New',
-                                style: TextStyle(fontWeight: FontWeight.bold),
-                              ),
-                            ),
-                          ),
-                          const SizedBox(height: 24),
-
                           // Footer Links
-                          _FooterItem(
-                            icon: Icons.help_outline_rounded,
-                            label: 'Help',
-                            onTap: () {},
-                          ),
                           _FooterItem(
                             icon: Icons.logout_rounded,
                             label: 'Logout',
-                            onTap: () {},
+                            onTap: () {
+                              showDialog(
+                                context: context,
+                                builder: (context) => AlertDialog(
+                                  backgroundColor: AppTheme.surface,
+                                  title: const Text('Konfirmasi Logout'),
+                                  content: const Text('Apakah Anda yakin ingin keluar?\n\n(Ini hanya berupa tampilan View, fungsi otentikasi belum diimplementasikan pada versi Web).'),
+                                  actions: [
+                                    TextButton(
+                                      onPressed: () => Navigator.pop(context),
+                                      child: const Text('Batal'),
+                                    ),
+                                    ElevatedButton(
+                                      onPressed: () => Navigator.pop(context),
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor: Colors.red,
+                                        foregroundColor: Colors.white,
+                                      ),
+                                      child: const Text('Keluar'),
+                                    ),
+                                  ],
+                                ),
+                              );
+                            },
                           ),
                         ],
                       ),

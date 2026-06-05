@@ -229,6 +229,22 @@ class SupabaseService {
     }
   }
 
+  Future<List<Map<String, dynamic>>> getAllQuizAttempts() async {
+    final userId = _client.auth.currentUser?.id;
+    if (userId == null) return [];
+    try {
+      return await _client
+          .from('quiz_attempts')
+          .select()
+          .eq('user_id', userId)
+          .order('created_at', ascending: false);
+    } catch (e) {
+      print('Error fetching all quiz attempts: $e');
+      return [];
+    }
+  }
+
+
   Future<double> getAverageQuizScoreForCourse(String courseId) async {
     try {
       final lecturesRes = await _client.from('lectures').select('id').eq('course_id', courseId);
@@ -256,16 +272,53 @@ class SupabaseService {
 
   // --- Chat ---
   Future<List<Map<String, dynamic>>> getChatMessages(String contextId) async {
-    return await _client.from('chat_messages').select().eq('context_id', contextId).order('created_at');
+    return await _client.from('chat_messages').select().eq('lecture_id', contextId).order('created_at');
   }
 
   Future<void> saveChatMessage(String contextId, String role, String content) async {
     await _client.from('chat_messages').insert({
-      'context_id': contextId,
+      'lecture_id': contextId,
       'role': role,
       'content': content,
       'user_id': _client.auth.currentUser?.id,
     });
+  }
+
+  Future<List<Map<String, dynamic>>> getRecentChatSessions() async {
+    try {
+      final userId = _client.auth.currentUser?.id;
+      if (userId == null) return [];
+
+      final res = await _client
+          .from('chat_messages')
+          .select('lecture_id, created_at, lectures(title, course_id, courses(name))')
+          .eq('user_id', userId)
+          .order('created_at', ascending: false);
+
+      final List<Map<String, dynamic>> sessions = [];
+      final Set<String> seenLectures = {};
+
+      for (var item in res) {
+        final lectureId = item['lecture_id'] as String?;
+        if (lectureId != null && !seenLectures.contains(lectureId)) {
+          seenLectures.add(lectureId);
+          final lectureData = item['lectures'] as Map<String, dynamic>?;
+          if (lectureData != null) {
+            final courseData = lectureData['courses'] as Map<String, dynamic>?;
+            sessions.add({
+              'lecture_id': lectureId,
+              'title': lectureData['title'] ?? 'Tanpa Judul',
+              'course_name': courseData != null ? courseData['name'] : 'Mata Kuliah',
+              'last_active': item['created_at'],
+            });
+          }
+        }
+      }
+      return sessions;
+    } catch (e) {
+      print('Error fetching recent chat sessions: $e');
+      return [];
+    }
   }
 
   // --- User Profile ---

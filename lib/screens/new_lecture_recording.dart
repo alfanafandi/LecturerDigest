@@ -61,13 +61,34 @@ class _NewLectureRecordingState extends State<NewLectureRecording> with TickerPr
     });
   }
 
+  void _handleAutoStopRecording() async {
+    _timer?.cancel();
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Batas maksimal durasi 90 menit tercapai. Rekaman dihentikan otomatis dan diproses oleh AI.'),
+          backgroundColor: Colors.orange,
+          duration: Duration(seconds: 5),
+        ),
+      );
+    }
+    await _handleStopRecording();
+  }
+
   void _runTimer() {
     _timer?.cancel();
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
       if (!_isPaused) {
+        bool thresholdReached = false;
         setState(() {
           _secondsElapsed++;
+          if (_secondsElapsed >= 5400) { // 90 minutes
+            thresholdReached = true;
+          }
         });
+        if (thresholdReached) {
+          _handleAutoStopRecording();
+        }
       }
     });
   }
@@ -562,6 +583,31 @@ class _NewLectureRecordingState extends State<NewLectureRecording> with TickerPr
                     },
                   ),
                 ],
+                const SizedBox(height: 24),
+                Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: AppTheme.tertiary.withOpacity(0.08),
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(color: AppTheme.tertiary.withOpacity(0.2)),
+                  ),
+                  child: Row(
+                    children: [
+                      Icon(Icons.info_outline_rounded, color: AppTheme.tertiary, size: 20),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Text(
+                          'Catatan: Batas maksimal durasi rekaman kuliah adalah 90 menit agar ukuran file tetap optimal dan dapat diproses oleh AI.',
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: AppTheme.tertiary,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
                 const SizedBox(height: 100),
               ],
             ),

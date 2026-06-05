@@ -9,6 +9,7 @@ import 'package:lecturer_digest/screens/new_lecture_recording.dart';
 import 'package:lecturer_digest/screens/profile_screen.dart';
 import 'package:lecturer_digest/core/utils/responsive.dart';
 import 'package:lecturer_digest/widgets/navigation/web_sidebar.dart';
+import 'package:lecturer_digest/screens/login_screen.dart';
 
 class MainWrapper extends StatefulWidget {
   const MainWrapper({super.key});
@@ -18,7 +19,7 @@ class MainWrapper extends StatefulWidget {
 }
 
 class _MainWrapperState extends State<MainWrapper> {
-  final List<Widget> _pages = [
+  List<Widget> get _pages => [
     const HomeDashboard(),
     const MyCourses(),
     const AskAiChat(isTab: true),
@@ -29,6 +30,9 @@ class _MainWrapperState extends State<MainWrapper> {
   Widget build(BuildContext context) {
     return Consumer<AppProvider>(
       builder: (context, provider, child) {
+        if (!provider.isAuthenticated) {
+          return const LoginScreen();
+        }
         final currentIndex = provider.currentTabIndex;
         final bool isDesktop = Responsive.isDesktop(context);
 

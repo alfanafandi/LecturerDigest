@@ -32,9 +32,17 @@ class AppProvider extends ChangeNotifier {
   List<Map<String, dynamic>> chatMessages = [];
   Map<String, dynamic>? chatLecture;
   Map<String, dynamic>? chatCourse;
+  List<Map<String, dynamic>> recentChatSessions = [];
+  bool isRecentChatsLoading = false;
   
   // Stats State
   Map<String, double> courseStats = {};
+
+  // Diagnostics State
+  Map<String, Map<String, dynamic>> lectureDiagnostics = {};
+  bool isDiagnosticsLoading = false;
+  List<Map<String, dynamic>> allQuizAttempts = [];
+  String? activeRemedialPrompt;
   
   bool isLoading = false;
   String? error;
@@ -97,6 +105,44 @@ class AppProvider extends ChangeNotifier {
     try {
       userProfile = await _db.getProfile();
       
+      // Auto-sync Google/Social OAuth Profile if not initialized or has defaults
+      final user = currentUser;
+      if (user != null && user.userMetadata != null && user.userMetadata!.isNotEmpty) {
+        final oauthName = user.userMetadata?['full_name'] ?? user.userMetadata?['name'];
+        final oauthAvatar = user.userMetadata?['avatar_url'];
+        
+        bool needsUpdate = false;
+        String? updateName;
+        String? updateAvatar;
+
+        if (userProfile == null) {
+          needsUpdate = true;
+          updateName = oauthName;
+          updateAvatar = oauthAvatar;
+        } else {
+          final currentName = userProfile!['full_name'];
+          final currentAvatar = userProfile!['avatar_url'];
+          
+          if (currentName == null || currentName.isEmpty || currentName == 'Mahasiswa' || currentName == 'Mahasiswa Baru') {
+            needsUpdate = true;
+            updateName = oauthName;
+          }
+          if (currentAvatar == null || currentAvatar.isEmpty) {
+            needsUpdate = true;
+            updateAvatar = oauthAvatar;
+          }
+        }
+
+        if (needsUpdate) {
+          await _db.updateProfile(
+            fullName: updateName,
+            avatarUrl: updateAvatar,
+          );
+          // Fetch updated profile
+          userProfile = await _db.getProfile();
+        }
+      }
+      
       // Sync theme from profile preferences
       if (userProfile?['preferences'] != null) {
         final theme = userProfile!['preferences']['theme'];
@@ -147,6 +193,9 @@ class AppProvider extends ChangeNotifier {
     currentSummary = null;
     dueFlashcards = [];
     userProfile = null;
+    lectureDiagnostics = {};
+    allQuizAttempts = [];
+    activeRemedialPrompt = null;
     notifyListeners();
   }
 
@@ -161,6 +210,7 @@ class AppProvider extends ChangeNotifier {
     await fetchCourses();
     await fetchAllLectures();
     await fetchDueFlashcards();
+    await fetchAllQuizAttempts();
     _setLoading(false);
   }
 
@@ -233,6 +283,17 @@ class AppProvider extends ChangeNotifier {
     _setLoading(true);
     try {
       await _auth.signIn(email, password);
+      error = null;
+    } catch (e) {
+      error = _mapAuthError(e);
+    }
+    _setLoading(false);
+  }
+
+  Future<void> loginWithGoogle() async {
+    _setLoading(true);
+    try {
+      await _auth.signInWithGoogle();
       error = null;
     } catch (e) {
       error = _mapAuthError(e);
@@ -387,9 +448,18 @@ class AppProvider extends ChangeNotifier {
     }
   }
 
+  String _mapGeneralError(dynamic e) {
+    final str = e.toString().toLowerCase();
+    if (str.contains('socketexception') || str.contains('failed host lookup') || str.contains('clientexception')) {
+      return "Koneksi internet bermasalah. Periksa koneksi internet Anda dan coba lagi.";
+    }
+    return e.toString();
+  }
+
   Future<void> submitQuizResult(String lectureId, int score, int total, List<Map<String, dynamic>> answers) async {
     try {
       await _db.saveQuizAttempt(lectureId, score, total, answers);
+      await fetchAllQuizAttempts();
       
       // Ensure we have the course ID to update stats
       String? courseId = currentLectureDetails?['course_id'];
@@ -404,8 +474,49 @@ class AppProvider extends ChangeNotifier {
         await fetchAverageScoreForCourse(courseId);
       }
     } catch (e) {
-      error = "Gagal menyimpan hasil kuis: ${e.toString()}";
+      error = "Gagal menyimpan hasil kuis: ${_mapGeneralError(e)}";
       notifyListeners();
+    }
+  }
+
+  Future<void> fetchAllQuizAttempts() async {
+    try {
+      allQuizAttempts = await _db.getAllQuizAttempts();
+      notifyListeners();
+    } catch (e) {
+      print('DEBUG: AppProvider error fetching all quiz attempts: $e');
+    }
+  }
+
+  Future<Map<String, dynamic>?> fetchOrGenerateDiagnostics(
+    String lectureId, 
+    String lectureTitle, 
+    List<Map<String, dynamic>> detailedAnswers
+  ) async {
+    if (lectureDiagnostics.containsKey(lectureId)) {
+      return lectureDiagnostics[lectureId];
+    }
+
+    isDiagnosticsLoading = true;
+    error = null;
+    notifyListeners();
+
+    try {
+      final rawResponse = await _ai.generateDiagnostics(lectureTitle, detailedAnswers);
+      String cleaned = rawResponse.trim();
+      if (cleaned.startsWith('```')) {
+        cleaned = cleaned.replaceAll(RegExp(r'^```(json)?'), '').replaceAll(RegExp(r'```$'), '').trim();
+      }
+      final parsed = jsonDecode(cleaned) as Map<String, dynamic>;
+      lectureDiagnostics[lectureId] = parsed;
+      isDiagnosticsLoading = false;
+      notifyListeners();
+      return parsed;
+    } catch (e) {
+      error = "Gagal memproses diagnosis AI: ${_mapGeneralError(e)}";
+      isDiagnosticsLoading = false;
+      notifyListeners();
+      return null;
     }
   }
 
@@ -455,30 +566,54 @@ class AppProvider extends ChangeNotifier {
   }
 
   // --- AI Chat ---
-  Future<void> setChatLecture(String lectureId) async {
-    // Prevent duplicate context settings if it's already the same lecture
-    if (chatLecture != null && chatLecture!['id'] == lectureId && chatMessages.isNotEmpty) return;
+  Future<void> setChatLecture(String lectureId, {String? remedialPrompt}) async {
+    // Prevent duplicate context settings if it's already the same lecture and no remedialPrompt is provided
+    if (remedialPrompt == null && chatLecture != null && chatLecture!['id'] == lectureId && chatMessages.isNotEmpty) return;
 
     _setLoading(true);
     chatMessages = []; 
     chatCourse = null; // Clear course mode
+    activeRemedialPrompt = remedialPrompt;
     try {
       chatLecture = await _db.getLectureDetails(lectureId);
       
-      // Load history from database
-      final history = await _db.getChatMessages(lectureId);
-      if (history.isEmpty) {
-        // Initial greeting only if brand new chat
+      if (remedialPrompt != null) {
+        // Initial greeting custom to remedial mode
+        final diagnostic = lectureDiagnostics[lectureId];
+        final weaknesses = diagnostic != null && diagnostic['weaknesses'] != null
+            ? List<String>.from(diagnostic['weaknesses'])
+            : <String>[];
+
+        String greetingText = "Halo! Saya DigestBot. Saya melihat Anda butuh ulasan remedial untuk materi '${chatLecture!['title']}'.";
+        if (weaknesses.isNotEmpty) {
+          greetingText += "\n\nBerdasarkan hasil kuis Anda, ada beberapa konsep yang perlu diperbaiki:\n"
+              "${weaknesses.map((w) => "• $w").join("\n")}"
+              "\n\nMari kita bahas konsep yang masih kurang Anda pahami. Apa yang ingin Anda tanyakan terlebih dahulu?";
+        } else {
+          greetingText += " Mari kita bahas konsep yang masih kurang Anda pahami. Apa yang ingin Anda tanyakan terlebih dahulu?";
+        }
+
         chatMessages.add({
           'role': 'bot',
-          'text': "Halo! Saya adalah DigestBot. Ada yang ingin ditanyakan terkait materi '${chatLecture!['title']}' ini?",
+          'text': greetingText,
         });
       } else {
-        chatMessages = history.map((m) => {
-          'role': m['role'],
-          'text': m['content'],
-        }).toList();
+        // Load history from database
+        final history = await _db.getChatMessages(lectureId);
+        if (history.isEmpty) {
+          // Initial greeting only if brand new chat
+          chatMessages.add({
+            'role': 'bot',
+            'text': "Halo! Saya adalah DigestBot. Ada yang ingin ditanyakan terkait materi '${chatLecture!['title']}' ini?",
+          });
+        } else {
+          chatMessages = history.map((m) => {
+            'role': m['role'],
+            'text': m['content'],
+          }).toList();
+        }
       }
+      await fetchRecentChatSessions();
     } catch (e) {
       error = e.toString();
     }
@@ -510,6 +645,18 @@ class AppProvider extends ChangeNotifier {
     chatLecture = null;
     chatCourse = null;
     chatMessages = [];
+    notifyListeners();
+  }
+
+  Future<void> fetchRecentChatSessions() async {
+    isRecentChatsLoading = true;
+    notifyListeners();
+    try {
+      recentChatSessions = await _db.getRecentChatSessions();
+    } catch (e) {
+      error = e.toString();
+    }
+    isRecentChatsLoading = false;
     notifyListeners();
   }
 
@@ -561,11 +708,13 @@ class AppProvider extends ChangeNotifier {
     }
   }
 
-  Future<void> sendChatMessage(String text) async {
+  Future<void> sendChatMessage(String text, {String? fileContext, String? fileName}) async {
     if (chatLecture == null && chatCourse == null) return;
     
+    final displayUserText = fileName != null ? "[File: $fileName] $text" : text;
+    
     // 1. Add to local UI
-    chatMessages.add({'role': 'user', 'text': text});
+    chatMessages.add({'role': 'user', 'text': displayUserText});
     notifyListeners();
     
     try {
@@ -575,7 +724,13 @@ class AppProvider extends ChangeNotifier {
       if (chatLecture != null) {
         contextId = chatLecture!['id'];
         contextTranscript = chatLecture!['raw_transcript'] ?? '';
-        await _db.saveChatMessage(contextId, 'user', text);
+        if (activeRemedialPrompt != null) {
+          contextTranscript = "REMEDIAL LESSON GUIDANCE INSTRUCTION: $activeRemedialPrompt\n\nLecture Transcript: $contextTranscript";
+        }
+        if (fileContext != null) {
+          contextTranscript = "ATTACHED DOCUMENT CONTEXT (FileName: $fileName):\n$fileContext\n\n$contextTranscript";
+        }
+        await _db.saveChatMessage(contextId, 'user', displayUserText);
       } else if (chatCourse != null) {
         contextId = chatCourse!['id'];
         // Course Mode: Aggregating context from all lectures
@@ -583,6 +738,9 @@ class AppProvider extends ChangeNotifier {
         contextTranscript = "Konteks Mata Kuliah: ${chatCourse!['name']}\n\n";
         for (var l in courseLectures) {
           contextTranscript += "Materi: ${l['title']}\nTranskrip: ${l['raw_transcript'] ?? 'No transcript available.'}\n\n";
+        }
+        if (fileContext != null) {
+          contextTranscript = "ATTACHED DOCUMENT CONTEXT (FileName: $fileName):\n$fileContext\n\n$contextTranscript";
         }
         // Trim if too long for token limits (approx 15k chars for safe GPT-3.5 context)
         if (contextTranscript.length > 20000) {
@@ -605,6 +763,7 @@ class AppProvider extends ChangeNotifier {
       chatMessages.add({'role': 'bot', 'text': response});
       if (chatLecture != null) {
         await _db.saveChatMessage(contextId, 'bot', response);
+        await fetchRecentChatSessions();
       }
       
     } catch (e) {
@@ -674,7 +833,7 @@ class AppProvider extends ChangeNotifier {
 
       // 3. Generate Summary via AI
       final summaryRaw = await _ai.generateSummary(transcript);
-      final summaryData = jsonDecode(summaryRaw);
+      final summaryData = jsonDecode(_cleanJson(summaryRaw));
 
       // 4. Save Summary
       await _db.saveSummary(
@@ -686,7 +845,7 @@ class AppProvider extends ChangeNotifier {
 
       // 5. Generate Flashcards via AI
       final flashcardsRaw = await _ai.generateFlashcards(summaryRaw);
-      final List<dynamic> flashcardsData = jsonDecode(flashcardsRaw);
+      final List<dynamic> flashcardsData = jsonDecode(_cleanJson(flashcardsRaw));
 
       // 6. Save Flashcards
       await _db.saveFlashcards(
@@ -708,7 +867,7 @@ class AppProvider extends ChangeNotifier {
   }
 
   // --- Quiz Generation Logic (Manual Trigger) ---
-  Future<void> generateQuizForLecture(String lectureId) async {
+  Future<void> generateQuizForLecture(String lectureId, {int count = 5}) async {
     _setLoading(true);
     error = null;
     try {
@@ -726,8 +885,8 @@ class AppProvider extends ChangeNotifier {
       if (contextText.isEmpty) throw Exception("Tidak ada materi untuk membuat kuis.");
 
       // 2. Generate via AI
-      final quizRaw = await _ai.generateQuizzes(contextText);
-      final List<dynamic> quizData = jsonDecode(quizRaw);
+      final quizRaw = await _ai.generateQuizzes(contextText, count: count);
+      final List<dynamic> quizData = jsonDecode(_cleanJson(quizRaw));
 
       // 2. Save to DB
       await _db.saveQuizzes(
@@ -762,7 +921,7 @@ class AppProvider extends ChangeNotifier {
 
       // 3. Generate Summary via AI
       final summaryRaw = await _ai.generateSummary(transcript);
-      final summaryData = jsonDecode(summaryRaw);
+      final summaryData = jsonDecode(_cleanJson(summaryRaw));
 
       // 4. Save Summary
       await _db.saveSummary(
@@ -774,7 +933,7 @@ class AppProvider extends ChangeNotifier {
 
       // 5. Generate Flashcards via AI
       final flashcardsRaw = await _ai.generateFlashcards(summaryRaw);
-      final List<dynamic> flashcardsData = jsonDecode(flashcardsRaw);
+      final List<dynamic> flashcardsData = jsonDecode(_cleanJson(flashcardsRaw));
 
       // 6. Save Flashcards
       await _db.saveFlashcards(
@@ -793,5 +952,69 @@ class AppProvider extends ChangeNotifier {
       print(error);
     }
     _setLoading(false);
+  }
+
+  String _cleanJson(String input) {
+    String cleaned = input.trim();
+    
+    // Strip markdown formatting if it wraps everything
+    cleaned = cleaned.replaceAll(RegExp(r'^```(?:json)?\s*', caseSensitive: false), '');
+    cleaned = cleaned.replaceAll(RegExp(r'\s*```$'), '');
+    cleaned = cleaned.trim();
+
+    int startIdx = -1;
+    int braceCount = 0;
+    int bracketCount = 0;
+    bool inString = false;
+    bool escape = false;
+
+    for (int i = 0; i < cleaned.length; i++) {
+      int char = cleaned.codeUnitAt(i);
+      
+      if (escape) {
+        escape = false;
+        continue;
+      }
+      
+      if (char == 92) { // backslash \
+        escape = true;
+        continue;
+      }
+      
+      if (char == 34) { // double quote "
+        inString = !inString;
+        continue;
+      }
+      
+      if (!inString) {
+        if (char == 123) { // open brace {
+          if (braceCount == 0 && bracketCount == 0) {
+            startIdx = i;
+          }
+          braceCount++;
+        } else if (char == 125) { // close brace }
+          braceCount--;
+          if (braceCount == 0 && bracketCount == 0 && startIdx != -1) {
+            cleaned = cleaned.substring(startIdx, i + 1);
+            break;
+          }
+        } else if (char == 91) { // open bracket [
+          if (braceCount == 0 && bracketCount == 0) {
+            startIdx = i;
+          }
+          bracketCount++;
+        } else if (char == 93) { // close bracket ]
+          bracketCount--;
+          if (braceCount == 0 && bracketCount == 0 && startIdx != -1) {
+            cleaned = cleaned.substring(startIdx, i + 1);
+            break;
+          }
+        }
+      }
+    }
+    
+    // Remove trailing commas before closing braces/brackets (common LLM error)
+    cleaned = cleaned.replaceAll(RegExp(r',\s*([\]}])'), r'$1');
+    return cleaned;
   }
 }

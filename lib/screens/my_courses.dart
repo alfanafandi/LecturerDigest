@@ -255,19 +255,24 @@ class MyCourses extends StatelessWidget {
                                 MaterialPageRoute(builder: (context) => const ProfileScreen()),
                               ),
                               child: Container(
-                                width: 40,
-                                height: 40,
+                                width: 42,
+                                height: 42,
                                 decoration: BoxDecoration(
                                   shape: BoxShape.circle,
-                                  border: Border.all(color: AppTheme.primaryContainer.withOpacity(0.5), width: 2),
+                                  border: Border.all(color: Theme.of(context).colorScheme.primary, width: 2),
                                   color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
                                 ),
                                 child: provider.userProfile?['avatar_url'] != null
                                     ? ClipOval(
-                                        child: Image.asset(
-                                          provider.userProfile!['avatar_url'],
-                                          fit: BoxFit.cover,
-                                        ),
+                                        child: provider.userProfile!['avatar_url'].startsWith('http')
+                                            ? Image.network(
+                                                provider.userProfile!['avatar_url'],
+                                                fit: BoxFit.cover,
+                                              )
+                                            : Image.asset(
+                                                provider.userProfile!['avatar_url'],
+                                                fit: BoxFit.cover,
+                                              ),
                                       )
                                     : Icon(
                                         Icons.person_rounded, 
@@ -286,18 +291,10 @@ class MyCourses extends StatelessWidget {
                 // Header Section
                 SliverToBoxAdapter(
                   child: Padding(
-                    padding: EdgeInsets.symmetric(horizontal: isDesktop ? 48 : 24, vertical: 16),
+                    padding: EdgeInsets.symmetric(horizontal: isDesktop ? 48 : 24, vertical: 8),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
-                          'RUANG AKADEMIK',
-                          style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                            letterSpacing: 1.0,
-                            fontSize: 12,
-                          ),
-                        ),
-                        const SizedBox(height: 8),
                         Text(
                           'Kelas',
                           style: Theme.of(context).textTheme.displayMedium?.copyWith(
@@ -305,15 +302,7 @@ class MyCourses extends StatelessWidget {
                             fontSize: isDesktop ? 48 : 36,
                           ),
                         ),
-                        const SizedBox(height: 8),
-                        Text(
-                          'Kelola kurikulum dan ringkasan kuliah berbasis AI Anda.',
-                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            color: AppTheme.onSurfaceVariant,
-                            fontSize: isDesktop ? 16 : 14,
-                          ),
-                        ),
-                        const SizedBox(height: 24),
+                        const SizedBox(height: 16),
                         // Search & Add
                         Row(
                           children: [
@@ -403,9 +392,9 @@ class MyCourses extends StatelessWidget {
                         return SliverGrid(
                           gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                             crossAxisCount: 2,
-                            crossAxisSpacing: 32,
-                            mainAxisSpacing: 32,
-                            mainAxisExtent: 280,
+                            crossAxisSpacing: 16,
+                            mainAxisSpacing: 16,
+                            mainAxisExtent: 90,
                           ),
                           delegate: SliverChildBuilderDelegate(
                             (context, index) => _buildDynamicCourseCard(context, provider.courses[index]),
@@ -416,7 +405,7 @@ class MyCourses extends StatelessWidget {
                         return SliverList(
                           delegate: SliverChildBuilderDelegate(
                             (context, index) => Padding(
-                              padding: const EdgeInsets.only(bottom: 16),
+                              padding: const EdgeInsets.only(bottom: 12),
                               child: _buildDynamicCourseCard(context, provider.courses[index]),
                             ),
                             childCount: provider.courses.length,
@@ -449,14 +438,6 @@ class MyCourses extends StatelessWidget {
         // Find lectures for this course
         final courseLectures = provider.lectures.where((l) => l['course_id'] == course['id']).toList();
         final lectureCount = courseLectures.length;
-        
-        // Find last activity
-        String lastActivity = 'Belum ada';
-        if (courseLectures.isNotEmpty) {
-          // Sort by date (descending)
-          courseLectures.sort((a, b) => (b['lecture_date'] ?? '').compareTo(a['lecture_date'] ?? ''));
-          lastActivity = courseLectures.first['lecture_date'] ?? 'Baru saja';
-        }
 
         return GestureDetector(
           onTap: () {
@@ -470,104 +451,81 @@ class MyCourses extends StatelessWidget {
             _showCourseOptions(context, course['id'], course['name'] ?? 'Tanpa Nama');
           },
           child: Container(
-            padding: const EdgeInsets.all(24),
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
             decoration: BoxDecoration(
               color: AppTheme.surfaceContainerLowest,
-              borderRadius: BorderRadius.circular(32),
-              border:
-                  Border.all(color: AppTheme.outlineVariant.withOpacity(0.15)),
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(color: AppTheme.outlineVariant.withOpacity(0.12)),
               boxShadow: [
                 BoxShadow(
-                    color: Colors.black.withOpacity(0.02),
-                    blurRadius: 4,
-                    offset: const Offset(0, 2)),
+                  color: Colors.black.withOpacity(0.01),
+                  blurRadius: 8,
+                  offset: const Offset(0, 2),
+                ),
               ],
             ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+            child: Row(
               children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.all(12),
-                      decoration: BoxDecoration(
-                        color: cardColor.withOpacity(0.1),
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                      child: Icon(Icons.psychology, color: cardColor),
-                    ),
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 12, vertical: 6),
-                      decoration: BoxDecoration(
-                        color: AppTheme.surfaceContainerHigh,
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      child: const Row(
-                        children: [
-                          Icon(Icons.mic, size: 14, color: AppTheme.primary),
-                          SizedBox(width: 4),
-                          Text('AI Aktif',
-                              style: TextStyle(
-                                  color: AppTheme.primary,
-                                  fontSize: 10,
-                                  fontWeight: FontWeight.bold)),
-                        ],
-                      ),
-                    ),
-                  ],
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: cardColor.withOpacity(0.1),
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(Icons.school_outlined, color: cardColor, size: 24),
                 ),
-                const SizedBox(height: 24),
-                Text(course['name'] ?? 'Tanpa Nama',
-                    style: Theme.of(context)
-                        .textTheme
-                        .headlineSmall
-                        ?.copyWith(fontWeight: FontWeight.bold)),
-                const SizedBox(height: 8),
-                Text(course['schedule'] ?? 'Tidak ada jadwal',
-                    style: Theme.of(context).textTheme.bodyMedium),
-                const SizedBox(height: 24),
-                Row(
-                  children: [
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Text('Rekaman',
-                              style: TextStyle(
-                                  color: AppTheme.outlineVariant,
-                                  fontSize: 10,
-                                  fontWeight: FontWeight.bold)),
-                          const SizedBox(height: 4),
-                          Text('$lectureCount Rekaman',
-                              style: const TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 14,
-                                  color: AppTheme.onSurfaceVariant)),
-                        ],
+                const SizedBox(width: 16),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        course['name'] ?? 'Tanpa Nama',
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                          color: AppTheme.onSurface,
+                        ),
                       ),
-                    ),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Text('Aktivitas Terakhir',
-                              style: TextStyle(
-                                  color: AppTheme.outlineVariant,
-                                  fontSize: 10,
-                                  fontWeight: FontWeight.bold)),
-                          const SizedBox(height: 4),
-                          Text(lastActivity,
-                              style: const TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 14,
-                                  color: AppTheme.onSurfaceVariant)),
-                        ],
+                      const SizedBox(height: 4),
+                      Text(
+                        '${course['schedule'] ?? 'Tidak ada jadwal'} • $lectureCount Rekaman',
+                        style: const TextStyle(
+                          fontSize: 13,
+                          color: AppTheme.onSurfaceVariant,
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
+                const SizedBox(width: 8),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  decoration: BoxDecoration(
+                    color: AppTheme.primary.withOpacity(0.08),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: const Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(Icons.mic, size: 12, color: AppTheme.primary),
+                      SizedBox(width: 4),
+                      Text(
+                        'AI Aktif',
+                        style: TextStyle(
+                          color: AppTheme.primary,
+                          fontSize: 10,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(width: 8),
+                const Icon(Icons.chevron_right_rounded, color: AppTheme.outlineVariant),
               ],
             ),
           ),

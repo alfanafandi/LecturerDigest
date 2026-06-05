@@ -18,8 +18,8 @@ class AudioService {
     if (await hasPermission()) {
       const config = RecordConfig(
         encoder: AudioEncoder.aacLc,
-        bitRate: 128000,
-        sampleRate: 44100,
+        bitRate: 32000,
+        sampleRate: 16000,
       );
       await _recorder.start(config, path: path);
     } else {

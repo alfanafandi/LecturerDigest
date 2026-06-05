@@ -5,8 +5,7 @@ import 'package:lecturer_digest/core/theme/app_theme.dart';
 import 'package:lecturer_digest/core/providers/app_provider.dart';
 import 'package:lecturer_digest/core/widgets/brand_logo.dart';
 import 'package:lecturer_digest/core/utils/responsive.dart';
-import 'package:lecturer_digest/screens/splash_screen.dart';
-import 'package:lecturer_digest/screens/login_screen.dart';
+import 'package:lecturer_digest/screens/main_wrapper.dart';
 
 class ProfileScreen extends StatefulWidget {
   final bool isTab;
@@ -75,71 +74,89 @@ class _ProfileScreenState extends State<ProfileScreen> {
           },
           child: Scaffold(
             backgroundColor: Theme.of(context).colorScheme.background,
-            appBar: AppBar(
-              backgroundColor: Colors.transparent,
-              elevation: 0,
-              automaticallyImplyLeading: !widget.isTab,
-              leadingWidth: isDesktop ? 80 : (widget.isTab ? 0 : 70),
-              leading: widget.isTab && !isDesktop ? null : Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: CircleAvatar(
-                  backgroundColor: Theme.of(context).colorScheme.surfaceVariant,
-                  child: IconButton(
-                    icon: Icon(Icons.arrow_back, color: Theme.of(context).colorScheme.primary, size: 20),
-                    onPressed: () => Navigator.of(context).pop(),
-                  ),
-                ),
-              ),
-              title: Text(
-                'Profil & Pengaturan',
-                style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
-              ),
-            ),
-            body: Center(
-              child: ConstrainedBox(
-                constraints: BoxConstraints(maxWidth: isDesktop ? 1000 : double.infinity),
-                child: SingleChildScrollView(
-                  padding: EdgeInsets.symmetric(horizontal: isDesktop ? 48 : 0, vertical: 24),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      // Integrated Header Section
-                      Container(
-                        padding: const EdgeInsets.all(32),
-                        decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight,
-                            colors: isDark 
-                              ? [AppTheme.primary.withOpacity(0.1), AppTheme.surface]
-                              : [AppTheme.primary.withOpacity(0.05), Colors.white],
+            body: SafeArea(
+              child: Align(
+                alignment: Alignment.topCenter,
+                child: ConstrainedBox(
+                  constraints: BoxConstraints(maxWidth: isDesktop ? 1000 : double.infinity),
+                  child: SingleChildScrollView(
+                    padding: EdgeInsets.symmetric(horizontal: isDesktop ? 48 : 0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        // Custom Header Row (Replaces Scaffold AppBar)
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+                          child: Row(
+                            children: [
+                              if (!widget.isTab) ...[
+                                GestureDetector(
+                                  onTap: () => Navigator.of(context).pop(),
+                                  child: Container(
+                                    padding: const EdgeInsets.all(8),
+                                    margin: const EdgeInsets.only(right: 12),
+                                    decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      color: Theme.of(context).colorScheme.surfaceVariant,
+                                    ),
+                                    child: Icon(Icons.arrow_back, color: Theme.of(context).colorScheme.primary, size: 20),
+                                  ),
+                                ),
+                              ],
+                              const BrandLogo(size: 32),
+                              const SizedBox(width: 8),
+                              Text(
+                                'LectureDigest',
+                                style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                                  color: AppTheme.onBackground,
+                                  fontWeight: FontWeight.w800,
+                                  letterSpacing: -0.5,
+                                ),
+                              ),
+                            ],
                           ),
-                          borderRadius: BorderRadius.circular(isDesktop ? 32 : 0),
-                          boxShadow: isDesktop ? [BoxShadow(color: Colors.black.withOpacity(0.03), blurRadius: 40)] : null,
+                        ),
+                        // Integrated Header Section
+                        Container(
+                          margin: const EdgeInsets.symmetric(horizontal: 24),
+                        padding: const EdgeInsets.all(16),
+                        decoration: BoxDecoration(
+                          color: AppTheme.surfaceContainerLowest,
+                          borderRadius: BorderRadius.circular(24),
+                          border: Border.all(color: AppTheme.outlineVariant.withOpacity(0.12)),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.01),
+                              blurRadius: 10,
+                              offset: const Offset(0, 4),
+                            ),
+                          ],
                         ),
                         child: Row(
                           children: [
-                            // Avatar with Glow
+                            // Avatar
                             Container(
-                              width: isDesktop ? 120 : 80,
-                              height: isDesktop ? 120 : 80,
-                              padding: const EdgeInsets.all(4),
+                              width: 64,
+                              height: 64,
+                              padding: const EdgeInsets.all(2),
                               decoration: BoxDecoration(
                                 shape: BoxShape.circle,
-                                border: Border.all(color: AppTheme.primary.withOpacity(0.3), width: 2),
+                                border: Border.all(color: AppTheme.primary, width: 1.5),
                               ),
                               child: CircleAvatar(
-                                radius: isDesktop ? 60 : 40,
+                                radius: 32,
                                 backgroundColor: AppTheme.surfaceContainerHigh,
                                 backgroundImage: currentAvatar != null 
-                                    ? AssetImage(currentAvatar) 
+                                    ? (currentAvatar.startsWith('http')
+                                        ? NetworkImage(currentAvatar) as ImageProvider
+                                        : AssetImage(currentAvatar) as ImageProvider)
                                     : null,
                                 child: currentAvatar == null 
-                                    ? Icon(Icons.person_outline_rounded, size: isDesktop ? 60 : 40, color: AppTheme.primary)
+                                    ? const Icon(Icons.person_outline_rounded, size: 32, color: AppTheme.primary)
                                     : null,
                               ),
                             ),
-                            const SizedBox(width: 32),
+                            const SizedBox(width: 16),
                             
                             // Name & Email
                             Expanded(
@@ -152,7 +169,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                          Expanded(
                                            child: TextField(
                                               controller: _nameController,
-                                              style: Theme.of(context).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w900),
+                                              style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w900),
                                               decoration: const InputDecoration(
                                                 hintText: 'Nama kamu',
                                                 isDense: true,
@@ -171,12 +188,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                         Flexible(
                                           child: Text(
                                             profile?['full_name'] ?? 'Mahasiswa',
-                                            style: Theme.of(context).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w900),
+                                            style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w900),
                                             maxLines: 1,
                                             overflow: TextOverflow.ellipsis,
                                           ),
                                         ),
-                                      const SizedBox(width: 12),
+                                      const SizedBox(width: 8),
                                       IconButton(
                                         onPressed: () {
                                           if (_isEditing) {
@@ -189,7 +206,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                         icon: Icon(
                                           _isEditing ? Icons.check_circle_rounded : Icons.edit_rounded, 
                                           color: AppTheme.primary,
-                                          size: 24,
+                                          size: 20,
                                         ),
                                         padding: EdgeInsets.zero,
                                         constraints: const BoxConstraints(),
@@ -201,7 +218,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                   const SizedBox(height: 4),
                                   Text(
                                     provider.currentUser?.email ?? '',
-                                    style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                                       color: AppTheme.onSurfaceVariant,
                                       fontWeight: FontWeight.w500,
                                     ),
@@ -213,16 +230,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         ),
                       ),
 
-                      const SizedBox(height: 40),
+                      const SizedBox(height: 16),
 
                       // Avatar Choice
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 24),
                         child: _buildSectionHeader(context, 'PILIH AVATAR AI'),
                       ),
-                      const SizedBox(height: 16),
+                      const SizedBox(height: 10),
                       SizedBox(
-                        height: 90,
+                        height: 68,
                         child: ListView.builder(
                           padding: const EdgeInsets.symmetric(horizontal: 16),
                           scrollDirection: Axis.horizontal,
@@ -235,15 +252,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               onTap: () => _saveProfile(avatarUrl: avatarPath),
                               child: AnimatedContainer(
                                 duration: const Duration(milliseconds: 200),
-                                width: 70,
+                                width: 52,
                                 margin: const EdgeInsets.symmetric(horizontal: 8),
                                 decoration: BoxDecoration(
                                   shape: BoxShape.circle,
                                   border: Border.all(
                                     color: isSelected ? AppTheme.primary : Colors.transparent,
-                                    width: 3,
+                                    width: 2.5,
                                   ),
-                                  boxShadow: isSelected ? [BoxShadow(color: AppTheme.primary.withOpacity(0.2), blurRadius: 12)] : null,
+                                  boxShadow: isSelected ? [BoxShadow(color: AppTheme.primary.withOpacity(0.2), blurRadius: 8)] : null,
                                 ),
                                 child: CircleAvatar(
                                   backgroundColor: AppTheme.surfaceContainerHigh,
@@ -255,7 +272,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         ),
                       ),
 
-                      const SizedBox(height: 40),
+                      const SizedBox(height: 16),
 
                       // Settings Grid/List
                       Padding(
@@ -264,55 +281,51 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             _buildSectionHeader(context, 'PENGATURAN APLIKASI'),
-                            const SizedBox(height: 16),
+                            const SizedBox(height: 10),
                             
-                            if (isDesktop) 
-                              GridView.count(
-                                shrinkWrap: true,
-                                physics: const NeverScrollableScrollPhysics(),
-                                crossAxisCount: 2,
-                                crossAxisSpacing: 20,
-                                mainAxisSpacing: 20,
-                                childAspectRatio: 4,
-                                children: _buildSettingsItems(context, provider, isDark),
-                              )
-                            else 
-                              Column(
-                                children: _buildSettingsItems(context, provider, isDark),
-                              ),
-                            
-                            const SizedBox(height: 40),
-                            _buildSectionHeader(context, 'AKUN'),
-                            const SizedBox(height: 16),
-                            
-                            _buildSettingTile(
+                            _buildSettingsGroup(
                               context,
-                              icon: Icons.lock_reset_rounded,
-                              title: 'Ganti Kata Sandi',
-                              onTap: () => _showPasswordDialog(context, provider),
+                              _buildSettingsItems(context, provider, isDark),
                             ),
-                            _buildSettingTile(
+                            
+                            const SizedBox(height: 16),
+                            _buildSectionHeader(context, 'AKUN'),
+                            const SizedBox(height: 10),
+                            
+                            _buildSettingsGroup(
                               context,
-                              icon: Icons.logout_rounded,
-                              title: 'Keluar dari Aplikasi',
-                              titleColor: Colors.redAccent,
-                              onTap: () => _showLogoutDialog(context, provider),
+                              [
+                                _buildSettingTile(
+                                  context,
+                                  icon: Icons.lock_reset_rounded,
+                                  title: 'Ganti Kata Sandi',
+                                  onTap: () => _showPasswordDialog(context, provider),
+                                ),
+                                _buildSettingTile(
+                                  context,
+                                  icon: Icons.logout_rounded,
+                                  title: 'Keluar dari Aplikasi',
+                                  titleColor: Colors.redAccent,
+                                  onTap: () => _showLogoutDialog(context, provider),
+                                ),
+                              ],
                             ),
                           ],
                         ),
                       ),
                       
-                      const SizedBox(height: 60),
+                      const SizedBox(height: 120),
                     ],
                   ),
                 ),
               ),
             ),
           ),
-        );
-      },
-    );
-  }
+        ),
+      );
+    },
+  );
+}
 
   List<Widget> _buildSettingsItems(BuildContext context, AppProvider provider, bool isDark) {
     return [
@@ -324,17 +337,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
         trailing: Switch(
           value: isDark,
           onChanged: (val) => provider.toggleTheme(),
-          activeColor: AppTheme.primary,
-        ),
-      ),
-      _buildSettingTile(
-        context,
-        icon: Icons.notifications_active_rounded,
-        title: 'Notifikasi',
-        subtitle: 'Dapatkan update rangkuman AI',
-        trailing: Switch(
-          value: true,
-          onChanged: (val) {},
           activeColor: AppTheme.primary,
         ),
       ),
@@ -353,11 +355,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ElevatedButton(
             onPressed: () async {
               Navigator.pop(context);
+              await provider.signOut();
               LectureDigestApp.navigatorKey.currentState?.pushAndRemoveUntil(
-                MaterialPageRoute(builder: (_) => const LoginScreen()),
+                MaterialPageRoute(builder: (_) => MainWrapper()),
                 (route) => false,
               );
-              await provider.signOut();
             }, 
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.redAccent, 
@@ -451,6 +453,29 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
+  Widget _buildSettingsGroup(BuildContext context, List<Widget> tiles) {
+    return Container(
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.surfaceVariant.withOpacity(0.15),
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Column(
+        children: List.generate(tiles.length * 2 - 1, (index) {
+          if (index.isOdd) {
+            return Divider(
+              height: 1,
+              thickness: 1,
+              color: Theme.of(context).colorScheme.onSurface.withOpacity(0.06),
+              indent: 52,
+              endIndent: 16,
+            );
+          }
+          return tiles[index ~/ 2];
+        }),
+      ),
+    );
+  }
+
   Widget _buildSettingTile(BuildContext context, {
     required IconData icon, 
     required String title, 
@@ -459,27 +484,25 @@ class _ProfileScreenState extends State<ProfileScreen> {
     Color? titleColor,
     VoidCallback? onTap
   }) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surfaceVariant.withOpacity(0.2),
-        borderRadius: BorderRadius.circular(20),
+    return ListTile(
+      onTap: onTap,
+      dense: true,
+      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+      leading: Icon(
+        icon, 
+        color: titleColor ?? Theme.of(context).colorScheme.primary, 
+        size: 20
       ),
-      child: ListTile(
-        onTap: onTap,
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-        leading: Container(
-          padding: const EdgeInsets.all(8),
-          decoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.surface,
-            borderRadius: BorderRadius.circular(12),
-          ),
-          child: Icon(icon, color: titleColor ?? Theme.of(context).colorScheme.primary, size: 22),
-        ),
-        title: Text(title, style: TextStyle(fontWeight: FontWeight.bold, color: titleColor)),
-        subtitle: subtitle != null ? Text(subtitle, style: const TextStyle(fontSize: 11)) : null,
-        trailing: trailing ?? Icon(Icons.chevron_right, color: Colors.grey.withOpacity(0.3), size: 18),
+      title: Text(
+        title, 
+        style: TextStyle(
+          fontWeight: FontWeight.bold, 
+          color: titleColor ?? Theme.of(context).colorScheme.onSurface,
+          fontSize: 14,
+        )
       ),
+      subtitle: subtitle != null ? Text(subtitle, style: const TextStyle(fontSize: 11)) : null,
+      trailing: trailing ?? Icon(Icons.chevron_right, color: Colors.grey.withOpacity(0.4), size: 16),
     );
   }
 }

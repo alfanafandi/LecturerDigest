@@ -7,7 +7,9 @@ import 'package:lecturer_digest/screens/search_screen.dart';
 import 'package:lecturer_digest/screens/lecture_summary_view.dart';
 import 'package:lecturer_digest/core/widgets/brand_logo.dart';
 import 'package:lecturer_digest/screens/profile_screen.dart';
+import 'package:lecturer_digest/screens/new_lecture_recording.dart';
 import 'package:lecturer_digest/core/utils/responsive.dart';
+import 'package:lecturer_digest/screens/learning_diagnostics.dart';
 
 class HomeDashboard extends StatefulWidget {
   const HomeDashboard({super.key});
@@ -92,7 +94,7 @@ class _HomeDashboardState extends State<HomeDashboard> {
       builder: (context) => StatefulBuilder(
         builder: (context, setModalState) => Container(
           padding: EdgeInsets.only(
-            bottom: MediaQuery.of(context).viewInsets.bottom + 32,
+            bottom: MediaQuery.of(context).viewInsets.bottom + MediaQuery.of(context).padding.bottom + 32,
             top: 32,
             left: 24,
             right: 24,
@@ -210,6 +212,7 @@ class _HomeDashboardState extends State<HomeDashboard> {
                     },
                   ),
                 ),
+                const SizedBox(height: 16),
               ],
             ),
           ),
@@ -262,17 +265,22 @@ class _HomeDashboardState extends State<HomeDashboard> {
                           child: Container(
                             width: 42,
                             height: 42,
-                            decoration: BoxDecoration(
+                        decoration: BoxDecoration(
                               shape: BoxShape.circle,
                               color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
                               border: Border.all(color: Theme.of(context).colorScheme.primary, width: 2),
                             ),
                             child: provider.userProfile?['avatar_url'] != null
                                 ? ClipOval(
-                                    child: Image.asset(
-                                      provider.userProfile!['avatar_url'],
-                                      fit: BoxFit.cover,
-                                    ),
+                                    child: provider.userProfile!['avatar_url'].startsWith('http')
+                                        ? Image.network(
+                                            provider.userProfile!['avatar_url'],
+                                            fit: BoxFit.cover,
+                                          )
+                                        : Image.asset(
+                                            provider.userProfile!['avatar_url'],
+                                            fit: BoxFit.cover,
+                                          ),
                                   )
                                 : Icon(
                                     Icons.person_rounded, 
@@ -378,6 +386,17 @@ class _HomeDashboardState extends State<HomeDashboard> {
                 ),
               ),
             ),
+
+            // AI Diagnostics Card
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
+                child: Consumer<AppProvider>(
+                  builder: (context, provider, child) => _buildDiagnosticsCard(context, provider),
+                ),
+              ),
+            ),
+
 
             // Recent Summaries Header
             SliverToBoxAdapter(
@@ -508,11 +527,34 @@ class _HomeDashboardState extends State<HomeDashboard> {
             // AI Study Radar Content
             Consumer<AppProvider>(
               builder: (context, provider, child) {
-                // Logic to find lectures needing review
                 final dueLectureIds = provider.dueFlashcards.map((f) => f['lecture_id'] as String).toSet();
                 final priorityLectures = provider.lectures.where((l) => dueLectureIds.contains(l['id'])).toList();
 
-                if (priorityLectures.isEmpty) {
+                final groupedData = <String, Map<String, dynamic>>{};
+                for (var lecture in priorityLectures) {
+                  final courseId = lecture['course_id'] as String? ?? 'Umum';
+                  final course = provider.courses.firstWhere(
+                    (c) => c['id'] == courseId, 
+                    orElse: () => {'name': 'Umum'}
+                  );
+                  final dueCount = provider.dueFlashcards.where((f) => f['lecture_id'] == lecture['id']).length;
+
+                  if (!groupedData.containsKey(courseId)) {
+                    groupedData[courseId] = {
+                      'courseId': courseId,
+                      'courseName': course['name'] ?? 'Umum',
+                      'materiCount': 1,
+                      'flashcardsCount': dueCount,
+                    };
+                  } else {
+                    groupedData[courseId]!['materiCount'] = (groupedData[courseId]!['materiCount'] as int) + 1;
+                    groupedData[courseId]!['flashcardsCount'] = (groupedData[courseId]!['flashcardsCount'] as int) + dueCount;
+                  }
+                }
+
+                final courseGroups = groupedData.values.toList();
+
+                if (courseGroups.isEmpty) {
                   return SliverToBoxAdapter(
                     child: Padding(
                       padding: const EdgeInsets.all(24.0),
@@ -547,25 +589,17 @@ class _HomeDashboardState extends State<HomeDashboard> {
                 return SliverList(
                   delegate: SliverChildBuilderDelegate(
                     (context, index) {
-                      final lecture = priorityLectures[index];
-                      final dueCount = provider.dueFlashcards.where((f) => f['lecture_id'] == lecture['id']).length;
-                      
-                      // Find course name
-                      final course = provider.courses.firstWhere(
-                        (c) => c['id'] == lecture['course_id'], 
-                        orElse: () => {'name': 'Umum'}
-                      );
-
+                      final group = courseGroups[index];
                       return _buildRadarCard(
                         context,
-                        lecture['id'],
-                        course['name'],
-                        lecture['title'],
-                        '$dueCount Kartu Hafalan perlu diulas',
+                        group['courseId'] as String,
+                        group['courseName'] as String,
+                        group['materiCount'] as int,
+                        group['flashcardsCount'] as int,
                         AppTheme.primary,
                       );
                     },
-                    childCount: priorityLectures.length,
+                    childCount: courseGroups.length,
                   ),
                 );
               },
@@ -587,73 +621,121 @@ class _HomeDashboardState extends State<HomeDashboard> {
             // Desktop Hero Section
             Container(
               width: double.infinity,
-              padding: const EdgeInsets.all(48),
+              padding: const EdgeInsets.all(40),
               decoration: BoxDecoration(
                 color: AppTheme.surfaceContainerLowest,
                 borderRadius: BorderRadius.circular(24),
+                border: Border.all(color: AppTheme.outlineVariant.withOpacity(0.15)),
                 boxShadow: [
                   BoxShadow(
-                    color: AppTheme.primary.withOpacity(0.04),
+                    color: AppTheme.primary.withOpacity(0.03),
                     blurRadius: 32,
                     offset: const Offset(0, 12),
                   ),
                 ],
               ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  Text(
-                    'DASHBOARD OVERVIEW',
-                    style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                          letterSpacing: 2.0,
-                          fontWeight: FontWeight.w900,
-                          color: AppTheme.primary,
-                        ),
-                  ),
-                  const SizedBox(height: 16),
-                  Consumer<AppProvider>(
-                    builder: (context, provider, child) {
-                      final user = provider.currentUser;
-                      final profile = provider.userProfile;
-                      String displayName = profile?['full_name'] ?? user?.email?.split('@')[0] ?? 'Mahasiswa';
-                      return Text(
-                        'Selamat datang kembali, $displayName!',
-                        style: Theme.of(context).textTheme.displayMedium?.copyWith(
-                              fontWeight: FontWeight.w900,
+                  // Left Side: Greeting & Recording Button
+                  Expanded(
+                    child: Consumer<AppProvider>(
+                      builder: (context, provider, child) {
+                        final user = provider.currentUser;
+                        final profile = provider.userProfile;
+                        
+                        String displayName = 'Mahasiswa';
+                        if (profile != null && profile['full_name'] != null && profile['full_name'].toString().isNotEmpty) {
+                          displayName = profile['full_name'];
+                        } else if (user?.email != null) {
+                          final emailPrefix = user!.email!.split('@')[0];
+                          displayName = emailPrefix[0].toUpperCase() + emailPrefix.substring(1);
+                        }
+
+                        return Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'SELAMAT DATANG',
+                              style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                                letterSpacing: 2.0,
+                                fontWeight: FontWeight.w900,
+                                color: AppTheme.primary,
+                              ),
                             ),
-                      );
-                    },
+                            const SizedBox(height: 12),
+                            Text(
+                              'Halo, $displayName!',
+                              style: Theme.of(context).textTheme.displayMedium?.copyWith(
+                                fontWeight: FontWeight.w900,
+                                height: 1.1,
+                              ),
+                            ),
+                            const SizedBox(height: 12),
+                            const Text(
+                              'Lanjutkan belajarmu dengan rangkuman kuliah yang cerdas. Rekam perkuliahan baru sekarang untuk memulai transkripsi dan sintesis AI secara instan.',
+                              style: TextStyle(fontSize: 16, color: AppTheme.onSurfaceVariant, height: 1.4),
+                            ),
+                            const SizedBox(height: 24),
+                            ElevatedButton.icon(
+                              onPressed: () {
+                                Navigator.of(context).push(
+                                  MaterialPageRoute(builder: (_) => const NewLectureRecording()),
+                                );
+                              },
+                              icon: const Icon(Icons.mic, color: Colors.white, size: 20),
+                              label: const Text('Mulai Rekam Kuliah', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: AppTheme.primary,
+                                foregroundColor: Colors.white,
+                                padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 18),
+                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                                elevation: 4,
+                                shadowColor: AppTheme.primary.withOpacity(0.4),
+                              ),
+                            ),
+                          ],
+                        );
+                      },
+                    ),
                   ),
-                  const SizedBox(height: 16),
-                  const Text(
-                    'Anda telah menyintesis 12 jam kuliah informatika minggu ini. Siap untuk Sistem Basis Data hari ini?',
-                    style: TextStyle(fontSize: 18, color: AppTheme.onSurfaceVariant),
-                  ),
-                  const SizedBox(height: 32),
-                  Row(
-                    children: [
-                      ElevatedButton.icon(
-                        onPressed: () {},
-                        icon: const Icon(Icons.fiber_manual_record, color: Colors.white, size: 16),
-                        label: const Text('Mulai Rekam', style: TextStyle(fontWeight: FontWeight.bold)),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.red,
-                          foregroundColor: Colors.white,
-                          padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 20),
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+                  
+                  const SizedBox(width: 48),
+
+                  // Right Side: Search Bar
+                  SizedBox(
+                    width: 320,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          'Cari Materi',
+                          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14, color: AppTheme.onSurfaceVariant),
                         ),
-                      ),
-                      const SizedBox(width: 16),
-                      OutlinedButton(
-                        onPressed: () {},
-                        style: OutlinedButton.styleFrom(
-                          padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 20),
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
-                          side: BorderSide(color: AppTheme.outlineVariant.withOpacity(0.3)),
+                        const SizedBox(height: 8),
+                        GestureDetector(
+                          onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const SearchScreen())),
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+                            decoration: BoxDecoration(
+                              color: AppTheme.surfaceContainerLow,
+                              borderRadius: BorderRadius.circular(16),
+                              border: Border.all(color: AppTheme.outlineVariant.withOpacity(0.15)),
+                            ),
+                            child: Row(
+                              children: [
+                                Icon(Icons.search, color: AppTheme.primary.withOpacity(0.7)),
+                                const SizedBox(width: 12),
+                                const Text(
+                                  'Cari materi atau topik...',
+                                  style: TextStyle(color: Colors.grey, fontSize: 14),
+                                ),
+                              ],
+                            ),
+                          ),
                         ),
-                        child: const Text('Lihat Analitik', style: TextStyle(fontWeight: FontWeight.bold, color: AppTheme.onSurface)),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ],
               ),
@@ -668,30 +750,50 @@ class _HomeDashboardState extends State<HomeDashboard> {
                 Expanded(
                   flex: 2,
                   child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // Stats Grid
-                      Row(
-                        children: [
-                          Expanded(
-                            child: _buildDesktopStatCard(
-                              context,
-                              Icons.menu_book_rounded,
-                              'Materi Hari Ini',
-                              '3 Sesi',
-                              AppTheme.primary,
-                            ),
-                          ),
-                          const SizedBox(width: 24),
-                          Expanded(
-                            child: _buildDesktopStatCard(
-                              context,
-                              Icons.quiz_rounded,
-                              'Kartu Hafalan',
-                              '42 Pending',
-                              AppTheme.secondary,
-                            ),
-                          ),
-                        ],
+                      // Stats Row using dynamic data
+                      Consumer<AppProvider>(
+                        builder: (context, provider, child) {
+                          final todayStr = DateTime.now().toIso8601String().split('T')[0];
+                          final todayCount = provider.lectures.where((l) => l['lecture_date'] == todayStr).length;
+                          final dueCount = provider.dueFlashcards.length;
+
+                          return Row(
+                            children: [
+                              Expanded(
+                                child: _buildDesktopStatCard(
+                                  context,
+                                  Icons.menu_book_rounded,
+                                  'Materi Hari Ini',
+                                  '$todayCount Sesi',
+                                  AppTheme.primary,
+                                  onTap: () {
+                                    final today = DateTime.now().toIso8601String().split('T')[0];
+                                    Navigator.of(context).push(MaterialPageRoute(builder: (_) => SearchScreen(initialQuery: today)));
+                                  },
+                                ),
+                              ),
+                              const SizedBox(width: 24),
+                              Expanded(
+                                child: _buildDesktopStatCard(
+                                  context,
+                                  Icons.quiz_rounded,
+                                  'Kartu Hafalan',
+                                  '$dueCount Kartu',
+                                  AppTheme.secondary,
+                                  onTap: () {
+                                    Navigator.of(context).push(MaterialPageRoute(builder: (_) => const FlashcardsReview()));
+                                  },
+                                ),
+                              ),
+                            ],
+                          );
+                        },
+                      ),
+                      const SizedBox(height: 24),
+                      Consumer<AppProvider>(
+                        builder: (context, provider, child) => _buildDiagnosticsCard(context, provider),
                       ),
                       const SizedBox(height: 48),
 
@@ -699,25 +801,68 @@ class _HomeDashboardState extends State<HomeDashboard> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text(
-                            'Rangkuman Terbaru',
-                            style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                                  fontWeight: FontWeight.w900,
-                                ),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Rangkuman Terbaru',
+                                style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                                      fontWeight: FontWeight.w900,
+                                    ),
+                              ),
+                              const SizedBox(height: 4),
+                              const Text(
+                                'Lanjutkan belajarmu',
+                                style: TextStyle(fontSize: 14, color: AppTheme.onSurfaceVariant),
+                              ),
+                            ],
                           ),
-                          TextButton(
-                            onPressed: () {},
-                            child: const Text('Lihat Semua', style: TextStyle(fontWeight: FontWeight.bold)),
+                          GestureDetector(
+                            onTap: () => _showImportBottomSheet(context),
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                              decoration: BoxDecoration(
+                                color: AppTheme.primary.withOpacity(0.1),
+                                borderRadius: BorderRadius.circular(24),
+                              ),
+                              child: const Row(
+                                children: [
+                                  Icon(Icons.download_rounded, size: 18, color: AppTheme.primary),
+                                  SizedBox(width: 6),
+                                  Text(
+                                    'Impor Materi',
+                                    style: TextStyle(
+                                      color: AppTheme.primary,
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
                           ),
                         ],
                       ),
                       const SizedBox(height: 24),
 
-                      // Bento Grid Style for Summaries
+                      // Bento Grid Style for Summaries (Dynamic!)
                       Consumer<AppProvider>(
                         builder: (context, provider, child) {
                           if (provider.lectures.isEmpty) {
-                            return const Center(child: Text('Belum ada materi.'));
+                            return Container(
+                              width: double.infinity,
+                              padding: const EdgeInsets.symmetric(vertical: 48),
+                              decoration: BoxDecoration(
+                                color: AppTheme.surfaceContainerLow,
+                                borderRadius: BorderRadius.circular(24),
+                              ),
+                              child: const Center(
+                                child: Text(
+                                  'Belum ada rangkuman materi. Mulailah merekam kuliah!',
+                                  style: TextStyle(color: Colors.grey, fontStyle: FontStyle.italic),
+                                ),
+                              ),
+                            );
                           }
                           return GridView.builder(
                             shrinkWrap: true,
@@ -731,14 +876,20 @@ class _HomeDashboardState extends State<HomeDashboard> {
                             itemCount: provider.lectures.length > 4 ? 4 : provider.lectures.length,
                             itemBuilder: (context, index) {
                               final lecture = provider.lectures[index];
+                              final date = lecture['created_at'] != null 
+                                ? DateTime.parse(lecture['created_at']).toLocal() 
+                                : DateTime.now();
+                              
+                              final status = lecture['status'] == 'Summarized' ? 'Selesai' : 'Proses';
+
                               return _buildSummaryCard(
                                 context,
-                                lecture['id'],
-                                'Informatika',
-                                '2 jam yang lalu',
-                                lecture['title'],
-                                lecture['raw_transcript'] ?? '',
-                                'Selesai',
+                                lecture['id'] ?? '',
+                                'Materi',
+                                '${date.hour}:${date.minute.toString().padLeft(2, '0')}',
+                                lecture['title'] ?? 'Tanpa Judul',
+                                lecture['raw_transcript'] ?? 'Tidak ada transkrip',
+                                status,
                                 AppTheme.primary.withOpacity(0.1),
                                 AppTheme.primary,
                               );
@@ -749,78 +900,112 @@ class _HomeDashboardState extends State<HomeDashboard> {
                     ],
                   ),
                 ),
+                
                 const SizedBox(width: 48),
 
-                // Right Column: Schedule & AI Pulse
+                // Right Column: AI Study Radar
                 Expanded(
                   child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // Schedule Panel
-                      Container(
-                        padding: const EdgeInsets.all(32),
-                        decoration: BoxDecoration(
-                          color: AppTheme.surfaceContainerLowest,
-                          borderRadius: BorderRadius.circular(24),
-                          border: Border.all(color: AppTheme.outlineVariant.withOpacity(0.1)),
-                        ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Expanded(child: Text('Jadwal Hari Ini', style: TextStyle(fontSize: 20, fontWeight: FontWeight.w900), overflow: TextOverflow.ellipsis)),
-                                SizedBox(width: 8),
-                                Text('24 Okt, 2023', style: TextStyle(fontSize: 12, color: Colors.grey)),
-                              ],
-                            ),
-                            const SizedBox(height: 32),
-                            _buildScheduleItem('09:00 - 10:30', 'Rekayasa Perangkat Lunak', 'Gedung B • R.402', AppTheme.primary),
-                            _buildScheduleItem('11:00 - 12:30', 'Jaringan Komputer', 'Lab Digital • Zoom', AppTheme.secondary),
-                            _buildScheduleItem('14:00 - 15:30', 'Interaksi Manusia & Komputer', 'Aula Seminar', Colors.grey),
-                          ],
-                        ),
-                      ),
-                      const SizedBox(height: 32),
-
-                      // AI Pulse Card
-                      Container(
-                        padding: const EdgeInsets.all(32),
-                        decoration: BoxDecoration(
-                          gradient: const LinearGradient(
-                            colors: [AppTheme.onPrimaryContainer, AppTheme.primary],
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight,
+                      // AI Study Radar Header
+                      Row(
+                        children: [
+                          const Icon(Icons.radar_rounded, color: AppTheme.primary, size: 28),
+                          const SizedBox(width: 8),
+                          Text(
+                            'AI Study Radar',
+                            style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                                  fontWeight: FontWeight.w900,
+                                ),
                           ),
-                          borderRadius: BorderRadius.circular(24),
-                        ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const Icon(Icons.tips_and_updates_rounded, color: Colors.white, size: 32),
-                            const SizedBox(height: 16),
-                            const Text(
-                              'Saran AI',
-                              style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
-                            ),
-                            const SizedBox(height: 8),
-                            const Text(
-                              'Anda sudah belajar "Sistem Terdistribusi" selama 4 jam. Ambil istirahat 15 menit untuk daya ingat lebih baik.',
-                              style: TextStyle(color: Colors.white70, height: 1.5),
-                            ),
-                            const SizedBox(height: 24),
-                            ElevatedButton(
-                              onPressed: () {},
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.white.withOpacity(0.15),
-                                foregroundColor: Colors.white,
-                                elevation: 0,
-                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                        ],
+                      ),
+                      const SizedBox(height: 4),
+                      const Text(
+                        'Materi mendesak yang perlu kamu review hari ini',
+                        style: TextStyle(fontSize: 14, color: AppTheme.onSurfaceVariant),
+                      ),
+                      const SizedBox(height: 24),
+
+                      // AI Study Radar Content
+                      Consumer<AppProvider>(
+                        builder: (context, provider, child) {
+                          // Logic to find lectures needing review
+                          final dueLectureIds = provider.dueFlashcards.map((f) => f['lecture_id'] as String).toSet();
+                          final priorityLectures = provider.lectures.where((l) => dueLectureIds.contains(l['id'])).toList();
+
+                          // Group by course
+                          final groupedData = <String, Map<String, dynamic>>{};
+                          for (var lecture in priorityLectures) {
+                            final courseId = lecture['course_id'] as String? ?? 'Umum';
+                            final course = provider.courses.firstWhere(
+                              (c) => c['id'] == courseId, 
+                              orElse: () => {'name': 'Umum'}
+                            );
+                            final dueCount = provider.dueFlashcards.where((f) => f['lecture_id'] == lecture['id']).length;
+
+                            if (!groupedData.containsKey(courseId)) {
+                              groupedData[courseId] = {
+                                'courseId': courseId,
+                                'courseName': course['name'] ?? 'Umum',
+                                'materiCount': 1,
+                                'flashcardsCount': dueCount,
+                              };
+                            } else {
+                              groupedData[courseId]!['materiCount'] = (groupedData[courseId]!['materiCount'] as int) + 1;
+                              groupedData[courseId]!['flashcardsCount'] = (groupedData[courseId]!['flashcardsCount'] as int) + dueCount;
+                            }
+                          }
+
+                          final courseGroups = groupedData.values.toList();
+
+                          if (courseGroups.isEmpty) {
+                            return Container(
+                              width: double.infinity,
+                              padding: const EdgeInsets.symmetric(vertical: 36, horizontal: 24),
+                              decoration: BoxDecoration(
+                                color: AppTheme.surfaceContainerLow,
+                                borderRadius: BorderRadius.circular(24),
+                                border: Border.all(color: AppTheme.primary.withOpacity(0.08)),
                               ),
-                              child: const Text('Set Timer Pomodoro'),
-                            ),
-                          ],
-                        ),
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  const Icon(Icons.check_circle_outline_rounded, size: 48, color: Colors.green),
+                                  const SizedBox(height: 16),
+                                  const Text(
+                                    'Semua Terkejar!',
+                                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                                  ),
+                                  const SizedBox(height: 8),
+                                  const Text(
+                                    'Belum ada materi yang perlu direview mendesak. Kerja bagus!',
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(color: Colors.grey, fontSize: 13, height: 1.4),
+                                  ),
+                                ],
+                              ),
+                            );
+                          }
+
+                          return ListView.builder(
+                            shrinkWrap: true,
+                            physics: const NeverScrollableScrollPhysics(),
+                            itemCount: courseGroups.length,
+                            itemBuilder: (context, index) {
+                              final group = courseGroups[index];
+                              return _buildDesktopRadarCard(
+                                context,
+                                group['courseId'] as String,
+                                group['courseName'] as String,
+                                group['materiCount'] as int,
+                                group['flashcardsCount'] as int,
+                                AppTheme.primary,
+                              );
+                            },
+                          );
+                        },
                       ),
                     ],
                   ),
@@ -833,56 +1018,272 @@ class _HomeDashboardState extends State<HomeDashboard> {
     );
   }
 
-  Widget _buildDesktopStatCard(BuildContext context, IconData icon, String label, String value, Color color) {
+  Widget _buildDesktopStatCard(BuildContext context, IconData icon, String label, String value, Color color, {VoidCallback? onTap}) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.all(32),
+        decoration: BoxDecoration(
+          color: AppTheme.surfaceContainerLow,
+          borderRadius: BorderRadius.circular(24),
+          border: Border.all(color: AppTheme.primary.withOpacity(0.05)),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.01),
+              blurRadius: 8,
+              offset: const Offset(0, 4),
+            ),
+          ],
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Icon(icon, color: color, size: 32),
+            const SizedBox(height: 24),
+            Text(label, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: AppTheme.onSurfaceVariant)),
+            const SizedBox(height: 4),
+            Text(value, style: Theme.of(context).textTheme.headlineMedium?.copyWith(fontWeight: FontWeight.w900)),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildDesktopRadarCard(
+    BuildContext context,
+    String courseId,
+    String courseName,
+    int materiCount,
+    int flashcardsCount,
+    Color accentColor,
+  ) {
     return Container(
-      padding: const EdgeInsets.all(32),
+      margin: const EdgeInsets.only(bottom: 16),
+      padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: AppTheme.surfaceContainerLow,
-        borderRadius: BorderRadius.circular(24),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: accentColor.withOpacity(0.08)),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.02),
+            blurRadius: 8,
+            offset: const Offset(0, 4),
+          ),
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(icon, color: color, size: 32),
-          const SizedBox(height: 24),
-          Text(label, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: AppTheme.onSurfaceVariant)),
-          const SizedBox(height: 4),
-          Text(value, style: Theme.of(context).textTheme.headlineMedium?.copyWith(fontWeight: FontWeight.w900)),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  color: accentColor.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Icon(Icons.school_outlined, color: accentColor, size: 24),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'MATA KULIAH',
+                      style: TextStyle(
+                        fontSize: 9,
+                        fontWeight: FontWeight.bold,
+                        color: accentColor.withOpacity(0.7),
+                        letterSpacing: 1.0,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      courseName,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 15,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Expanded(
+                child: Row(
+                  children: [
+                    Icon(Icons.notification_important_rounded, size: 14, color: Colors.orange.shade700),
+                    const SizedBox(width: 4),
+                    Expanded(
+                      child: Text(
+                        '$materiCount materi ($flashcardsCount kartu) perlu diulas',
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          fontSize: 11,
+                          color: Colors.orange.shade800,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(width: 8),
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.of(context).push(MaterialPageRoute(
+                    builder: (_) => FlashcardsReview(courseId: courseId),
+                  ));
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: accentColor,
+                  foregroundColor: Colors.white,
+                  elevation: 0,
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                ),
+                child: const Text('Review', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 11)),
+              ),
+            ],
+          ),
         ],
       ),
     );
   }
 
-  Widget _buildScheduleItem(String time, String title, String loc, Color color) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 24),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            width: 12,
-            height: 12,
-            margin: const EdgeInsets.only(top: 4),
-            decoration: BoxDecoration(
-              color: color,
-              shape: BoxShape.circle,
-              border: Border.all(color: color.withOpacity(0.2), width: 4),
+  Widget _buildDiagnosticsCard(BuildContext context, AppProvider provider) {
+    final latestAttemptsMap = <String, Map<String, dynamic>>{};
+    for (var attempt in provider.allQuizAttempts) {
+      final lectureId = attempt['lecture_id'] as String;
+      if (!latestAttemptsMap.containsKey(lectureId)) {
+        latestAttemptsMap[lectureId] = attempt;
+      }
+    }
+
+    final lowScoreCount = latestAttemptsMap.values.where((attempt) {
+      final score = attempt['score'] as int;
+      final total = attempt['total_questions'] as int;
+      return total > 0 && (score / total) < 0.7;
+    }).length;
+
+    final isNeedAttention = lowScoreCount > 0;
+    final cardColor = isNeedAttention 
+        ? const Color(0xFFFDF4F5) // Very soft red-pink
+        : const Color(0xFFF3FAF6); // Very soft mint green
+    final borderColor = isNeedAttention
+        ? const Color(0xFFF5C2C7)
+        : const Color(0xFFD1E7DD);
+    final accentColor = isNeedAttention ? const Color(0xFF842029) : const Color(0xFF0F5132);
+    final description = isNeedAttention
+        ? '$lowScoreCount materi teridentifikasi memerlukan ulasan tambahan'
+        : 'Seluruh pemahaman materi Anda terpantau sangat baik';
+    final badgeText = isNeedAttention ? 'Perlu Ulasan' : 'Sangat Baik';
+
+    return GestureDetector(
+      onTap: () {
+        Navigator.of(context).push(
+          MaterialPageRoute(builder: (_) => const LearningDiagnosticsScreen()),
+        );
+      },
+      child: Container(
+        padding: const EdgeInsets.all(20),
+        decoration: BoxDecoration(
+          color: cardColor,
+          borderRadius: BorderRadius.circular(24),
+          border: Border.all(color: borderColor),
+          boxShadow: [
+            BoxShadow(
+              color: accentColor.withOpacity(0.02),
+              blurRadius: 10,
+              offset: const Offset(0, 4),
             ),
-          ),
-          const SizedBox(width: 16),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(time, style: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: Colors.grey)),
-                const SizedBox(height: 4),
-                Text(title, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
-                const SizedBox(height: 2),
-                Text(loc, style: const TextStyle(fontSize: 12, color: Colors.grey)),
-              ],
+          ],
+        ),
+        child: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: accentColor.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(16),
+              ),
+              child: Icon(
+                isNeedAttention ? Icons.insights_rounded : Icons.analytics_outlined,
+                color: accentColor,
+                size: 28,
+              ),
             ),
-          ),
-        ],
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Text(
+                          'AI LEARNING DIAGNOSTICS',
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            fontSize: 10,
+                            fontWeight: FontWeight.w900,
+                            color: accentColor.withOpacity(0.7),
+                            letterSpacing: 1.0,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                        decoration: BoxDecoration(
+                          color: accentColor.withOpacity(0.1),
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        child: Text(
+                          badgeText,
+                          style: TextStyle(
+                            fontSize: 10,
+                            fontWeight: FontWeight.bold,
+                            color: accentColor,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 6),
+                  Text(
+                    description,
+                    style: const TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.bold,
+                      color: AppTheme.onSurface,
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    isNeedAttention ? 'Ketuk untuk melihat rekomendasi perbaikan' : 'Ketuk untuk membuka pusat diagnosis',
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: accentColor.withOpacity(0.8),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -1175,10 +1576,10 @@ class _HomeDashboardState extends State<HomeDashboard> {
 
   Widget _buildRadarCard(
     BuildContext context,
-    String lectureId,
+    String courseId,
     String courseName,
-    String title,
-    String reason,
+    int materiCount,
+    int flashcardsCount,
     Color accentColor,
   ) {
     return Container(
@@ -1204,7 +1605,7 @@ class _HomeDashboardState extends State<HomeDashboard> {
               color: accentColor.withOpacity(0.1),
               borderRadius: BorderRadius.circular(16),
             ),
-            child: Icon(Icons.psychology_outlined, color: accentColor, size: 28),
+            child: Icon(Icons.school_outlined, color: accentColor, size: 28),
           ),
           const SizedBox(width: 16),
           Expanded(
@@ -1212,7 +1613,7 @@ class _HomeDashboardState extends State<HomeDashboard> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  courseName.toUpperCase(),
+                  'MATA KULIAH',
                   style: TextStyle(
                     fontSize: 10,
                     fontWeight: FontWeight.bold,
@@ -1222,7 +1623,7 @@ class _HomeDashboardState extends State<HomeDashboard> {
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  title,
+                  courseName,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
@@ -1237,7 +1638,7 @@ class _HomeDashboardState extends State<HomeDashboard> {
                     const SizedBox(width: 4),
                     Expanded(
                       child: Text(
-                        reason,
+                        '$materiCount materi ($flashcardsCount Kartu) perlu diulas',
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         style: TextStyle(
@@ -1256,11 +1657,8 @@ class _HomeDashboardState extends State<HomeDashboard> {
           ElevatedButton(
             onPressed: () {
               Navigator.of(context).push(MaterialPageRoute(
-                builder: (_) => FlashcardsReview(lectureId: lectureId),
+                builder: (_) => FlashcardsReview(courseId: courseId),
               ));
-            },
-            onLongPress: () {
-              _showLectureOptions(context, lectureId, title);
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: accentColor,
