@@ -5,7 +5,6 @@ import 'package:lecturer_digest/core/providers/app_provider.dart';
 import 'package:lecturer_digest/core/widgets/brand_logo.dart';
 import 'package:lecturer_digest/core/utils/responsive.dart';
 import 'package:flutter/services.dart';
-import 'dart:io';
 import 'package:lecturer_digest/core/services/document_service.dart';
 
 class AskAiChat extends StatefulWidget {
@@ -24,7 +23,7 @@ class _AskAiChatState extends State<AskAiChat> with WidgetsBindingObserver {
   int _lastMessageCount = 0;
   bool _lastIsLoading = false;
 
-  File? _attachedFile;
+  PickedDocument? _attachedFile;
   String? _attachedFileName;
   String? _attachedFileText;
   bool _isExtractingFile = false;
@@ -51,7 +50,7 @@ class _AskAiChatState extends State<AskAiChat> with WidgetsBindingObserver {
       setState(() {
         _isExtractingFile = true;
         _attachedFile = file;
-        _attachedFileName = file.path.split(Platform.pathSeparator).last;
+        _attachedFileName = file.name; // gunakan .name langsung, cross-platform
         _attachedFileText = null;
       });
 

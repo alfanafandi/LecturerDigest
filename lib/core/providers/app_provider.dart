@@ -8,7 +8,6 @@ import 'package:lecturer_digest/core/services/audio_service.dart';
 import 'package:lecturer_digest/core/services/transcription_service.dart';
 import 'package:lecturer_digest/core/services/document_service.dart';
 import 'package:lecturer_digest/core/services/pdf_service.dart';
-import 'dart:io';
 
 class AppProvider extends ChangeNotifier {
   final SupabaseService _db = SupabaseService();
@@ -196,6 +195,11 @@ class AppProvider extends ChangeNotifier {
     lectureDiagnostics = {};
     allQuizAttempts = [];
     activeRemedialPrompt = null;
+    notifyListeners();
+  }
+
+  void clearError() {
+    error = null;
     notifyListeners();
   }
 
@@ -457,6 +461,7 @@ class AppProvider extends ChangeNotifier {
   }
 
   Future<void> submitQuizResult(String lectureId, int score, int total, List<Map<String, dynamic>> answers) async {
+    error = null; // Reset error sebelum submit untuk menghindari error lama (misal dari rekaman audio) muncul
     try {
       await _db.saveQuizAttempt(lectureId, score, total, answers);
       await fetchAllQuizAttempts();
@@ -909,7 +914,7 @@ class AppProvider extends ChangeNotifier {
   }
 
   // --- Document Upload Workflow ---
-  Future<void> processDocument(String courseId, String title, File file) async {
+  Future<void> processDocument(String courseId, String title, PickedDocument file) async {
     _setLoading(true);
     error = null;
     try {

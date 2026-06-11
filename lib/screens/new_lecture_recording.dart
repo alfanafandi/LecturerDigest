@@ -6,7 +6,6 @@ import 'package:lecturer_digest/core/providers/app_provider.dart';
 import 'package:lecturer_digest/core/widgets/brand_logo.dart';
 import 'package:lecturer_digest/core/utils/responsive.dart';
 import 'package:lecturer_digest/core/services/document_service.dart';
-import 'dart:io';
 
 class NewLectureRecording extends StatefulWidget {
   const NewLectureRecording({super.key});
@@ -272,11 +271,95 @@ class _NewLectureRecordingState extends State<NewLectureRecording> with TickerPr
     }
   }
 
+  // Intercept back navigation saat sedang merekam
+  Future<bool> _onWillPop() async {
+    final provider = Provider.of<AppProvider>(context, listen: false);
+    if (!provider.isRecording && !_hasStartedAction) return true;
+
+    final shouldLeave = await showDialog<bool>(
+      context: context,
+      builder: (context) => Dialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(24, 28, 24, 20),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Row(
+                children: [
+                  Icon(Icons.mic_rounded, color: Colors.red, size: 20),
+                  SizedBox(width: 8),
+                  Text(
+                    'Sedang Merekam',
+                    style: TextStyle(fontWeight: FontWeight.w700, fontSize: 16),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 12),
+              const Text(
+                'Keluar sekarang akan membatalkan rekaman. Lanjutkan?',
+                style: TextStyle(fontSize: 14, height: 1.5, color: Color(0xFF6B7280)),
+              ),
+              const SizedBox(height: 24),
+              Row(
+                children: [
+                  Expanded(
+                    child: OutlinedButton(
+                      onPressed: () => Navigator.of(context).pop(false),
+                      style: OutlinedButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(vertical: 12),
+                        side: const BorderSide(color: Color(0xFFE5E7EB)),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                      ),
+                      child: const Text('Tetap', style: TextStyle(fontWeight: FontWeight.w600, color: Color(0xFF374151))),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: ElevatedButton(
+                      onPressed: () => Navigator.of(context).pop(true),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.red,
+                        foregroundColor: Colors.white,
+                        elevation: 0,
+                        padding: const EdgeInsets.symmetric(vertical: 12),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                      ),
+                      child: const Text('Keluar', style: TextStyle(fontWeight: FontWeight.w600)),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+
+    if (shouldLeave == true) {
+      // Stop recorder tanpa menyimpan sebelum keluar
+      _timer?.cancel();
+      await provider.stopRecording();
+      provider.clearError();
+      return true;
+    }
+    return false;
+  }
+
   @override
   Widget build(BuildContext context) {
     final bool isDesktop = Responsive.isDesktop(context);
 
-    return Scaffold(
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, result) async {
+        if (didPop) return;
+        final navigator = Navigator.of(context);
+        final shouldPop = await _onWillPop();
+        if (shouldPop && mounted) navigator.pop();
+      },
+      child: Scaffold(
       backgroundColor: AppTheme.surface,
       appBar: AppBar(
         backgroundColor: AppTheme.background.withOpacity(0.9),
@@ -284,7 +367,11 @@ class _NewLectureRecordingState extends State<NewLectureRecording> with TickerPr
         leadingWidth: isDesktop ? 80 : 56,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: AppTheme.primary),
-          onPressed: () => Navigator.of(context).pop(),
+          onPressed: () async {
+            final navigator = Navigator.of(context);
+            final shouldPop = await _onWillPop();
+            if (shouldPop && mounted) navigator.pop();
+          },
         ),
         title: Row(
           children: [
@@ -612,6 +699,7 @@ class _NewLectureRecordingState extends State<NewLectureRecording> with TickerPr
               ],
             ),
           ),
+        ),
         ),
       ),
     );
