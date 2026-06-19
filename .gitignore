@@ -83,3 +83,7 @@ app.*.map.json
 /android/app/profile
 /android/app/release
 .env
+
+# Landing Page (Separate project deployment)
+/lecturer_digest_landing/
+
