@@ -466,6 +466,44 @@ class AppProvider extends ChangeNotifier {
     _setLoading(false);
   }
 
+  Future<void> getOrGenerateFlashcards(String lectureId) async {
+    _setLoading(true);
+    error = null;
+    try {
+      currentFlashcards = await _db.getFlashcards(lectureId);
+      if (currentFlashcards.isEmpty) {
+        final summary = await _db.getSummary(lectureId);
+        String summaryText = "";
+        if (summary != null) {
+          summaryText = jsonEncode(summary);
+        } else {
+          final lecture = await _db.getLectureDetails(lectureId);
+          summaryText = lecture?['raw_transcript'] ?? '';
+        }
+        
+        if (summaryText.isNotEmpty) {
+          final flashcardsRaw = await _ai.generateFlashcards(summaryText);
+          final List<dynamic> flashcardsData = jsonDecode(_cleanJson(flashcardsRaw));
+          
+          await _db.saveFlashcards(
+            lectureId,
+            flashcardsData.map((f) => {
+              'front_concept': f['front_concept'],
+              'back_detail': f['back_detail'],
+            }).toList().cast<Map<String, dynamic>>(),
+          );
+          
+          currentFlashcards = await _db.getFlashcards(lectureId);
+        }
+      }
+      notifyListeners();
+    } catch (e) {
+      error = "Gagal memuat kartu AI: ${_mapAIError(e)}";
+      print(error);
+    }
+    _setLoading(false);
+  }
+
   Future<void> fetchQuizzes(String lectureId) async {
     _setLoading(true);
     try {
@@ -892,23 +930,6 @@ class AppProvider extends ChangeNotifier {
         summaryData['exam_tip'] ?? '',
       );
 
-      // 5. Generate Flashcards via AI
-      try {
-        final flashcardsRaw = await _ai.generateFlashcards(summaryRaw);
-        final List<dynamic> flashcardsData = jsonDecode(_cleanJson(flashcardsRaw));
-
-        // 6. Save Flashcards
-        await _db.saveFlashcards(
-          lectureId,
-          flashcardsData.map((f) => {
-            'front_concept': f['front_concept'],
-            'back_detail': f['back_detail'],
-          }).toList().cast<Map<String, dynamic>>(),
-        );
-      } catch (e) {
-        print("Auto flashcard generation failed, user can generate later: $e");
-      }
-
       // Finish
       await fetchCourses(); 
       await fetchDueFlashcards();
@@ -991,23 +1012,6 @@ class AppProvider extends ChangeNotifier {
         },
         summaryData['exam_tip'] ?? '',
       );
-
-      // 5. Generate Flashcards via AI
-      try {
-        final flashcardsRaw = await _ai.generateFlashcards(summaryRaw);
-        final List<dynamic> flashcardsData = jsonDecode(_cleanJson(flashcardsRaw));
-
-        // 6. Save Flashcards
-        await _db.saveFlashcards(
-          lectureId,
-          flashcardsData.map((f) => {
-            'front_concept': f['front_concept'],
-            'back_detail': f['back_detail'],
-          }).toList().cast<Map<String, dynamic>>(),
-        );
-      } catch (e) {
-        print("Auto flashcard generation failed, user can generate later: $e");
-      }
 
       // Finish
       await fetchCourses(); 

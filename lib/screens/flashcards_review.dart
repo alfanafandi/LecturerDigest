@@ -24,7 +24,7 @@ class _FlashcardsReviewState extends State<FlashcardsReview> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final provider = Provider.of<AppProvider>(context, listen: false);
       if (widget.lectureId != null) {
-        provider.fetchFlashcards(widget.lectureId!);
+        provider.getOrGenerateFlashcards(widget.lectureId!);
       } else {
         provider.fetchDueFlashcards();
       }
@@ -82,25 +82,66 @@ class _FlashcardsReviewState extends State<FlashcardsReview> {
         }
         
         if (provider.isLoading) {
-          return const Scaffold(body: Center(child: CircularProgressIndicator()));
-        }
-        
-        if (cards.isEmpty) {
+          final isGenerating = cards.isEmpty;
           return Scaffold(
-            appBar: AppBar(title: const Text('Kartu Hafalan')),
+            backgroundColor: AppTheme.surface,
             body: Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Icon(Icons.style_outlined, size: 64, color: AppTheme.outlineVariant),
-                  const SizedBox(height: 16),
-                  const Text('Tidak ada kartu untuk dipelajari.', style: TextStyle(color: AppTheme.onSurfaceVariant)),
+                  const CircularProgressIndicator(),
                   const SizedBox(height: 24),
-                  ElevatedButton(
-                    onPressed: () => Navigator.pop(context),
-                    child: const Text('Kembali'),
+                  Text(
+                    isGenerating ? 'AI sedang menyiapkan kartu hafalan...' : 'Memuat...',
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
+                  ),
+                  const SizedBox(height: 8),
+                  if (isGenerating) const Text(
+                    'Ini mungkin memakan waktu 10-20 detik.',
+                    style: TextStyle(color: AppTheme.onSurfaceVariant),
                   ),
                 ],
+              ),
+            ),
+          );
+        }
+        
+        if (cards.isEmpty) {
+          final isError = provider.error != null;
+          return Scaffold(
+            appBar: AppBar(
+              title: const Text('Kartu Hafalan'),
+              leading: IconButton(
+                icon: const Icon(Icons.arrow_back, color: AppTheme.primary),
+                onPressed: () => Navigator.pop(context),
+              ),
+            ),
+            body: Center(
+              child: Padding(
+                padding: const EdgeInsets.all(24.0),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      isError ? Icons.error_outline_rounded : Icons.style_outlined,
+                      size: 64,
+                      color: isError ? Colors.red : AppTheme.outlineVariant,
+                    ),
+                    const SizedBox(height: 16),
+                    Text(
+                      isError
+                          ? provider.error!
+                          : 'Tidak ada kartu untuk dipelajari.',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(color: isError ? Colors.red : AppTheme.onSurfaceVariant),
+                    ),
+                    const SizedBox(height: 24),
+                    ElevatedButton(
+                      onPressed: () => Navigator.pop(context),
+                      child: const Text('Kembali'),
+                    ),
+                  ],
+                ),
               ),
             ),
           );
