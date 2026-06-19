@@ -17,8 +17,8 @@ class AIService {
         'X-Title': 'LectureDigest',
       },
       body: jsonEncode({
-        "model": "openai/gpt-3.5-turbo",
-        "max_tokens": 1500,
+        "model": "google/gemma-4-31b-it:free",
+        "max_tokens": 2000,
         "messages": [
           {
             "role": "system",
@@ -48,7 +48,7 @@ class AIService {
         'Authorization': 'Bearer $_apiKey',
       },
       body: jsonEncode({
-        "model": "openai/gpt-3.5-turbo",
+        "model": "google/gemma-4-31b-it:free",
         "max_tokens": 1000,
         "messages": [
           {
@@ -110,8 +110,8 @@ class AIService {
         'Authorization': 'Bearer $_apiKey',
       },
       body: jsonEncode({
-        "model": "openai/gpt-3.5-turbo",
-        "max_tokens": 800,
+        "model": "google/gemma-4-31b-it:free",
+        "max_tokens": 1000,
         "messages": messages,
       }),
     );
@@ -132,7 +132,7 @@ class AIService {
         'Authorization': 'Bearer $_apiKey',
       },
       body: jsonEncode({
-        "model": "openai/gpt-3.5-turbo",
+        "model": "google/gemma-4-31b-it:free",
         "max_tokens": 2000,
         "messages": [
           {
@@ -163,7 +163,7 @@ class AIService {
         'Authorization': 'Bearer $_apiKey',
       },
       body: jsonEncode({
-        "model": "openai/gpt-3.5-turbo",
+        "model": "google/gemma-4-31b-it:free",
         "max_tokens": 1000,
         "messages": [
           {

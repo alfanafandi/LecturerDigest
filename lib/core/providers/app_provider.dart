@@ -1068,7 +1068,7 @@ class AppProvider extends ChangeNotifier {
     }
     
     // Remove trailing commas before closing braces/brackets (common LLM error)
-    cleaned = cleaned.replaceAll(RegExp(r',\s*([\]}])'), r'$1');
+    cleaned = cleaned.replaceAllMapped(RegExp(r',\s*([\]}])'), (match) => match.group(1)!);
     return cleaned;
   }
 }
