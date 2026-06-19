@@ -27,6 +27,7 @@ class _LectureSummaryViewState extends State<LectureSummaryView> {
   bool _isPlaying = false;
   Duration _duration = Duration.zero;
   Duration _position = Duration.zero;
+  String _activeTab = 'Poin Penting';
 
   @override
   void initState() {
@@ -168,9 +169,11 @@ class _LectureSummaryViewState extends State<LectureSummaryView> {
           );
         }
 
-        final takeaways = (summary['key_takeaways'] != null && summary['key_takeaways']['takeaways'] != null)
-            ? summary['key_takeaways']['takeaways'] as List<dynamic>
-            : [];
+        final keyTakeawaysObj = summary['key_takeaways'] ?? {};
+        final takeaways = keyTakeawaysObj['takeaways'] is List ? keyTakeawaysObj['takeaways'] as List<dynamic> : [];
+        final outline = keyTakeawaysObj['outline'] is List ? keyTakeawaysObj['outline'] as List<dynamic> : [];
+        final glossary = keyTakeawaysObj['glossary'] is List ? keyTakeawaysObj['glossary'] as List<dynamic> : [];
+        final studyQuestions = keyTakeawaysObj['study_questions'] is List ? keyTakeawaysObj['study_questions'] as List<dynamic> : [];
 
         return Scaffold(
           backgroundColor: AppTheme.surface,
@@ -383,39 +386,41 @@ class _LectureSummaryViewState extends State<LectureSummaryView> {
                     ),
                     const SizedBox(height: 32),
 
-                    // Key Takeaways
+                    // Peningkatan Materi Belajar (Tabbed/Segmented Control)
                     Container(
-                      padding: const EdgeInsets.all(32),
+                      width: double.infinity,
+                      padding: const EdgeInsets.all(28),
                       decoration: BoxDecoration(
                           color: AppTheme.surfaceContainerLowest,
-                          borderRadius: BorderRadius.circular(32)),
+                          borderRadius: BorderRadius.circular(32),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.03),
+                              blurRadius: 20,
+                              offset: const Offset(0, 4),
+                            )
+                          ]),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Row(
-                            children: [
-                              Container(
-                                  width: 6,
-                                  height: 24,
-                                  decoration: BoxDecoration(
-                                      color: AppTheme.primary,
-                                      borderRadius: BorderRadius.circular(4))),
-                              const SizedBox(width: 12),
-                              const Text('Poin Penting',
-                                  style: TextStyle(
-                                      fontSize: 20, fontWeight: FontWeight.bold)),
-                            ],
-                          ),
+                          const Text('MATERI BELAJAR',
+                              style: TextStyle(
+                                  color: AppTheme.primary,
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.bold,
+                                  letterSpacing: 1.2)),
+                          const SizedBox(height: 12),
+                          _buildTabChips(),
                           const SizedBox(height: 24),
-                          ...takeaways.asMap().entries.map((entry) {
-                            final index = entry.key;
-                            final val = entry.value;
-                            return Padding(
-                              padding: const EdgeInsets.only(bottom: 24.0),
-                              child: _buildTakeawayItem('${index + 1}',
-                                  val['title'] ?? '', val['description'] ?? ''),
-                            );
-                          }).toList(),
+                          // Content switcher
+                          if (_activeTab == 'Poin Penting')
+                            _buildTakeawaysTab(takeaways)
+                          else if (_activeTab == 'Rangkuman Detail')
+                            _buildOutlineTab(outline, context, provider)
+                          else if (_activeTab == 'Glosarium Istilah')
+                            _buildGlossaryTab(glossary, context, provider)
+                          else if (_activeTab == 'Latihan Mandiri')
+                            _buildStudyQuestionsTab(studyQuestions, context, provider),
                         ],
                       ),
                     ),
@@ -639,6 +644,304 @@ class _LectureSummaryViewState extends State<LectureSummaryView> {
           ),
         ),
       ],
+    );
+  }
+
+  Widget _buildTabChips() {
+    final List<String> tabs = ['Poin Penting', 'Rangkuman Detail', 'Glosarium Istilah', 'Latihan Mandiri'];
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      physics: const BouncingScrollPhysics(),
+      child: Row(
+        children: tabs.map((tabName) {
+          final isSelected = _activeTab == tabName;
+          return Padding(
+            padding: const EdgeInsets.only(right: 8.0),
+            child: ChoiceChip(
+              label: Text(tabName),
+              selected: isSelected,
+              onSelected: (selected) {
+                if (selected) {
+                  setState(() {
+                    _activeTab = tabName;
+                  });
+                }
+              },
+              selectedColor: AppTheme.primary,
+              backgroundColor: AppTheme.surfaceContainerLow,
+              labelStyle: TextStyle(
+                color: isSelected ? Colors.white : AppTheme.onSurfaceVariant,
+                fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                fontSize: 13,
+              ),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20),
+                side: BorderSide(
+                  color: isSelected ? AppTheme.primary : AppTheme.outlineVariant.withOpacity(0.3),
+                ),
+              ),
+              showCheckmark: false,
+            ),
+          );
+        }).toList(),
+      ),
+    );
+  }
+
+  Widget _buildTakeawaysTab(List<dynamic> takeaways) {
+    if (takeaways.isEmpty) {
+      return const Center(
+        child: Padding(
+          padding: EdgeInsets.symmetric(vertical: 24.0),
+          child: Text('Tidak ada poin penting tersedia.', style: TextStyle(color: AppTheme.onSurfaceVariant)),
+        ),
+      );
+    }
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: takeaways.asMap().entries.map((entry) {
+        final index = entry.key;
+        final val = entry.value;
+        return Padding(
+          padding: const EdgeInsets.only(bottom: 20.0),
+          child: _buildTakeawayItem('${index + 1}', val['title'] ?? '', val['description'] ?? ''),
+        );
+      }).toList(),
+    );
+  }
+
+  Widget _buildOutlineTab(List<dynamic> outline, BuildContext context, AppProvider provider) {
+    if (outline.isEmpty) {
+      return _buildLegacyBanner(context, provider);
+    }
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: outline.map((item) {
+        return Container(
+          margin: const EdgeInsets.only(bottom: 16),
+          width: double.infinity,
+          padding: const EdgeInsets.all(20),
+          decoration: BoxDecoration(
+            color: AppTheme.surfaceContainerLow,
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(color: AppTheme.outlineVariant.withOpacity(0.2)),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  const Icon(Icons.bookmark_border, color: AppTheme.primary, size: 20),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      item['section_title'] ?? 'Bagian Tanpa Judul',
+                      style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15, color: AppTheme.onSurface),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 12),
+              Text(
+                item['section_summary'] ?? '',
+                style: const TextStyle(fontSize: 13, color: AppTheme.onSurfaceVariant, height: 1.5),
+              ),
+            ],
+          ),
+        );
+      }).toList(),
+    );
+  }
+
+  Widget _buildGlossaryTab(List<dynamic> glossary, BuildContext context, AppProvider provider) {
+    if (glossary.isEmpty) {
+      return _buildLegacyBanner(context, provider);
+    }
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: glossary.map((item) {
+        return Container(
+          margin: const EdgeInsets.only(bottom: 12),
+          width: double.infinity,
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+          decoration: BoxDecoration(
+            color: AppTheme.surfaceContainerLowest,
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: AppTheme.outlineVariant.withOpacity(0.2)),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.02),
+                blurRadius: 4,
+                offset: const Offset(0, 2),
+              )
+            ],
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                decoration: BoxDecoration(
+                  color: AppTheme.secondary.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Text(
+                  item['term'] ?? 'Istilah',
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 13,
+                    color: AppTheme.secondary,
+                  ),
+                ),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                item['definition'] ?? '',
+                style: const TextStyle(fontSize: 13, color: AppTheme.onSurfaceVariant, height: 1.4),
+              ),
+            ],
+          ),
+        );
+      }).toList(),
+    );
+  }
+
+  Widget _buildStudyQuestionsTab(List<dynamic> questions, BuildContext context, AppProvider provider) {
+    if (questions.isEmpty) {
+      return _buildLegacyBanner(context, provider);
+    }
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: questions.asMap().entries.map((entry) {
+        final index = entry.key;
+        final qText = entry.value.toString();
+        return Container(
+          margin: const EdgeInsets.only(bottom: 12),
+          width: double.infinity,
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: AppTheme.tertiary.withOpacity(0.04),
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: AppTheme.tertiary.withOpacity(0.12)),
+          ),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                margin: const EdgeInsets.only(top: 2),
+                width: 24,
+                height: 24,
+                decoration: BoxDecoration(
+                  color: AppTheme.tertiary.withOpacity(0.1),
+                  shape: BoxShape.circle,
+                ),
+                child: Center(
+                  child: Text(
+                    '${index + 1}',
+                    style: const TextStyle(
+                      color: AppTheme.tertiary,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 11,
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Text(
+                  qText,
+                  style: const TextStyle(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w500,
+                    color: AppTheme.onSurface,
+                    height: 1.4,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        );
+      }).toList(),
+    );
+  }
+
+  Widget _buildLegacyBanner(BuildContext context, AppProvider provider) {
+    return Container(
+      padding: const EdgeInsets.all(24),
+      decoration: BoxDecoration(
+        color: AppTheme.secondary.withOpacity(0.05),
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(color: AppTheme.secondary.withOpacity(0.2)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              const Icon(Icons.auto_awesome, color: AppTheme.secondary),
+              const SizedBox(width: 8),
+              const Expanded(
+                child: Text(
+                  'Materi Lengkap Belum Tersedia',
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15, color: AppTheme.secondary),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          const Text(
+            'Materi detail (Outline, Glosarium, & Pertanyaan Latihan) belum digenerasi untuk kuliah ini. Anda bisa memperbarui materi lengkap ini menggunakan AI secara gratis.',
+            style: TextStyle(fontSize: 12, color: AppTheme.onSurfaceVariant, height: 1.4),
+          ),
+          const SizedBox(height: 16),
+          SizedBox(
+            width: double.infinity,
+            child: ElevatedButton.icon(
+              onPressed: provider.isLoading ? null : () async {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Row(
+                      children: [
+                        SizedBox(
+                          width: 16,
+                          height: 16,
+                          child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                        ),
+                        SizedBox(width: 12),
+                        Text('Sedang menyusun materi lengkap dengan AI...'),
+                      ],
+                    ),
+                    duration: Duration(seconds: 15),
+                  ),
+                );
+                await provider.regenerateSummary(widget.lectureId);
+                if (mounted) {
+                  ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                  if (provider.error != null) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text(provider.error!), backgroundColor: Colors.red),
+                    );
+                  } else {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Materi lengkap berhasil dibuat!'), backgroundColor: Colors.green),
+                    );
+                  }
+                }
+              },
+              icon: provider.isLoading 
+                ? const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
+                : const Icon(Icons.refresh, size: 16),
+              label: Text(provider.isLoading ? 'Memproses...' : 'Lengkapi Ringkasan Cerdas'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppTheme.secondary,
+                foregroundColor: Colors.white,
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                elevation: 0,
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 

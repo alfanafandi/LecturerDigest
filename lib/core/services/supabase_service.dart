@@ -89,12 +89,12 @@ class SupabaseService {
 
   // --- Summaries ---
   Future<void> saveSummary(String lectureId, String coreEssence, Map<String, dynamic> keyTakeaways, String examTips) async {
-    await _client.from('summaries').insert({
+    await _client.from('summaries').upsert({
       'lecture_id': lectureId,
       'core_essence': coreEssence,
       'key_takeaways': keyTakeaways,
       'exam_tips': examTips,
-    });
+    }, onConflict: 'lecture_id');
   }
 
   Future<Map<String, dynamic>?> getSummary(String lectureId) async {

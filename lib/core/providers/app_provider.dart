@@ -422,6 +422,40 @@ class AppProvider extends ChangeNotifier {
     _setLoading(false);
   }
 
+  Future<void> regenerateSummary(String lectureId) async {
+    _setLoading(true);
+    error = null;
+    try {
+      final details = await _db.getLectureDetails(lectureId);
+      final transcript = details?['raw_transcript'];
+      if (transcript == null || transcript.isEmpty) {
+        throw Exception("Transkrip tidak ditemukan. Tidak dapat meregenerasi ringkasan.");
+      }
+
+      final summaryRaw = await _ai.generateSummary(transcript);
+      final summaryData = jsonDecode(_cleanJson(summaryRaw));
+
+      await _db.saveSummary(
+        lectureId,
+        summaryData['core_essence'] ?? '',
+        {
+          'takeaways': summaryData['key_takeaways'] ?? [],
+          'outline': summaryData['outline'] ?? [],
+          'glossary': summaryData['glossary'] ?? [],
+          'study_questions': summaryData['study_questions'] ?? [],
+        },
+        summaryData['exam_tip'] ?? '',
+      );
+
+      await fetchSummary(lectureId);
+    } catch (e) {
+      error = "Gagal memperbarui ringkasan: ${e.toString()}";
+      print(error);
+    } finally {
+      _setLoading(false);
+    }
+  }
+
   Future<void> fetchFlashcards(String lectureId) async {
     _setLoading(true);
     try {
@@ -530,9 +564,11 @@ class AppProvider extends ChangeNotifier {
     
     _setLoading(true);
     try {
-      final takeaways = (currentSummary!['key_takeaways'] != null && currentSummary!['key_takeaways']['takeaways'] != null)
-          ? currentSummary!['key_takeaways']['takeaways'] as List<dynamic>
-          : [];
+      final keyTakeawaysObj = currentSummary!['key_takeaways'] ?? {};
+      final takeaways = keyTakeawaysObj['takeaways'] is List ? keyTakeawaysObj['takeaways'] as List<dynamic> : [];
+      final outline = keyTakeawaysObj['outline'] is List ? keyTakeawaysObj['outline'] as List<dynamic> : [];
+      final glossary = keyTakeawaysObj['glossary'] is List ? keyTakeawaysObj['glossary'] as List<dynamic> : [];
+      final studyQuestions = keyTakeawaysObj['study_questions'] is List ? keyTakeawaysObj['study_questions'] as List<dynamic> : [];
 
       final path = await PdfService.generateLectureSummaryPdf(
         title: currentLectureDetails!['title'] ?? 'Untitled',
@@ -540,6 +576,9 @@ class AppProvider extends ChangeNotifier {
         coreEssence: currentSummary!['core_essence'] ?? '-',
         takeaways: takeaways,
         examTips: currentSummary!['exam_tips'] ?? '-',
+        outline: outline,
+        glossary: glossary,
+        studyQuestions: studyQuestions,
       );
       
       _setLoading(false);
@@ -843,9 +882,14 @@ class AppProvider extends ChangeNotifier {
       // 4. Save Summary
       await _db.saveSummary(
         lectureId,
-        summaryData['core_essence'],
-        {'takeaways': summaryData['key_takeaways']},
-        summaryData['exam_tip'],
+        summaryData['core_essence'] ?? '',
+        {
+          'takeaways': summaryData['key_takeaways'] ?? [],
+          'outline': summaryData['outline'] ?? [],
+          'glossary': summaryData['glossary'] ?? [],
+          'study_questions': summaryData['study_questions'] ?? [],
+        },
+        summaryData['exam_tip'] ?? '',
       );
 
       // 5. Generate Flashcards via AI
@@ -931,9 +975,14 @@ class AppProvider extends ChangeNotifier {
       // 4. Save Summary
       await _db.saveSummary(
         lectureId,
-        summaryData['core_essence'],
-        {'takeaways': summaryData['key_takeaways']},
-        summaryData['exam_tip'],
+        summaryData['core_essence'] ?? '',
+        {
+          'takeaways': summaryData['key_takeaways'] ?? [],
+          'outline': summaryData['outline'] ?? [],
+          'glossary': summaryData['glossary'] ?? [],
+          'study_questions': summaryData['study_questions'] ?? [],
+        },
+        summaryData['exam_tip'] ?? '',
       );
 
       // 5. Generate Flashcards via AI
