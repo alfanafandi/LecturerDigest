@@ -314,7 +314,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         ),
                       ),
                       
-                      SizedBox(height: 100 + MediaQuery.of(context).padding.bottom),
+                      SizedBox(height: 20 + MediaQuery.of(context).padding.bottom),
                     ],
                   ),
                 ),

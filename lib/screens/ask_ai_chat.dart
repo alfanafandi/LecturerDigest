@@ -345,7 +345,7 @@ class _AskAiChatState extends State<AskAiChat> with WidgetsBindingObserver {
                           : (Responsive.isDesktop(context) 
                               ? 24 
                               : (widget.isTab 
-                                  ? 96 + MediaQuery.of(context).padding.bottom 
+                                  ? 20 + MediaQuery.of(context).padding.bottom 
                                   : 16 + MediaQuery.of(context).padding.bottom)), 
                       left: Responsive.isDesktop(context) ? 48 : 24, 
                       right: Responsive.isDesktop(context) ? 48 : 24
@@ -597,6 +597,25 @@ class _AskAiChatState extends State<AskAiChat> with WidgetsBindingObserver {
     );
   }
 
+  List<InlineSpan> _parseMarkdown(String text, TextStyle baseStyle) {
+    final List<InlineSpan> spans = [];
+    final parts = text.split('**');
+    for (int i = 0; i < parts.length; i++) {
+      final isBold = i % 2 == 1;
+      if (parts[i].isNotEmpty) {
+        spans.add(
+          TextSpan(
+            text: parts[i],
+            style: isBold 
+                ? baseStyle.copyWith(fontWeight: FontWeight.bold) 
+                : baseStyle,
+          ),
+        );
+      }
+    }
+    return spans;
+  }
+
   Widget _buildAIMessage(BuildContext context, String text) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -624,12 +643,16 @@ class _AskAiChatState extends State<AskAiChat> with WidgetsBindingObserver {
                 ),
               ),
               const SizedBox(height: 6),
-              Text(
-                text,
-                style: const TextStyle(
-                  fontSize: 15,
-                  height: 1.6,
-                  color: AppTheme.onSurface,
+              Text.rich(
+                TextSpan(
+                  children: _parseMarkdown(
+                    text,
+                    const TextStyle(
+                      fontSize: 15,
+                      height: 1.6,
+                      color: AppTheme.onSurface,
+                    ),
+                  ),
                 ),
               ),
               const SizedBox(height: 12),

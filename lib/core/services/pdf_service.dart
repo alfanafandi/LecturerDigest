@@ -84,10 +84,16 @@ class PdfService {
       yPos += 15;
 
       // --- SECTION 1: INTISARI UTAMA ---
-      checkPageOverflow(70);
+      final PdfFont essenceFont = PdfStandardFont(PdfFontFamily.helvetica, 12, style: PdfFontStyle.italic);
+      final Size essenceSize = essenceFont.measureString(
+          '"$coreEssence"',
+          layoutArea: Size(pageSize.width - 30, double.infinity));
+      final double essenceBoxHeight = 22 + essenceSize.height + 12;
+
+      checkPageOverflow(essenceBoxHeight);
       activePage.graphics.drawRectangle(
           brush: PdfSolidBrush(PdfColor(245, 250, 249)),
-          bounds: Rect.fromLTWH(0, yPos, pageSize.width, 70));
+          bounds: Rect.fromLTWH(0, yPos, pageSize.width, essenceBoxHeight));
       
       activePage.graphics.drawString(
         'INTISARI UTAMA', 
@@ -98,14 +104,14 @@ class PdfService {
       
       final PdfTextElement essenceElement = PdfTextElement(
           text: '"$coreEssence"',
-          font: PdfStandardFont(PdfFontFamily.helvetica, 12, style: PdfFontStyle.italic),
+          font: essenceFont,
           brush: PdfSolidBrush(textColor));
       
       essenceElement.draw(
           page: activePage,
-          bounds: Rect.fromLTWH(15, yPos + 22, pageSize.width - 30, 45));
+          bounds: Rect.fromLTWH(15, yPos + 22, pageSize.width - 30, essenceSize.height + 5));
       
-      yPos += 85;
+      yPos += essenceBoxHeight + 15;
 
       // --- SECTION 2: POIN PENTING ---
       if (takeaways.isNotEmpty) {
@@ -123,7 +129,12 @@ class PdfService {
           final String tTitle = takeaway['title'] ?? '';
           final String tDesc = takeaway['description'] ?? '';
 
-          checkPageOverflow(45);
+          final Size descSize = bodyFont.measureString(
+              tDesc,
+              layoutArea: Size(pageSize.width - 22, double.infinity));
+          final double itemHeight = 18 + descSize.height + 12;
+
+          checkPageOverflow(itemHeight);
 
           // Number bullet
           activePage.graphics.drawEllipse(
@@ -155,7 +166,7 @@ class PdfService {
           
           final PdfLayoutResult result = descElement.draw(
               page: activePage,
-              bounds: Rect.fromLTWH(22, yPos, pageSize.width - 22, 0))!;
+              bounds: Rect.fromLTWH(22, yPos, pageSize.width - 22, descSize.height + 5))!;
           
           yPos = result.bounds.bottom + 12;
           activePage = result.page;
@@ -178,7 +189,12 @@ class PdfService {
           final String sTitle = item['section_title'] ?? 'Bagian';
           final String sSummary = item['section_summary'] ?? '';
 
-          checkPageOverflow(50);
+          final Size summarySize = bodyFont.measureString(
+              sSummary,
+              layoutArea: Size(pageSize.width - 10, double.infinity));
+          final double itemHeight = 18 + summarySize.height + 15;
+
+          checkPageOverflow(itemHeight);
 
           // Section Title indicator
           activePage.graphics.drawRectangle(
@@ -201,7 +217,7 @@ class PdfService {
           
           final PdfLayoutResult result = summaryElement.draw(
               page: activePage,
-              bounds: Rect.fromLTWH(10, yPos, pageSize.width - 10, 0))!;
+              bounds: Rect.fromLTWH(10, yPos, pageSize.width - 10, summarySize.height + 5))!;
           
           yPos = result.bounds.bottom + 15;
           activePage = result.page;
@@ -224,7 +240,12 @@ class PdfService {
           final String term = item['term'] ?? 'Istilah';
           final String definition = item['definition'] ?? '';
 
-          checkPageOverflow(45);
+          final Size defSize = bodyFont.measureString(
+              definition,
+              layoutArea: Size(pageSize.width - 12, double.infinity));
+          final double itemHeight = 16 + defSize.height + 12;
+
+          checkPageOverflow(itemHeight);
 
           // Draw term
           activePage.graphics.drawString(
@@ -243,7 +264,7 @@ class PdfService {
           // Indent definition slightly
           final PdfLayoutResult result = defElement.draw(
               page: activePage,
-              bounds: Rect.fromLTWH(12, yPos + 16, pageSize.width - 12, 0))!;
+              bounds: Rect.fromLTWH(12, yPos + 16, pageSize.width - 12, defSize.height + 5))!;
           
           yPos = result.bounds.bottom + 12;
           activePage = result.page;
@@ -265,7 +286,12 @@ class PdfService {
         for (var i = 0; i < studyQuestions.length; i++) {
           final String qText = studyQuestions[i].toString();
 
-          checkPageOverflow(35);
+          final Size qTextSize = bodyFont.measureString(
+              qText,
+              layoutArea: Size(pageSize.width - 16, double.infinity));
+          final double itemHeight = qTextSize.height + 10;
+
+          checkPageOverflow(itemHeight);
 
           // Dot indicator
           activePage.graphics.drawEllipse(
@@ -279,7 +305,7 @@ class PdfService {
 
           final PdfLayoutResult result = qElement.draw(
               page: activePage,
-              bounds: Rect.fromLTWH(16, yPos, pageSize.width - 16, 0))!;
+              bounds: Rect.fromLTWH(16, yPos, pageSize.width - 16, qTextSize.height + 5))!;
           
           yPos = result.bounds.bottom + 10;
           activePage = result.page;
@@ -289,11 +315,19 @@ class PdfService {
 
       // --- SECTION 6: TIPS UJIAN ---
       if (examTips.isNotEmpty && examTips != '-') {
-        checkPageOverflow(55);
+        final double tipsWidth = pageSize.width - 20;
+        final Size tipsTextSize = bodyFont.measureString(
+          examTips,
+          layoutArea: Size(tipsWidth, double.infinity)
+        );
+        final double boxHeight = 22 + tipsTextSize.height + 12;
+
+        checkPageOverflow(boxHeight);
+        
         activePage.graphics.drawRectangle(
             brush: PdfSolidBrush(PdfColor(255, 240, 235)),
             pen: PdfPen(tertiaryColor, width: 0.5),
-            bounds: Rect.fromLTWH(0, yPos, pageSize.width, 50));
+            bounds: Rect.fromLTWH(0, yPos, pageSize.width, boxHeight));
         
         activePage.graphics.drawString(
           'Tips Ujian:', 
@@ -309,9 +343,9 @@ class PdfService {
         
         tipsElement.draw(
             page: activePage,
-            bounds: Rect.fromLTWH(10, yPos + 22, pageSize.width - 20, 25));
+            bounds: Rect.fromLTWH(10, yPos + 22, tipsWidth, tipsTextSize.height + 5));
         
-        yPos += 65;
+        yPos += boxHeight + 15;
       }
 
       // Draw footer on all pages

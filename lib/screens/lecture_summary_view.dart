@@ -23,6 +23,7 @@ class LectureSummaryView extends StatefulWidget {
 
 class _LectureSummaryViewState extends State<LectureSummaryView> {
   final AudioPlayer _audioPlayer = AudioPlayer();
+  final ScrollController _tabScrollController = ScrollController();
   bool _isPlayerReady = false;
   bool _isPlaying = false;
   Duration _duration = Duration.zero;
@@ -37,6 +38,27 @@ class _LectureSummaryViewState extends State<LectureSummaryView> {
       await provider.fetchSummary(widget.lectureId);
       await provider.fetchQuizzes(widget.lectureId);
       await provider.fetchLatestQuizAttempt(widget.lectureId);
+
+      // Micro-animation to hint horizontal scrollability of tabs
+      Future.delayed(const Duration(milliseconds: 1500), () {
+        if (_tabScrollController.hasClients) {
+          _tabScrollController.animateTo(
+            40.0,
+            duration: const Duration(milliseconds: 600),
+            curve: Curves.easeInOut,
+          ).then((_) {
+            Future.delayed(const Duration(milliseconds: 300), () {
+              if (_tabScrollController.hasClients) {
+                _tabScrollController.animateTo(
+                  0.0,
+                  duration: const Duration(milliseconds: 600),
+                  curve: Curves.easeInOut,
+                );
+              }
+            });
+          });
+        }
+      });
 
       // Load audio if path exists in lecture details
       String? audioPath = provider.currentLectureDetails?['audio_url'];
@@ -85,6 +107,7 @@ class _LectureSummaryViewState extends State<LectureSummaryView> {
   @override
   void dispose() {
     _audioPlayer.dispose();
+    _tabScrollController.dispose();
     super.dispose();
   }
 
@@ -175,6 +198,94 @@ class _LectureSummaryViewState extends State<LectureSummaryView> {
         final glossary = keyTakeawaysObj['glossary'] is List ? keyTakeawaysObj['glossary'] as List<dynamic> : [];
         final studyQuestions = keyTakeawaysObj['study_questions'] is List ? keyTakeawaysObj['study_questions'] as List<dynamic> : [];
 
+        final List<Widget> activeButtons = [
+          _buildActionButton(
+            context,
+            onPressed: () async {
+              if (provider.currentQuizzes.isEmpty) {
+                _showQuizConfigSheet(context, provider);
+              } else {
+                Navigator.of(context).push(MaterialPageRoute(
+                    builder: (_) => QuizScreen(
+                        lectureId: widget.lectureId)));
+              }
+            },
+            icon: provider.currentQuizzes.isEmpty
+                ? Icons.psychology_outlined
+                : Icons.quiz_outlined,
+            label: provider.currentQuizzes.isEmpty
+                ? 'Buat Kuis'
+                : 'Kuis AI',
+            color: provider.currentQuizzes.isEmpty
+                ? AppTheme.tertiary
+                : AppTheme.primary,
+            isLoading: provider.isLoading,
+          ),
+          _buildActionButton(
+            context,
+            onPressed: () {
+              Navigator.of(context).push(MaterialPageRoute(
+                  builder: (_) => FlashcardsReview(
+                      lectureId: widget.lectureId)));
+            },
+            icon: Icons.style_outlined,
+            label: 'Kartu',
+            color: AppTheme.secondary,
+          ),
+          _buildActionButton(
+            context,
+            onPressed: () {
+              provider.setChatLecture(widget.lectureId);
+              Navigator.of(context).push(MaterialPageRoute(
+                  builder: (_) => const AskAiChat()));
+            },
+            icon: Icons.auto_awesome_outlined,
+            label: 'Chat AI',
+            color: AppTheme.primary,
+          ),
+          if (provider.latestQuizAttempt != null)
+            _buildActionButton(
+              context,
+              onPressed: () {
+                Navigator.of(context).push(MaterialPageRoute(
+                    builder: (_) => QuizReviewScreen(
+                        lectureId: widget.lectureId)));
+              },
+              icon: Icons.history_edu_outlined,
+              label: 'Hasil',
+              color: AppTheme.secondary,
+            ),
+          _buildActionButton(
+            context,
+            onPressed: () async {
+              final path = await provider.exportLectureSummary();
+              if (path != null) {
+                if (context.mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: const Text('PDF Berhasil disimpan!'),
+                      action: SnackBarAction(
+                        label: 'BUKA',
+                        onPressed: () => PdfService.openFile(path),
+                      ),
+                    ),
+                  );
+                }
+              } else if (provider.error != null) {
+                if (context.mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text(provider.error!))
+                  );
+                }
+              }
+            },
+            icon: Icons.picture_as_pdf_outlined,
+            label: 'Simpan PDF',
+            color: AppTheme.tertiary,
+            isLoading: provider.isLoading,
+          ),
+        ];
+
         return Scaffold(
           backgroundColor: AppTheme.surface,
           appBar: AppBar(
@@ -245,104 +356,35 @@ class _LectureSummaryViewState extends State<LectureSummaryView> {
 
                     // Quick Actions
                     Center(
-                      child: SingleChildScrollView(
-                        scrollDirection: Axis.horizontal,
-                        clipBehavior: Clip.none,
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            _buildActionButton(
-                              context,
-                              onPressed: () async {
-                                if (provider.currentQuizzes.isEmpty) {
-                                  _showQuizConfigSheet(context, provider);
-                                } else {
-                                  Navigator.of(context).push(MaterialPageRoute(
-                                      builder: (_) => QuizScreen(
-                                          lectureId: widget.lectureId)));
-                                }
-                              },
-                              icon: provider.currentQuizzes.isEmpty
-                                  ? Icons.psychology_outlined
-                                  : Icons.quiz_outlined,
-                              label: provider.currentQuizzes.isEmpty
-                                  ? 'Buat Kuis'
-                                  : 'Kuis AI',
-                              color: provider.currentQuizzes.isEmpty
-                                  ? AppTheme.tertiary
-                                  : AppTheme.primary,
-                              isLoading: provider.isLoading,
-                            ),
-                            const SizedBox(width: 12),
-                            _buildActionButton(
-                              context,
-                              onPressed: () {
-                                Navigator.of(context).push(MaterialPageRoute(
-                                    builder: (_) => FlashcardsReview(
-                                        lectureId: widget.lectureId)));
-                              },
-                              icon: Icons.style_outlined,
-                              label: 'Kartu',
-                              color: AppTheme.secondary,
-                            ),
-                            const SizedBox(width: 12),
-                            _buildActionButton(
-                              context,
-                              onPressed: () {
-                                provider.setChatLecture(widget.lectureId);
-                                Navigator.of(context).push(MaterialPageRoute(
-                                    builder: (_) => const AskAiChat()));
-                              },
-                              icon: Icons.auto_awesome_outlined,
-                              label: 'Chat AI',
-                              color: AppTheme.primary,
-                            ),
-                            if (provider.latestQuizAttempt != null) ...[
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Row(
+                            children: [
+                              Expanded(child: activeButtons[0]),
                               const SizedBox(width: 12),
-                              _buildActionButton(
-                                context,
-                                onPressed: () {
-                                  Navigator.of(context).push(MaterialPageRoute(
-                                      builder: (_) => QuizReviewScreen(
-                                          lectureId: widget.lectureId)));
-                                },
-                                icon: Icons.history_edu_outlined,
-                                label: 'Hasil',
-                                color: AppTheme.secondary,
-                              ),
+                              Expanded(child: activeButtons[1]),
                             ],
-                            const SizedBox(width: 12),
-                            _buildActionButton(
-                              context,
-                              onPressed: () async {
-                                final path = await provider.exportLectureSummary();
-                                if (path != null) {
-                                  if (context.mounted) {
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackBar(
-                                        content: const Text('PDF Berhasil disimpan!'),
-                                        action: SnackBarAction(
-                                          label: 'BUKA',
-                                          onPressed: () => PdfService.openFile(path),
-                                        ),
-                                      ),
-                                    );
-                                  }
-                                } else if (provider.error != null) {
-                                  if (context.mounted) {
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackBar(content: Text(provider.error!))
-                                    );
-                                  }
-                                }
-                              },
-                              icon: Icons.picture_as_pdf_outlined,
-                              label: 'Simpan PDF',
-                              color: AppTheme.tertiary,
-                              isLoading: provider.isLoading,
+                          ),
+                          const SizedBox(height: 12),
+                          Row(
+                            children: [
+                              Expanded(child: activeButtons[2]),
+                              const SizedBox(width: 12),
+                              Expanded(child: activeButtons[3]),
+                            ],
+                          ),
+                          if (activeButtons.length > 4) ...[
+                            const SizedBox(height: 12),
+                            Row(
+                              children: [
+                                Expanded(child: activeButtons[4]),
+                                const SizedBox(width: 12),
+                                const Expanded(child: SizedBox()),
+                              ],
                             ),
                           ],
-                        ),
+                        ],
                       ),
                     ),
                     const SizedBox(height: 32),
@@ -649,41 +691,52 @@ class _LectureSummaryViewState extends State<LectureSummaryView> {
 
   Widget _buildTabChips() {
     final List<String> tabs = ['Poin Penting', 'Rangkuman Detail', 'Glosarium Istilah', 'Latihan Mandiri'];
-    return SingleChildScrollView(
-      scrollDirection: Axis.horizontal,
-      physics: const BouncingScrollPhysics(),
-      child: Row(
-        children: tabs.map((tabName) {
-          final isSelected = _activeTab == tabName;
-          return Padding(
-            padding: const EdgeInsets.only(right: 8.0),
-            child: ChoiceChip(
-              label: Text(tabName),
-              selected: isSelected,
-              onSelected: (selected) {
-                if (selected) {
-                  setState(() {
-                    _activeTab = tabName;
-                  });
-                }
-              },
-              selectedColor: AppTheme.primary,
-              backgroundColor: AppTheme.surfaceContainerLow,
-              labelStyle: TextStyle(
-                color: isSelected ? Colors.white : AppTheme.onSurfaceVariant,
-                fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-                fontSize: 13,
-              ),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(20),
-                side: BorderSide(
-                  color: isSelected ? AppTheme.primary : AppTheme.outlineVariant.withOpacity(0.3),
+    return Container(
+      height: 62,
+      child: Scrollbar(
+        controller: _tabScrollController,
+        thumbVisibility: true,
+        thickness: 2.5,
+        radius: const Radius.circular(8),
+        child: SingleChildScrollView(
+          controller: _tabScrollController,
+          scrollDirection: Axis.horizontal,
+          physics: const BouncingScrollPhysics(),
+          padding: const EdgeInsets.only(bottom: 18),
+          child: Row(
+            children: tabs.map((tabName) {
+              final isSelected = _activeTab == tabName;
+              return Padding(
+                padding: const EdgeInsets.only(right: 8.0),
+                child: ChoiceChip(
+                  label: Text(tabName),
+                  selected: isSelected,
+                  onSelected: (selected) {
+                    if (selected) {
+                      setState(() {
+                        _activeTab = tabName;
+                      });
+                    }
+                  },
+                  selectedColor: AppTheme.primary,
+                  backgroundColor: AppTheme.surfaceContainerLow,
+                  labelStyle: TextStyle(
+                    color: isSelected ? Colors.white : AppTheme.onSurfaceVariant,
+                    fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                    fontSize: 13,
+                  ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20),
+                    side: BorderSide(
+                      color: isSelected ? AppTheme.primary : AppTheme.outlineVariant.withOpacity(0.3),
+                    ),
+                  ),
+                  showCheckmark: false,
                 ),
-              ),
-              showCheckmark: false,
-            ),
-          );
-        }).toList(),
+              );
+            }).toList(),
+          ),
+        ),
       ),
     );
   }
