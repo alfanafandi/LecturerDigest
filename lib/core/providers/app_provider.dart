@@ -449,7 +449,7 @@ class AppProvider extends ChangeNotifier {
 
       await fetchSummary(lectureId);
     } catch (e) {
-      error = "Gagal memperbarui ringkasan: ${e.toString()}";
+      error = "Gagal memperbarui ringkasan: ${_mapAIError(e)}";
       print(error);
     } finally {
       _setLoading(false);
@@ -864,7 +864,7 @@ class AppProvider extends ChangeNotifier {
   }
 
   // --- AI Synthesis Workflow ---
-  Future<void> processLectureRecording(String courseId, String title, String audioPath, int durationMinutes) async {
+  Future<String?> processLectureRecording(String courseId, String title, String audioPath, int durationMinutes) async {
     _setLoading(true);
     error = null;
     try {
@@ -908,11 +908,14 @@ class AppProvider extends ChangeNotifier {
       // Finish
       await fetchCourses(); 
       await fetchDueFlashcards();
+      _setLoading(false);
+      return lectureId;
     } catch (e) {
-      error = "Gagal memproses AI: ${e.toString()}";
+      error = "Gagal memproses AI: ${_mapAIError(e)}";
       print(error);
     }
     _setLoading(false);
+    return null;
   }
 
   // --- Quiz Generation Logic (Manual Trigger) ---
@@ -951,14 +954,14 @@ class AppProvider extends ChangeNotifier {
       // 3. Refresh
       await fetchQuizzes(lectureId);
     } catch (e) {
-      error = "Gagal membuat kuis AI: ${e.toString()}";
+      error = "Gagal membuat kuis AI: ${_mapAIError(e)}";
       print(error);
     }
     _setLoading(false);
   }
 
   // --- Document Upload Workflow ---
-  Future<void> processDocument(String courseId, String title, PickedDocument file) async {
+  Future<String?> processDocument(String courseId, String title, PickedDocument file) async {
     _setLoading(true);
     error = null;
     try {
@@ -1001,11 +1004,14 @@ class AppProvider extends ChangeNotifier {
       // Finish
       await fetchCourses(); 
       await fetchDueFlashcards();
+      _setLoading(false);
+      return lectureId;
     } catch (e) {
-      error = e.toString().contains('Exception:') ? e.toString().replaceAll('Exception: ', '') : "Gagal memproses dokumen: ${e.toString()}";
+      error = "Gagal memproses dokumen: ${_mapAIError(e)}";
       print(error);
     }
     _setLoading(false);
+    return null;
   }
 
   String _cleanJson(String input) {
@@ -1070,5 +1076,27 @@ class AppProvider extends ChangeNotifier {
     // Remove trailing commas before closing braces/brackets (common LLM error)
     cleaned = cleaned.replaceAllMapped(RegExp(r',\s*([\]}])'), (match) => match.group(1)!);
     return cleaned;
+  }
+
+  String _mapAIError(dynamic e) {
+    final errStr = e.toString().toLowerCase();
+    if (errStr.contains('timeout') || 
+        errStr.contains('time out') || 
+        errStr.contains('504') || 
+        errStr.contains('502') || 
+        errStr.contains('deadline')) {
+      return "Koneksi ke AI terputus atau batas waktu habis (Timeout). Silakan klik/coba kembali, biasanya akan berhasil pada percobaan berikutnya.";
+    }
+    if (errStr.contains('rate limit') || 
+        errStr.contains('429') || 
+        errStr.contains('too many requests')) {
+      return "Server AI sedang sibuk menerima banyak permintaan (Rate Limit). Mohon tunggu beberapa detik sebelum mencoba lagi.";
+    }
+    if (errStr.contains('google') || 
+        errStr.contains('openrouter') || 
+        errStr.contains('api')) {
+      return "Terjadi kendala koneksi ke server AI. Silakan coba lagi beberapa saat lagi.";
+    }
+    return e.toString().replaceAll('Exception: ', '');
   }
 }

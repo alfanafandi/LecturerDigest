@@ -6,6 +6,7 @@ import 'package:lecturer_digest/core/providers/app_provider.dart';
 import 'package:lecturer_digest/core/widgets/brand_logo.dart';
 import 'package:lecturer_digest/core/utils/responsive.dart';
 import 'package:lecturer_digest/core/services/document_service.dart';
+import 'package:lecturer_digest/screens/lecture_summary_view.dart';
 
 class NewLectureRecording extends StatefulWidget {
   const NewLectureRecording({super.key});
@@ -179,7 +180,7 @@ class _NewLectureRecordingState extends State<NewLectureRecording> with TickerPr
 
     // 3. Process with real audio path and duration
     final durationMinutes = (_secondsElapsed / 60).ceil();
-    await provider.processLectureRecording(
+    final lectureId = await provider.processLectureRecording(
       _selectedCourseId!,
       _titleController.text,
       audioPath,
@@ -189,10 +190,10 @@ class _NewLectureRecordingState extends State<NewLectureRecording> with TickerPr
     // Close Loading Dialog
     if (mounted) Navigator.pop(context);
 
-    if (provider.error != null) {
+    if (provider.error != null || lectureId == null) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(provider.error!), backgroundColor: Colors.red),
+          SnackBar(content: Text(provider.error ?? 'Terjadi kesalahan saat memproses AI.'), backgroundColor: Colors.red),
         );
       }
     } else {
@@ -200,7 +201,12 @@ class _NewLectureRecordingState extends State<NewLectureRecording> with TickerPr
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Sesi berhasil disimpan & dirangkum oleh AI!')),
         );
-        Navigator.pop(context); // Return to Dashboard
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (_) => LectureSummaryView(lectureId: lectureId),
+          ),
+        );
       }
     }
   }
@@ -242,7 +248,7 @@ class _NewLectureRecordingState extends State<NewLectureRecording> with TickerPr
     );
 
     // 3. Process Document
-    await provider.processDocument(
+    final lectureId = await provider.processDocument(
       _selectedCourseId!,
       _titleController.text,
       file,
@@ -251,12 +257,12 @@ class _NewLectureRecordingState extends State<NewLectureRecording> with TickerPr
     // Close Loading Dialog
     if (mounted) Navigator.pop(context);
 
-    if (provider.error != null) {
+    if (provider.error != null || lectureId == null) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(provider.error!), 
-            backgroundColor: provider.error!.contains('halaman') ? Colors.orange : Colors.red,
+            content: Text(provider.error ?? 'Terjadi kesalahan saat memproses dokumen.'), 
+            backgroundColor: (provider.error != null && provider.error!.contains('halaman')) ? Colors.orange : Colors.red,
             duration: const Duration(seconds: 4),
           ),
         );
@@ -266,7 +272,12 @@ class _NewLectureRecordingState extends State<NewLectureRecording> with TickerPr
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Dokumen berhasil diunggah & dirangkum oleh AI!'), backgroundColor: Colors.green),
         );
-        Navigator.pop(context); // Return to Dashboard
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (_) => LectureSummaryView(lectureId: lectureId),
+          ),
+        );
       }
     }
   }

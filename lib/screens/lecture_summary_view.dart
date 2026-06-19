@@ -692,7 +692,7 @@ class _LectureSummaryViewState extends State<LectureSummaryView> {
   Widget _buildTabChips() {
     final List<String> tabs = ['Poin Penting', 'Rangkuman Detail', 'Glosarium Istilah', 'Latihan Mandiri'];
     return Container(
-      height: 62,
+      height: 70,
       child: Scrollbar(
         controller: _tabScrollController,
         thumbVisibility: true,
@@ -702,7 +702,7 @@ class _LectureSummaryViewState extends State<LectureSummaryView> {
           controller: _tabScrollController,
           scrollDirection: Axis.horizontal,
           physics: const BouncingScrollPhysics(),
-          padding: const EdgeInsets.only(bottom: 18),
+          padding: const EdgeInsets.only(bottom: 22),
           child: Row(
             children: tabs.map((tabName) {
               final isSelected = _activeTab == tabName;
