@@ -692,50 +692,44 @@ class _LectureSummaryViewState extends State<LectureSummaryView> {
   Widget _buildTabChips() {
     final List<String> tabs = ['Poin Penting', 'Rangkuman Detail', 'Glosarium Istilah', 'Latihan Mandiri'];
     return Container(
-      height: 70,
-      child: Scrollbar(
+      height: 54,
+      child: SingleChildScrollView(
         controller: _tabScrollController,
-        thumbVisibility: true,
-        thickness: 2.5,
-        radius: const Radius.circular(8),
-        child: SingleChildScrollView(
-          controller: _tabScrollController,
-          scrollDirection: Axis.horizontal,
-          physics: const BouncingScrollPhysics(),
-          padding: const EdgeInsets.only(bottom: 22),
-          child: Row(
-            children: tabs.map((tabName) {
-              final isSelected = _activeTab == tabName;
-              return Padding(
-                padding: const EdgeInsets.only(right: 8.0),
-                child: ChoiceChip(
-                  label: Text(tabName),
-                  selected: isSelected,
-                  onSelected: (selected) {
-                    if (selected) {
-                      setState(() {
-                        _activeTab = tabName;
-                      });
-                    }
-                  },
-                  selectedColor: AppTheme.primary,
-                  backgroundColor: AppTheme.surfaceContainerLow,
-                  labelStyle: TextStyle(
-                    color: isSelected ? Colors.white : AppTheme.onSurfaceVariant,
-                    fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-                    fontSize: 13,
-                  ),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(20),
-                    side: BorderSide(
-                      color: isSelected ? AppTheme.primary : AppTheme.outlineVariant.withOpacity(0.3),
-                    ),
-                  ),
-                  showCheckmark: false,
+        scrollDirection: Axis.horizontal,
+        physics: const BouncingScrollPhysics(),
+        padding: const EdgeInsets.only(bottom: 4),
+        child: Row(
+          children: tabs.map((tabName) {
+            final isSelected = _activeTab == tabName;
+            return Padding(
+              padding: const EdgeInsets.only(right: 8.0),
+              child: ChoiceChip(
+                label: Text(tabName),
+                selected: isSelected,
+                onSelected: (selected) {
+                  if (selected) {
+                    setState(() {
+                      _activeTab = tabName;
+                    });
+                  }
+                },
+                selectedColor: AppTheme.primary,
+                backgroundColor: AppTheme.surfaceContainerLow,
+                labelStyle: TextStyle(
+                  color: isSelected ? Colors.white : AppTheme.onSurfaceVariant,
+                  fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                  fontSize: 13,
                 ),
-              );
-            }).toList(),
-          ),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20),
+                  side: BorderSide(
+                    color: isSelected ? AppTheme.primary : AppTheme.outlineVariant.withOpacity(0.3),
+                  ),
+                ),
+                showCheckmark: false,
+              ),
+            );
+          }).toList(),
         ),
       ),
     );

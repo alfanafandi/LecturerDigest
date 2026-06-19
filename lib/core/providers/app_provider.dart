@@ -893,17 +893,21 @@ class AppProvider extends ChangeNotifier {
       );
 
       // 5. Generate Flashcards via AI
-      final flashcardsRaw = await _ai.generateFlashcards(summaryRaw);
-      final List<dynamic> flashcardsData = jsonDecode(_cleanJson(flashcardsRaw));
+      try {
+        final flashcardsRaw = await _ai.generateFlashcards(summaryRaw);
+        final List<dynamic> flashcardsData = jsonDecode(_cleanJson(flashcardsRaw));
 
-      // 6. Save Flashcards
-      await _db.saveFlashcards(
-        lectureId,
-        flashcardsData.map((f) => {
-          'front_concept': f['front_concept'],
-          'back_detail': f['back_detail'],
-        }).toList().cast<Map<String, dynamic>>(),
-      );
+        // 6. Save Flashcards
+        await _db.saveFlashcards(
+          lectureId,
+          flashcardsData.map((f) => {
+            'front_concept': f['front_concept'],
+            'back_detail': f['back_detail'],
+          }).toList().cast<Map<String, dynamic>>(),
+        );
+      } catch (e) {
+        print("Auto flashcard generation failed, user can generate later: $e");
+      }
 
       // Finish
       await fetchCourses(); 
@@ -989,17 +993,21 @@ class AppProvider extends ChangeNotifier {
       );
 
       // 5. Generate Flashcards via AI
-      final flashcardsRaw = await _ai.generateFlashcards(summaryRaw);
-      final List<dynamic> flashcardsData = jsonDecode(_cleanJson(flashcardsRaw));
+      try {
+        final flashcardsRaw = await _ai.generateFlashcards(summaryRaw);
+        final List<dynamic> flashcardsData = jsonDecode(_cleanJson(flashcardsRaw));
 
-      // 6. Save Flashcards
-      await _db.saveFlashcards(
-        lectureId,
-        flashcardsData.map((f) => {
-          'front_concept': f['front_concept'],
-          'back_detail': f['back_detail'],
-        }).toList().cast<Map<String, dynamic>>(),
-      );
+        // 6. Save Flashcards
+        await _db.saveFlashcards(
+          lectureId,
+          flashcardsData.map((f) => {
+            'front_concept': f['front_concept'],
+            'back_detail': f['back_detail'],
+          }).toList().cast<Map<String, dynamic>>(),
+        );
+      } catch (e) {
+        print("Auto flashcard generation failed, user can generate later: $e");
+      }
 
       // Finish
       await fetchCourses(); 
