@@ -598,21 +598,58 @@ class _AskAiChatState extends State<AskAiChat> with WidgetsBindingObserver {
   }
 
   List<InlineSpan> _parseMarkdown(String text, TextStyle baseStyle) {
+    // 1. Process bullet points
+    String processed = text;
+    if (processed.startsWith('* ')) {
+      processed = '• ' + processed.substring(2);
+    }
+    processed = processed.replaceAll('\n* ', '\n• ');
+    processed = processed.replaceAll('\n  * ', '\n  • ');
+
     final List<InlineSpan> spans = [];
-    final parts = text.split('**');
-    for (int i = 0; i < parts.length; i++) {
-      final isBold = i % 2 == 1;
-      if (parts[i].isNotEmpty) {
-        spans.add(
-          TextSpan(
-            text: parts[i],
-            style: isBold 
-                ? baseStyle.copyWith(fontWeight: FontWeight.bold) 
-                : baseStyle,
-          ),
-        );
+    int i = 0;
+    final int len = processed.length;
+    
+    bool isBold = false;
+    bool isItalic = false;
+    
+    StringBuffer currentText = StringBuffer();
+    
+    void flushCurrentText() {
+      if (currentText.isNotEmpty) {
+        TextStyle style = baseStyle;
+        if (isBold) {
+          style = style.copyWith(fontWeight: FontWeight.bold);
+        }
+        if (isItalic) {
+          style = style.copyWith(fontStyle: FontStyle.italic);
+        }
+        spans.add(TextSpan(text: currentText.toString(), style: style));
+        currentText.clear();
       }
     }
+    
+    while (i < len) {
+      // Check for double asterisk (bold)
+      if (i + 1 < len && processed[i] == '*' && processed[i + 1] == '*') {
+        flushCurrentText();
+        isBold = !isBold;
+        i += 2;
+      }
+      // Check for single asterisk (italic)
+      else if (processed[i] == '*') {
+        flushCurrentText();
+        isItalic = !isItalic;
+        i += 1;
+      }
+      // Normal character
+      else {
+        currentText.write(processed[i]);
+        i += 1;
+      }
+    }
+    
+    flushCurrentText();
     return spans;
   }
 
