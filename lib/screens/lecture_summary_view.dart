@@ -1080,44 +1080,16 @@ class _LectureSummaryViewState extends State<LectureSummaryView> {
     String description
   ) {
     return GestureDetector(
-      onTap: () async {
+      onTap: () {
         Navigator.pop(context); // Close bottom sheet
-        
-        // Show generating snackbar
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Row(
-              children: [
-                const SizedBox(
-                  width: 16,
-                  height: 16,
-                  child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
-                ),
-                const SizedBox(width: 12),
-                Text('AI sedang menyusun $count pertanyaan kuis...'),
-              ],
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (_) => QuizScreen(
+              lectureId: widget.lectureId,
+              generateCount: count,
             ),
-            duration: const Duration(seconds: 15),
           ),
         );
-
-        await provider.generateQuizForLecture(widget.lectureId, count: count);
-        
-        if (mounted) {
-          ScaffoldMessenger.of(context).hideCurrentSnackBar();
-          if (provider.error != null) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text(provider.error!), backgroundColor: Colors.red),
-            );
-          } else {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('Kuis AI berhasil dibuat!'), backgroundColor: Colors.green),
-            );
-            Navigator.of(context).push(
-              MaterialPageRoute(builder: (_) => QuizScreen(lectureId: widget.lectureId)),
-            );
-          }
-        }
       },
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),

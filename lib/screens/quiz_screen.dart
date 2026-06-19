@@ -9,7 +9,8 @@ import 'package:lecturer_digest/screens/learning_diagnostics.dart';
 
 class QuizScreen extends StatefulWidget {
   final String lectureId;
-  const QuizScreen({super.key, required this.lectureId});
+  final int? generateCount;
+  const QuizScreen({super.key, required this.lectureId, this.generateCount});
 
   @override
   State<QuizScreen> createState() => _QuizScreenState();
@@ -27,8 +28,13 @@ class _QuizScreenState extends State<QuizScreen> {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      Provider.of<AppProvider>(context, listen: false).fetchQuizzes(widget.lectureId);
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      final provider = Provider.of<AppProvider>(context, listen: false);
+      if (widget.generateCount != null) {
+        await provider.generateQuizForLecture(widget.lectureId, count: widget.generateCount!);
+      } else {
+        await provider.fetchQuizzes(widget.lectureId);
+      }
     });
   }
 
@@ -107,6 +113,7 @@ class _QuizScreenState extends State<QuizScreen> {
     return Consumer<AppProvider>(
       builder: (context, provider, child) {
         if (provider.isLoading || _isSubmitting) {
+          final isGenerating = provider.currentQuizzes.isEmpty;
           return Scaffold(
             backgroundColor: AppTheme.surface,
             body: Center(
@@ -115,9 +122,17 @@ class _QuizScreenState extends State<QuizScreen> {
                 children: [
                   const CircularProgressIndicator(),
                   const SizedBox(height: 24),
-                  Text('Menyimpan hasil kuis Anda...', style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600)),
+                  Text(
+                    isGenerating ? 'AI sedang menyusun pertanyaan kuis...' : 'Menyimpan hasil kuis Anda...',
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
+                  ),
                   const SizedBox(height: 8),
-                  const Text('AI sedang memperbarui statistik belajar Anda.', style: TextStyle(color: AppTheme.onSurfaceVariant)),
+                  Text(
+                    isGenerating
+                        ? 'Ini mungkin memakan waktu 10-20 detik.'
+                        : 'AI sedang memperbarui statistik belajar Anda.',
+                    style: const TextStyle(color: AppTheme.onSurfaceVariant),
+                  ),
                 ],
               ),
             ),
@@ -125,18 +140,41 @@ class _QuizScreenState extends State<QuizScreen> {
         }
 
         if (provider.currentQuizzes.isEmpty) {
+          final isError = provider.error != null;
           return Scaffold(
-            appBar: AppBar(title: const Text('Kuis AI')),
+            appBar: AppBar(
+              title: const Text('Kuis AI'),
+              leading: IconButton(
+                icon: const Icon(Icons.arrow_back),
+                onPressed: () => Navigator.pop(context),
+              ),
+            ),
             body: Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Icon(Icons.quiz_outlined, size: 64, color: AppTheme.outlineVariant),
-                  const SizedBox(height: 16),
-                  const Text('Belum ada kuis untuk materi ini.', style: TextStyle(color: AppTheme.onSurfaceVariant)),
-                  const SizedBox(height: 24),
-                  ElevatedButton(onPressed: () => Navigator.pop(context), child: const Text('Kembali')),
-                ],
+              child: Padding(
+                padding: const EdgeInsets.all(24.0),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      isError ? Icons.error_outline_rounded : Icons.quiz_outlined,
+                      size: 64,
+                      color: isError ? Colors.red : AppTheme.outlineVariant,
+                    ),
+                    const SizedBox(height: 16),
+                    Text(
+                      isError
+                          ? provider.error!
+                          : 'Belum ada kuis untuk materi ini.',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(color: isError ? Colors.red : AppTheme.onSurfaceVariant),
+                    ),
+                    const SizedBox(height: 24),
+                    ElevatedButton(
+                      onPressed: () => Navigator.pop(context),
+                      child: const Text('Kembali'),
+                    ),
+                  ],
+                ),
               ),
             ),
           );

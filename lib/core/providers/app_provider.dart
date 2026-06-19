@@ -905,23 +905,6 @@ class AppProvider extends ChangeNotifier {
         }).toList().cast<Map<String, dynamic>>(),
       );
 
-      // 7. Auto-generate Quiz
-      try {
-        final quizRaw = await _ai.generateQuizzes(summaryRaw, count: 5);
-        final List<dynamic> quizData = jsonDecode(_cleanJson(quizRaw));
-        await _db.saveQuizzes(
-          lectureId,
-          quizData.map((q) => {
-            'question': q['question'],
-            'options': q['options'],
-            'correct_answer': q['correct_answer'],
-            'explanation': q['explanation'],
-          }).toList().cast<Map<String, dynamic>>(),
-        );
-      } catch (e) {
-        print("Auto quiz generation failed, user can generate later: $e");
-      }
-
       // Finish
       await fetchCourses(); 
       await fetchDueFlashcards();
@@ -1017,23 +1000,6 @@ class AppProvider extends ChangeNotifier {
           'back_detail': f['back_detail'],
         }).toList().cast<Map<String, dynamic>>(),
       );
-
-      // 7. Auto-generate Quiz
-      try {
-        final quizRaw = await _ai.generateQuizzes(summaryRaw, count: 5);
-        final List<dynamic> quizData = jsonDecode(_cleanJson(quizRaw));
-        await _db.saveQuizzes(
-          lectureId,
-          quizData.map((q) => {
-            'question': q['question'],
-            'options': q['options'],
-            'correct_answer': q['correct_answer'],
-            'explanation': q['explanation'],
-          }).toList().cast<Map<String, dynamic>>(),
-        );
-      } catch (e) {
-        print("Auto quiz generation failed, user can generate later: $e");
-      }
 
       // Finish
       await fetchCourses(); 
