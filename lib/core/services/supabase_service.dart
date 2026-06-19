@@ -272,7 +272,7 @@ class SupabaseService {
 
   // --- Chat ---
   Future<List<Map<String, dynamic>>> getChatMessages(String contextId) async {
-    return await _client.from('chat_messages').select().eq('lecture_id', contextId).order('created_at');
+    return await _client.from('chat_messages').select().eq('lecture_id', contextId).order('created_at', ascending: true);
   }
 
   Future<void> saveChatMessage(String contextId, String role, String content) async {
