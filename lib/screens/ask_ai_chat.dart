@@ -344,7 +344,9 @@ class _AskAiChatState extends State<AskAiChat> with WidgetsBindingObserver {
                           ? 16 
                           : (Responsive.isDesktop(context) 
                               ? 24 
-                              : (widget.isTab ? 120 : 32)), 
+                              : (widget.isTab 
+                                  ? 96 + MediaQuery.of(context).padding.bottom 
+                                  : 16 + MediaQuery.of(context).padding.bottom)), 
                       left: Responsive.isDesktop(context) ? 48 : 24, 
                       right: Responsive.isDesktop(context) ? 48 : 24
                     ),

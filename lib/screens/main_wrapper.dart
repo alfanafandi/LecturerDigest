@@ -69,26 +69,27 @@ class _MainWrapperState extends State<MainWrapper> {
             ),
           ) : null,
           floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
-          bottomNavigationBar: isDesktop ? null : Container(
-            margin: const EdgeInsets.only(top: 12),
-            decoration: BoxDecoration(
-              color: AppTheme.background.withOpacity(0.9),
-              borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
-              boxShadow: [
-                BoxShadow(
-                  color: AppTheme.primary.withOpacity(0.06),
-                  blurRadius: 24,
-                  offset: const Offset(0, -8),
-                ),
-              ],
-            ),
-            child: ClipRRect(
-              borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
-              child: BottomNavigationBar(
-                currentIndex: currentIndex,
-                onTap: (index) {
-                  provider.setTabIndex(index);
-                },
+          bottomNavigationBar: isDesktop ? null : SafeArea(
+            child: Container(
+              margin: const EdgeInsets.only(top: 12),
+              decoration: BoxDecoration(
+                color: AppTheme.background.withOpacity(0.9),
+                borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
+                boxShadow: [
+                  BoxShadow(
+                    color: AppTheme.primary.withOpacity(0.06),
+                    blurRadius: 24,
+                    offset: const Offset(0, -8),
+                  ),
+                ],
+              ),
+              child: ClipRRect(
+                borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
+                child: BottomNavigationBar(
+                  currentIndex: currentIndex,
+                  onTap: (index) {
+                    provider.setTabIndex(index);
+                  },
                 type: BottomNavigationBarType.fixed,
                 backgroundColor: Colors.transparent,
                 elevation: 0,
@@ -117,7 +118,8 @@ class _MainWrapperState extends State<MainWrapper> {
               ),
             ),
           ),
-        );
+        ),
+      );
       },
     );
   }
