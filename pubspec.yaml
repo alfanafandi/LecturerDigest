@@ -46,6 +46,7 @@ dependencies:
   permission_handler: ^11.3.1
   intl: ^0.19.0
   just_audio: ^0.9.42
+  just_audio_windows: ^0.2.1
   file_picker: ^11.0.2
   syncfusion_flutter_pdf: ^33.1.49
   open_filex: ^4.7.0

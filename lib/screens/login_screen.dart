@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
+import 'dart:io' show Platform;
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
@@ -192,6 +194,7 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Widget _buildLoginForm({bool isMobile = false}) {
+    final bool showGoogleLogin = kIsWeb || !Platform.isWindows;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -305,76 +308,75 @@ class _LoginScreenState extends State<LoginScreen> {
           },
         ),
         
-        const SizedBox(height: 24),
-        
-        Row(
-          children: [
-            const Expanded(child: Divider()),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: Text(
-                'atau masuk dengan', 
-                style: TextStyle(
-                  color: AppTheme.onSurfaceVariant.withOpacity(0.5), 
-                  fontSize: 12,
-                  fontWeight: FontWeight.w500,
-                )
-              ),
-            ),
-            const Expanded(child: Divider()),
-          ],
-        ),
-        
-        const SizedBox(height: 24),
-        
-        // Google Sign In Button
-        Consumer<AppProvider>(
-          builder: (context, provider, child) {
-            return SizedBox(
-              width: double.infinity,
-              height: 60,
-              child: OutlinedButton(
-                onPressed: provider.isLoading ? null : () => provider.loginWithGoogle(),
-                style: OutlinedButton.styleFrom(
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  side: BorderSide(
-                    color: AppTheme.outlineVariant.withOpacity(0.4),
-                    width: 1.5,
-                  ),
-                  backgroundColor: AppTheme.surfaceContainerLowest,
-                  foregroundColor: AppTheme.onSurface,
-                  elevation: 0,
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Image.network(
-                      'https://upload.wikimedia.org/wikipedia/commons/thumb/c/c1/Google_%22G%22_logo.svg/48px-Google_%22G%22_logo.svg.png',
-                      height: 24,
-                      width: 24,
-                      errorBuilder: (context, error, stackTrace) => const Icon(
-                        Icons.account_circle_outlined,
-                        color: AppTheme.primary,
-                        size: 24,
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    Text(
-                      'Masuk dengan Google',
-                      style: GoogleFonts.inter(
-                        fontSize: 15,
-                        fontWeight: FontWeight.w700,
-                        color: AppTheme.onSurface,
-                      ),
-                    ),
-                  ],
+        if (showGoogleLogin) ...[
+          const SizedBox(height: 24),
+          Row(
+            children: [
+              const Expanded(child: Divider()),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: Text(
+                  'atau masuk dengan', 
+                  style: TextStyle(
+                    color: AppTheme.onSurfaceVariant.withOpacity(0.5), 
+                    fontSize: 12,
+                    fontWeight: FontWeight.w500,
+                  )
                 ),
               ),
-            );
-          },
-        ),
+              const Expanded(child: Divider()),
+            ],
+          ),
+          const SizedBox(height: 24),
+          // Google Sign In Button
+          Consumer<AppProvider>(
+            builder: (context, provider, child) {
+              return SizedBox(
+                width: double.infinity,
+                height: 60,
+                child: OutlinedButton(
+                  onPressed: provider.isLoading ? null : () => provider.loginWithGoogle(),
+                  style: OutlinedButton.styleFrom(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    side: BorderSide(
+                      color: AppTheme.outlineVariant.withOpacity(0.4),
+                      width: 1.5,
+                    ),
+                    backgroundColor: AppTheme.surfaceContainerLowest,
+                    foregroundColor: AppTheme.onSurface,
+                    elevation: 0,
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Image.network(
+                        'https://upload.wikimedia.org/wikipedia/commons/thumb/c/c1/Google_%22G%22_logo.svg/48px-Google_%22G%22_logo.svg.png',
+                        height: 24,
+                        width: 24,
+                        errorBuilder: (context, error, stackTrace) => const Icon(
+                          Icons.account_circle_outlined,
+                          color: AppTheme.primary,
+                          size: 24,
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Text(
+                        'Masuk dengan Google',
+                        style: GoogleFonts.inter(
+                          fontSize: 15,
+                          fontWeight: FontWeight.w700,
+                          color: AppTheme.onSurface,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            },
+          ),
+        ],
 
         const SizedBox(height: 32),
         

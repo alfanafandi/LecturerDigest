@@ -414,12 +414,75 @@ class AppProvider extends ChangeNotifier {
   Future<void> fetchSummary(String lectureId) async {
     _setLoading(true);
     try {
-      currentSummary = await _db.getSummary(lectureId);
+      final summary = await _db.getSummary(lectureId);
+      currentSummary = _sanitizeSummaryData(summary);
       currentLectureDetails = await _db.getLectureDetails(lectureId);
     } catch (e) {
       error = e.toString();
     }
     _setLoading(false);
+  }
+
+  Map<String, dynamic>? _sanitizeSummaryData(Map<String, dynamic>? data) {
+    if (data == null) return null;
+    
+    // Deep copy/clone to prevent modifying read-only database structures
+    final sanitized = jsonDecode(jsonEncode(data)) as Map<String, dynamic>;
+    
+    if (sanitized['core_essence'] is String) {
+      sanitized['core_essence'] = _sanitizeText(sanitized['core_essence'] as String);
+    }
+    if (sanitized['exam_tips'] is String) {
+      sanitized['exam_tips'] = _sanitizeText(sanitized['exam_tips'] as String);
+    }
+    
+    final keyTakeawaysObj = sanitized['key_takeaways'] ?? {};
+    if (keyTakeawaysObj['takeaways'] is List) {
+      for (var item in keyTakeawaysObj['takeaways']) {
+        if (item is Map) {
+          if (item['title'] is String) item['title'] = _sanitizeText(item['title'] as String);
+          if (item['description'] is String) item['description'] = _sanitizeText(item['description'] as String);
+        }
+      }
+    }
+    if (keyTakeawaysObj['outline'] is List) {
+      for (var item in keyTakeawaysObj['outline']) {
+        if (item is Map) {
+          if (item['section_title'] is String) item['section_title'] = _sanitizeText(item['section_title'] as String);
+          if (item['section_summary'] is String) item['section_summary'] = _sanitizeText(item['section_summary'] as String);
+        }
+      }
+    }
+    if (keyTakeawaysObj['glossary'] is List) {
+      for (var item in keyTakeawaysObj['glossary']) {
+        if (item is Map) {
+          if (item['term'] is String) item['term'] = _sanitizeText(item['term'] as String);
+          if (item['definition'] is String) item['definition'] = _sanitizeText(item['definition'] as String);
+        }
+      }
+    }
+    if (keyTakeawaysObj['study_questions'] is List) {
+      final list = keyTakeawaysObj['study_questions'] as List;
+      for (int i = 0; i < list.length; i++) {
+        if (list[i] is String) {
+          list[i] = _sanitizeText(list[i] as String);
+        }
+      }
+    }
+    
+    return sanitized;
+  }
+
+  String _sanitizeText(String text) {
+    if (text.isEmpty) return text;
+    return text
+        .replaceAll(RegExp(r'\$\s*\\\s*rightarrow\s*\$', caseSensitive: false), '→')
+        .replaceAll(RegExp(r'\\\s*rightarrow', caseSensitive: false), '→')
+        .replaceAll(RegExp(r'\$\s*[\r\n]\s*ightarrow\s*\$', caseSensitive: false), '→')
+        .replaceAll(RegExp(r'[\r\n]\s*ightarrow', caseSensitive: false), '→')
+        .replaceAll(r'$→$', '→')
+        .replaceAll(r'→$', '→')
+        .replaceAll(r'$→', '→');
   }
 
   Future<void> regenerateSummary(String lectureId) async {
@@ -432,7 +495,8 @@ class AppProvider extends ChangeNotifier {
         throw Exception("Transkrip tidak ditemukan. Tidak dapat meregenerasi ringkasan.");
       }
 
-      final summaryRaw = await _ai.generateSummary(transcript);
+      final cleanedTranscript = _cleanFillerWords(transcript);
+      final summaryRaw = await _ai.generateSummary(cleanedTranscript);
       final summaryData = jsonDecode(_cleanJson(summaryRaw));
 
       await _db.saveSummary(
@@ -805,9 +869,22 @@ class AppProvider extends ChangeNotifier {
 
       if (chatLecture != null) {
         contextId = chatLecture!['id'];
-        contextTranscript = chatLecture!['raw_transcript'] ?? '';
+        
+        // Coba gunakan Ringkasan Kuliah untuk menghemat token
+        final summaryData = await _db.getSummary(contextId);
+        if (summaryData != null) {
+          contextTranscript = "Ringkasan Kuliah:\n"
+              "Intisari Utama: ${summaryData['core_essence'] ?? ''}\n"
+              "Poin Penting: ${jsonEncode(summaryData['key_takeaways'] ?? {})}\n"
+              "Exam Tips: ${summaryData['exam_tips'] ?? ''}\n";
+        } else {
+          // Fallback ke transkrip mentah (dibersihkan dari filler words)
+          final rawText = chatLecture!['raw_transcript'] ?? '';
+          contextTranscript = "Transkrip Kuliah:\n${_cleanFillerWords(rawText)}";
+        }
+
         if (activeRemedialPrompt != null) {
-          contextTranscript = "REMEDIAL LESSON GUIDANCE INSTRUCTION: $activeRemedialPrompt\n\nLecture Transcript: $contextTranscript";
+          contextTranscript = "REMEDIAL LESSON GUIDANCE INSTRUCTION: $activeRemedialPrompt\n\n$contextTranscript";
         }
         if (fileContext != null) {
           contextTranscript = "ATTACHED DOCUMENT CONTEXT (FileName: $fileName):\n$fileContext\n\n$contextTranscript";
@@ -819,7 +896,7 @@ class AppProvider extends ChangeNotifier {
         final courseLectures = await _db.getLectures(contextId);
         contextTranscript = "Konteks Mata Kuliah: ${chatCourse!['name']}\n\n";
         for (var l in courseLectures) {
-          contextTranscript += "Materi: ${l['title']}\nTranskrip: ${l['raw_transcript'] ?? 'No transcript available.'}\n\n";
+          contextTranscript += "Materi: ${l['title']}\nTranskrip: ${_cleanFillerWords(l['raw_transcript'] ?? 'No transcript available.')}\n\n";
         }
         if (fileContext != null) {
           contextTranscript = "ATTACHED DOCUMENT CONTEXT (FileName: $fileName):\n$fileContext\n\n$contextTranscript";
@@ -910,11 +987,19 @@ class AppProvider extends ChangeNotifier {
       final transcript = await _transcriber.transcribe(audioPath);
       if (transcript.isEmpty) throw Exception("Transkrip kosong. Pastikan suara terdengar jelas.");
 
+      final cleanedTranscript = _cleanFillerWords(transcript);
+
+      // Batasi transkrip maksimal 5000 kata untuk proteksi token input
+      final List<String> words = cleanedTranscript.split(RegExp(r'\s+'));
+      final finalTranscript = words.length > 5000 
+          ? '${words.sublist(0, 5000).join(' ')}... [Transkrip dipotong otomatis karena melebihi batas 5.000 kata]' 
+          : cleanedTranscript;
+
       // 2. Save Lecture (with audio path for playback)
-      final lectureId = await _db.saveLecture(courseId, title, durationMinutes, transcript, audioPath: audioPath);
+      final lectureId = await _db.saveLecture(courseId, title, durationMinutes, finalTranscript, audioPath: audioPath);
 
       // 3. Generate Summary via AI
-      final summaryRaw = await _ai.generateSummary(transcript);
+      final summaryRaw = await _ai.generateSummary(finalTranscript);
       final summaryData = jsonDecode(_cleanJson(summaryRaw));
 
       // 4. Save Summary
@@ -993,11 +1078,17 @@ class AppProvider extends ChangeNotifier {
       // 1. Extract text from PDF
       final transcript = await _docService.extractTextFromPDF(file);
       
+      // Batasi transkrip maksimal 5000 kata untuk proteksi token input
+      final List<String> words = transcript.split(RegExp(r'\s+'));
+      final finalTranscript = words.length > 5000 
+          ? '${words.sublist(0, 5000).join(' ')}... [Transkrip dipotong otomatis karena melebihi batas 5.000 kata]' 
+          : transcript;
+
       // 2. Save Lecture (Mock duration for documents as 5 mins)
-      final lectureId = await _db.saveLecture(courseId, title, 5, transcript, audioPath: null);
+      final lectureId = await _db.saveLecture(courseId, title, 5, finalTranscript, audioPath: null);
 
       // 3. Generate Summary via AI
-      final summaryRaw = await _ai.generateSummary(transcript);
+      final summaryRaw = await _ai.generateSummary(finalTranscript);
       final summaryData = jsonDecode(_cleanJson(summaryRaw));
 
       // 4. Save Summary
@@ -1110,5 +1201,37 @@ class AppProvider extends ChangeNotifier {
       return "Terjadi kendala koneksi ke server AI. Silakan coba lagi beberapa saat lagi.";
     }
     return e.toString().replaceAll('Exception: ', '');
+  }
+
+  String _cleanFillerWords(String text) {
+    if (text.isEmpty) return text;
+    final List<String> fillerWords = [
+      // Bunyi vokal pengisi / interjeksi suara
+      'aaa', 'eee', 'ooo', 'hmmm', 'hmm', 'uhhh', 'uh', 'ummm', 'umm', 'um',
+      'eh', 'ehm', 'ah', 'oh', 'hah', 'heeh', 'lah', 'lha', 'kok', 'sih', 
+      'lho', 'dong', 'deh', 'well', 'like', 'so',
+      
+      // Kata pengisi / jeda bahasa Indonesia
+      'anu', 'kayak', 'kayaknya', 'kek', 'ya kan', 'kan ya', 
+      'apa namanya', 'apa tuh', 'apa sih', 'apa ya',
+      'gitu kan', 'gitu lho', 'gitu ya', 'gitu sih',
+      'gimana ya', 'gimana sih', 'macam kayak', 'semacam',
+      
+      // Kata pengisi bahasa Inggris (yang sering diucapkan saat berbicara)
+      'basically', 'literally', 'actually', 'you know'
+    ];
+    String cleaned = text;
+    for (final word in fillerWords) {
+      final regExp = RegExp(r'\b' + RegExp.escape(word) + r'\b', caseSensitive: false);
+      cleaned = cleaned.replaceAll(regExp, '');
+    }
+    
+    // Hapus kata yang berulang akibat gagap/stuttering (contoh: "saya saya" -> "saya")
+    cleaned = cleaned.replaceAllMapped(
+      RegExp(r'\b(\w+)\s+\1\b', caseSensitive: false), 
+      (match) => match.group(1)!
+    );
+    
+    return cleaned.replaceAll(RegExp(r'\s+'), ' ').trim();
   }
 }

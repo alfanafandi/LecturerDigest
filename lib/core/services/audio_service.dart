@@ -1,16 +1,11 @@
 import 'package:record/record.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:permission_handler/permission_handler.dart';
 
 class AudioService {
   final AudioRecorder _recorder = AudioRecorder();
 
   Future<bool> hasPermission() async {
-    final status = await Permission.microphone.status;
-    if (status.isGranted) return true;
-    
-    final result = await Permission.microphone.request();
-    return result.isGranted;
+    return await _recorder.hasPermission();
   }
 
   Future<void> startRecording(String path) async {

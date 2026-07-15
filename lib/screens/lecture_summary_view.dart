@@ -186,11 +186,85 @@ class _LectureSummaryViewState extends State<LectureSummaryView> {
         final summary = provider.currentSummary;
         final lectureDetails = provider.currentLectureDetails;
 
-        if (provider.isLoading || summary == null) {
+        if (provider.isLoading) {
           return const Scaffold(
             body: Center(child: CircularProgressIndicator()),
           );
         }
+
+        if (summary == null) {
+          return Scaffold(
+            backgroundColor: AppTheme.surface,
+            appBar: AppBar(
+              backgroundColor: AppTheme.background.withOpacity(0.9),
+              elevation: 0,
+              leading: IconButton(
+                icon: const Icon(Icons.arrow_back, color: AppTheme.primary),
+                onPressed: () => Navigator.of(context).pop(),
+              ),
+              title: Row(
+                children: [
+                  const BrandLogo(size: 28),
+                  const SizedBox(width: 8),
+                  Text('LectureDigest',
+                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                          fontWeight: FontWeight.w800, letterSpacing: -0.5)),
+                ],
+              ),
+            ),
+            body: Padding(
+              padding: const EdgeInsets.all(24.0),
+              child: Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Icon(Icons.cloud_off_rounded, size: 64, color: AppTheme.outlineVariant),
+                    const SizedBox(height: 24),
+                    Text(
+                      'Ringkasan Belum Tersedia',
+                      style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+                    ),
+                    const SizedBox(height: 12),
+                    Text(
+                      'Ringkasan untuk sesi "${lectureDetails?['title'] ?? ''}" belum berhasil dibuat karena kendala koneksi ke server AI sebelumnya. Anda dapat membuat ringkasannya sekarang.',
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(color: AppTheme.onSurfaceVariant, height: 1.5),
+                    ),
+                    if (provider.error != null) ...[
+                      const SizedBox(height: 16),
+                      Container(
+                        padding: const EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          color: Colors.red.withOpacity(0.05),
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(color: Colors.red.withOpacity(0.2)),
+                        ),
+                        child: Text(
+                          provider.error!,
+                          style: const TextStyle(color: Colors.red, fontSize: 12),
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                    ],
+                    const SizedBox(height: 32),
+                    ElevatedButton.icon(
+                      onPressed: () => provider.regenerateSummary(widget.lectureId),
+                      icon: const Icon(Icons.auto_awesome_rounded),
+                      label: const Text('Buat Ringkasan AI Sekarang'),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppTheme.primary,
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          );
+        }
+
 
         final keyTakeawaysObj = summary['key_takeaways'] ?? {};
         final takeaways = keyTakeawaysObj['takeaways'] is List ? keyTakeawaysObj['takeaways'] as List<dynamic> : [];

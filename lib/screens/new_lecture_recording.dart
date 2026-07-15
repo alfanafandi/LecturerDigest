@@ -66,7 +66,7 @@ class _NewLectureRecordingState extends State<NewLectureRecording> with TickerPr
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Batas maksimal durasi 90 menit tercapai. Rekaman dihentikan otomatis dan diproses oleh AI.'),
+          content: Text('Batas maksimal durasi 45 menit tercapai. Rekaman dihentikan otomatis untuk diproses AI. Silakan buat sesi baru untuk melanjutkan.'),
           backgroundColor: Colors.orange,
           duration: Duration(seconds: 5),
         ),
@@ -82,7 +82,7 @@ class _NewLectureRecordingState extends State<NewLectureRecording> with TickerPr
         bool thresholdReached = false;
         setState(() {
           _secondsElapsed++;
-          if (_secondsElapsed >= 5400) { // 90 minutes
+          if (_secondsElapsed >= 2700) { // 45 minutes
             thresholdReached = true;
           }
         });
@@ -695,7 +695,7 @@ class _NewLectureRecordingState extends State<NewLectureRecording> with TickerPr
                       const SizedBox(width: 12),
                       Expanded(
                         child: Text(
-                          'Catatan: Batas maksimal durasi rekaman kuliah adalah 90 menit agar ukuran file tetap optimal dan dapat diproses oleh AI.',
+                          'Catatan: Batas maksimal durasi rekaman kuliah adalah 45 menit agar proses AI tetap cepat dan hemat token. Silakan buat sesi baru jika ingin melanjutkan.',
                           style: TextStyle(
                             fontSize: 12,
                             color: AppTheme.tertiary,
