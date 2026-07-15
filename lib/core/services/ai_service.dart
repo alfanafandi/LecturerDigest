@@ -4,6 +4,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class AIService {
   static const String _baseUrl = 'https://openrouter.ai/api/v1/chat/completions';
+  static const String _model = 'google/gemma-4-26b-a4b-it:free';
   
   String get _apiKey => dotenv.env['OPENROUTER_API_KEY'] ?? '';
 
@@ -17,7 +18,7 @@ class AIService {
         'X-Title': 'LectureDigest',
       },
       body: jsonEncode({
-        "model": "google/gemma-4-31b-it:free",
+        "model": _model,
         "max_tokens": 2000,
         "messages": [
           {
@@ -48,7 +49,7 @@ class AIService {
         'Authorization': 'Bearer $_apiKey',
       },
       body: jsonEncode({
-        "model": "google/gemma-4-31b-it:free",
+        "model": _model,
         "max_tokens": 1000,
         "messages": [
           {
@@ -110,7 +111,7 @@ class AIService {
         'Authorization': 'Bearer $_apiKey',
       },
       body: jsonEncode({
-        "model": "google/gemma-4-31b-it:free",
+        "model": _model,
         "max_tokens": 1000,
         "messages": messages,
       }),
@@ -132,7 +133,7 @@ class AIService {
         'Authorization': 'Bearer $_apiKey',
       },
       body: jsonEncode({
-        "model": "google/gemma-4-31b-it:free",
+        "model": _model,
         "max_tokens": 2000,
         "messages": [
           {
@@ -163,7 +164,7 @@ class AIService {
         'Authorization': 'Bearer $_apiKey',
       },
       body: jsonEncode({
-        "model": "google/gemma-4-31b-it:free",
+        "model": _model,
         "max_tokens": 1000,
         "messages": [
           {
